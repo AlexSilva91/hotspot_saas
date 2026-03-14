@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtualenv
+venv/
+.env
+
+# Flask
+instance/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+migrations/
