@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}
+Editar Empresa
+{% endblock %}
+
+{% block content %}
+
+<h2>Editar Empresa</h2>
+
+<form method="POST">
+
+<label>Nome</label>
+<input type="text" name="name" value="{{ tenant.name }}" required>
+
+<label>Plano</label>
+
+<select name="plan_id">
+
+<option value="">Sem plano</option>
+
+{% for plan in plans %}
+
+<option value="{{ plan.id }}"
+{% if tenant.plan_id == plan.id %}selected{% endif %}>
+{{ plan.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<button type="submit">Salvar</button>
+
+</form>
+
+<br>
+
+<a href="/tenants">
+<button>Voltar</button>
+</a>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}
+Usuários
+{% endblock %}
+
+{% block content %}
+
+<h2>Criar Usuário</h2>
+
+<form method="POST" action="/users/create">
+
+<input type="email" name="email" placeholder="E-mail">
+
+<input type="password" name="password" placeholder="Senha">
+
+<input type="text" name="role" placeholder="Função">
+
+<label>Empresa</label>
+
+<select name="tenant_id">
+
+<option value="">Sem empresa</option>
+
+{% for tenant in tenants %}
+
+<option value="{{ tenant.id }}">
+{{ tenant.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<button type="submit">Criar</button>
+
+</form>
+<hr>
+
+<h2>Lista de Usuários</h2>
+
+<table border="1" width="50%">
+
+<thead>
+<tr>
+<th>E-mail</th>
+<th>Função</th>
+<th>Empresa</th>
+<th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for user in users %}
+
+<tr>
+
+<td>{{ user.email }}</td>
+<td>{{ user.role }}</td>
+<td>{{ user.tenant.name }}</td>
+
+<td>
+
+<button onclick="document.getElementById('modal-{{ user.id }}').style.display='block'">
+Detalhes
+</button>
+
+<a href="/users/{{ user.id }}/edit">
+<button>Editar</button>
+</a>
+
+<form method="POST" action="/users/{{ user.id }}/delete" style="display:inline;">
+<button type="submit">Excluir</button>
+</form>
+
+</td>
+
+</tr>
+
+<tr>
+<td colspan="4">
+
+<div id="modal-{{ user.id }}" style="display:none; border:1px solid black; padding:10px;">
+
+<h3>Detalhes do Usuário</h3>
+
+<p>E-mail: {{ user.email }}</p>
+<p>Função: {{ user.role }}</p>
+<p>Empresa: {{ user.tenant.name }}</p>
+
+<button onclick="document.getElementById('modal-{{ user.id }}').style.display='none'">
+Fechar
+</button>
+
+</div>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

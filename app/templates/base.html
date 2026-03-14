@@ -1,0 +1,35 @@
+{% block doctype %}
+<!DOCTYPE html>
+{% endblock %}
+
+<html>
+
+<head>
+    <title>{% block title %}Hotspot SaaS{% endblock %}</title>
+</head>
+
+<body>
+
+<header>
+
+<h1>Hotspot SaaS</h1>
+
+<nav>
+<a href="/plans">Plans</a>
+<a href="/routers">Routers</a>
+<a href="/tenants">Tenants</a>
+<a href="/users">Users</a>
+</nav>
+
+</header>
+
+<hr>
+
+<main>
+{% block content %}
+{% endblock %}
+</main>
+
+</body>
+
+</html>

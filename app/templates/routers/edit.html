@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+Edit Router
+{% endblock %}
+
+{% block content %}
+
+<h2>Edit Router</h2>
+
+<form method="POST">
+
+<label>Name</label>
+<input type="text" name="name" value="{{ router.name }}">
+
+<label>IP Address</label>
+<input type="text" name="ip_address" value="{{ router.ip_address }}">
+
+<label>Empresa</label>
+
+<select name="tenant_id">
+
+<option value="">Sem empresa</option>
+
+{% for tenant in tenants %}
+
+<option value="{{ tenant.id }}"
+{% if router.tenant_id == tenant.id %}selected{% endif %}>
+{{ tenant.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<label>Username</label>
+<input type="text" name="username" value="{{ router.username }}">
+
+<label>Password</label>
+<input type="text" name="password">
+
+<button type="submit">Save</button>
+
+</form>
+
+{% endblock %}

@@ -4,6 +4,7 @@ from app.models.user import User
 
 class UserRepository:
 
+
     @staticmethod
     def create(data):
 
@@ -31,6 +32,14 @@ class UserRepository:
     def get_by_email(email):
 
         return User.query.filter_by(email=email).first()
+
+
+    @staticmethod
+    def save(user):
+
+        db.session.commit()
+
+        return user
 
 
     @staticmethod

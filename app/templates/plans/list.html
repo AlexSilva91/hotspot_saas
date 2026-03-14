@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}
+Planos
+{% endblock %}
+
+{% block content %}
+
+<h2>Planos</h2>
+
+<button onclick="document.getElementById('createPlan').showModal()">
+Criar Plano
+</button>
+
+<table border="1" width="60%">
+
+<thead>
+<tr>
+<th>Nome</th>
+<th>Máx. Roteadores</th>
+<th>Máx. Usuários</th>
+<th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for plan in plans %}
+
+<tr>
+
+<td>{{ plan.name }}</td>
+<td>{{ plan.max_routers }}</td>
+<td>{{ plan.max_users }}</td>
+
+<td>
+
+<button onclick="document.getElementById('view_{{ plan.id }}').showModal()">
+Detalhes
+</button>
+
+<a href="/plans/{{ plan.id }}/edit">
+<button>Editar</button>
+</a>
+
+<form method="POST" action="/plans/{{ plan.id }}/delete" style="display:inline;">
+<button type="submit">Remover</button>
+</form>
+
+</td>
+
+</tr>
+
+<dialog id="view_{{ plan.id }}">
+
+<h3>Detalhes do Plano</h3>
+
+<p><strong>Nome:</strong> {{ plan.name }}</p>
+<p><strong>Máx. Roteadores:</strong> {{ plan.max_routers }}</p>
+<p><strong>Máx. Usuários:</strong> {{ plan.max_users }}</p>
+
+<button onclick="document.getElementById('view_{{ plan.id }}').close()">
+Fechar
+</button>
+
+</dialog>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+
+<!-- MODAL CRIAR PLANO -->
+
+<dialog id="createPlan">
+
+<h3>Criar Plano</h3>
+
+<form method="POST" action="/plans/create">
+
+<label>Nome</label>
+<input type="text" name="name" required>
+
+<label>Máx. Roteadores</label>
+<input type="number" name="max_routers" required>
+
+<label>Máx. Usuários</label>
+<input type="number" name="max_users" required>
+
+<br><br>
+
+<button type="submit">Criar</button>
+
+</form>
+
+<br>
+
+<button onclick="document.getElementById('createPlan').close()">
+Cancelar
+</button>
+
+</dialog>
+
+{% endblock %}

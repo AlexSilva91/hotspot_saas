@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}
+Routers
+{% endblock %}
+
+{% block content %}
+
+<h2>Routers</h2>
+
+<button onclick="document.getElementById('createRouter').showModal()">
+Criar Router
+</button>
+
+<br><br>
+
+<table border="1" width="50%">
+
+<thead>
+
+<tr>
+<th>Nome</th>
+<th>IP</th>
+<th>Empresa</th>
+<th>Ações</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for router in routers %}
+
+<tr>
+
+<td>{{ router.name }}</td>
+
+<td>{{ router.ip_address }}</td>
+
+<td>
+{% if router.tenant %}
+{{ router.tenant.name }}
+{% else %}
+Sem empresa
+{% endif %}
+</td>
+
+<td>
+
+<button onclick="document.getElementById('router_{{ router.id }}').showModal()">
+Detalhes
+</button>
+
+<a href="/routers/{{ router.id }}/edit">
+<button>Edit</button>
+</a>
+
+<form method="POST" action="/routers/{{ router.id }}/delete" style="display:inline;">
+<button type="submit">Delete</button>
+</form>
+
+</td>
+
+</tr>
+
+
+<!-- Modal de detalhes -->
+
+<dialog id="router_{{ router.id }}">
+
+<h3>Detalhes do Device</h3>
+
+<p><strong>Name:</strong> {{ router.name }}</p>
+
+<p><strong>IP Address:</strong> {{ router.ip_address }}</p>
+
+<p><strong>Username:</strong> {{ router.username }}</p>
+
+<p>
+<strong>Empresa:</strong>
+{% if router.tenant %}
+{{ router.tenant.name }}
+{% else %}
+Sem empresa
+{% endif %}
+</p>
+
+<br>
+
+<button onclick="document.getElementById('router_{{ router.id }}').close()">
+Close
+</button>
+
+</dialog>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+
+<!-- Modal criar router -->
+
+<dialog id="createRouter">
+
+<h3>Criar Router</h3>
+
+<form method="POST" action="/routers/create">
+
+<label>Nome</label>
+<br>
+<input type="text" name="name" required>
+
+<br><br>
+
+<label>IP Address</label>
+<br>
+<input type="text" name="ip_address" required>
+
+<br><br>
+
+<label>Username</label>
+<br>
+<input type="text" name="username">
+
+<br><br>
+
+<label>Password</label>
+<br>
+<input type="text" name="password">
+
+<br><br>
+
+<label>Empresa</label>
+<br>
+
+<select name="tenant_id">
+
+<option value="">Sem empresa</option>
+
+{% for tenant in tenants %}
+
+<option value="{{ tenant.id }}">
+{{ tenant.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<button type="submit">Criar</button>
+
+<button type="button" onclick="document.getElementById('createRouter').close()">
+Cancelar
+</button>
+
+</form>
+
+</dialog>
+
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}
+Empresas
+{% endblock %}
+
+{% block content %}
+
+<h2>Empresas</h2>
+
+<button onclick="document.getElementById('createTenant').showModal()">
+Criar Empresa
+</button>
+
+<table border="1" width="50%">
+
+<thead>
+<tr>
+<th>Nome</th>
+<th>Plano</th>
+<th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for tenant in tenants %}
+
+<tr>
+
+<td>{{ tenant.name }}</td>
+<td>{{ tenant.plan.name }}</td>
+
+<td>
+
+<button onclick="document.getElementById('tenant_{{ tenant.id }}').showModal()">
+Detalhes
+</button>
+
+<a href="/tenants/{{ tenant.id }}/edit">
+<button>Editar</button>
+</a>
+
+<form method="POST" action="/tenants/{{ tenant.id }}/delete" style="display:inline;">
+<button type="submit">Remover</button>
+</form>
+
+</td>
+
+</tr>
+
+
+<dialog id="tenant_{{ tenant.id }}">
+
+<h3>Detalhes da Empresa</h3>
+
+<p><strong>Nome:</strong> {{ tenant.name }}</p>
+<p><strong>Plano:</strong> {{ tenant.plan.name }}</p>
+<p><strong>Criado em:</strong> {{ tenant.created_at }}</p>
+
+<button onclick="document.getElementById('tenant_{{ tenant.id }}').close()">
+Fechar
+</button>
+
+</dialog>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+
+<!-- MODAL CRIAR TENANT -->
+
+<dialog id="createTenant">
+
+<h3>Criar Empresa</h3>
+
+<form method="POST" action="/tenants/create">
+
+<label>Nome</label>
+<input type="text" name="name" required>
+
+<label>Plano</label>
+
+<select name="plan_id">
+
+<option value="">Sem plano</option>
+
+{% for plan in plans %}
+
+<option value="{{ plan.id }}">
+{{ plan.name }} ({{ plan.max_users }} usuários)
+</option>
+
+{% endfor %}
+
+</select>
+
+<br><br>
+
+<button type="submit">Criar</button>
+
+</form>
+
+<br>
+
+<button onclick="document.getElementById('createTenant').close()">
+Cancelar
+</button>
+
+</dialog>
+
+{% endblock %}

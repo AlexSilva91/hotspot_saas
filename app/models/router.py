@@ -1,13 +1,21 @@
 import uuid
 from app.extensions import db
 
+
 class Router(db.Model):
 
     __tablename__ = "routers"
 
-    id = db.Column(db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = db.Column(
+        db.UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4
+    )
 
-    tenant_id = db.Column(db.UUID(as_uuid=True), db.ForeignKey("tenants.id"))
+    tenant_id = db.Column(
+        db.UUID(as_uuid=True),
+        db.ForeignKey("tenants.id")
+    )
 
     name = db.Column(db.String(100))
 
@@ -16,3 +24,5 @@ class Router(db.Model):
     username = db.Column(db.String(100))
 
     password = db.Column(db.String(200))
+
+    tenant = db.relationship("Tenant", lazy="joined")
