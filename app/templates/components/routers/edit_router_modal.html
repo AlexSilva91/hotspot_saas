@@ -1,0 +1,67 @@
+<dialog id="editRouter_{{ router.id }}" class="modal">
+    <div class="modal-header">
+        <h3>Editar Router: {{ router.name }}</h3>
+    </div>
+
+    <form method="POST" action="/routers/{{ router.id }}/edit" class="modal-form">
+        <div class="form-group">
+            <label for="edit_name_{{ router.id }}">Nome</label>
+            <input type="text" 
+                   id="edit_name_{{ router.id }}" 
+                   name="name" 
+                   value="{{ router.name }}" 
+                   placeholder="Ex: Router Principal"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="edit_ip_{{ router.id }}">IP Address</label>
+            <input type="text" 
+                   id="edit_ip_{{ router.id }}" 
+                   name="ip_address" 
+                   value="{{ router.ip_address }}" 
+                   placeholder="Ex: 192.168.1.1"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label for="edit_username_{{ router.id }}">Username</label>
+            <input type="text" 
+                   id="edit_username_{{ router.id }}" 
+                   name="username" 
+                   value="{{ router.username }}" 
+                   placeholder="Usuário de acesso">
+        </div>
+
+        <div class="form-group">
+            <label for="edit_password_{{ router.id }}">Password</label>
+            <input type="password" 
+                   id="edit_password_{{ router.id }}" 
+                   name="password" 
+                   placeholder="Deixe em branco para manter a atual">
+            <small class="form-text">Deixe em branco para não alterar</small>
+        </div>
+
+        <div class="form-group">
+            <label for="edit_tenant_{{ router.id }}">Empresa</label>
+            <select id="edit_tenant_{{ router.id }}" name="tenant_id">
+                <option value="">Sem empresa</option>
+                {% for tenant in tenants %}
+                <option value="{{ tenant.id }}" 
+                        {% if router.tenant_id == tenant.id %}selected{% endif %}>
+                    {{ tenant.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button secondary" onclick="document.getElementById('editRouter_{{ router.id }}').close()">
+                Cancelar
+            </button>
+            <button type="submit" class="button primary">
+                Salvar Alterações
+            </button>
+        </div>
+    </form>
+</dialog>

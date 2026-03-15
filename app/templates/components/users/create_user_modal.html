@@ -1,0 +1,71 @@
+<dialog id="createUserModal" class="modal">
+    <div class="modal-header">
+        <h3>Criar Novo Usuário</h3>
+    </div>
+
+    <form method="POST" action="/users/create" class="modal-form">
+        <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" 
+                   id="email" 
+                   name="email" 
+                   placeholder="exemplo@email.com" 
+                   value="{{ form_data.get('email', '') }}" 
+                   required>
+            {% if form_errors.get('email') %}
+                <small class="error">{{ form_errors.get('email') }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" 
+                   id="password" 
+                   name="password" 
+                   placeholder="Digite a senha" 
+                   required>
+            {% if form_errors.get('password') %}
+                <small class="error">{{ form_errors.get('password') }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="role">Função</label>
+            <select id="role" name="role" required>
+                <option value="" disabled {% if not form_data.get('role') %}selected{% endif %}>Selecione uma função</option>
+                <option value="admin" {% if form_data.get('role') == 'admin' %}selected{% endif %}>Admin</option>
+                <option value="manager" {% if form_data.get('role') == 'manager' %}selected{% endif %}>Manager</option>
+                <option value="user" {% if form_data.get('role') == 'user' %}selected{% endif %}>User</option>
+                <option value="viewer" {% if form_data.get('role') == 'viewer' %}selected{% endif %}>Viewer</option>
+            </select>
+            {% if form_errors.get('role') %}
+                <small class="error">{{ form_errors.get('role') }}</small>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="tenant_id">Empresa</label>
+            <select id="tenant_id" name="tenant_id">
+                <option value="">Sem empresa</option>
+                {% for tenant in tenants %}
+                <option value="{{ tenant.id }}" 
+                        {% if form_data.get('tenant_id') == tenant.id|string %}selected{% endif %}>
+                    {{ tenant.name }}
+                </option>
+                {% endfor %}
+            </select>
+            {% if form_errors.get('tenant_id') %}
+                <small class="error">{{ form_errors.get('tenant_id') }}</small>
+            {% endif %}
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="button secondary" onclick="document.getElementById('createUserModal').close()">
+                Cancelar
+            </button>
+            <button type="submit" class="button primary">
+                Criar Usuário
+            </button>
+        </div>
+    </form>
+</dialog>

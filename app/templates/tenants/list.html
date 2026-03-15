@@ -6,110 +6,113 @@ Empresas
 
 {% block content %}
 
-<h2>Empresas</h2>
+{% include "components/flash_messages.html" %}
 
-<button onclick="document.getElementById('createTenant').showModal()">
-Criar Empresa
-</button>
+<div class="page-header">
+    <h2>Empresas</h2>
+    <button class="button primary" onclick="document.getElementById('createTenant').showModal()">
+        Criar Empresa
+    </button>
+</div>
 
-<table border="1" width="50%">
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Plano</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tenant in tenants %}
+            <tr>
+                <td class="tenant-name">{{ tenant.name }}</td>
+                <td>
+                    {% if tenant.plan %}
+                        <span class="badge badge-info">{{ tenant.plan.name }}</span>
+                    {% else %}
+                        <span class="badge">Sem plano</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <!-- Botão Detalhes -->
+                    <button class="button-icon" onclick="document.getElementById('tenant_{{ tenant.id }}').showModal()" title="Detalhes">
+                        Detalhes
+                    </button>
 
-<thead>
-<tr>
-<th>Nome</th>
-<th>Plano</th>
-<th>Ações</th>
-</tr>
-</thead>
+                    <!-- Botão Editar -->
+                    <button class="button-icon" onclick="document.getElementById('editTenant_{{ tenant.id }}').showModal()" title="Editar">
+                        Editar
+                    </button>
 
-<tbody>
+                    <!-- Botão Remover -->
+                    <form method="POST" action="/tenants/{{ tenant.id }}/delete" style="display:inline;">
+                        <button type="submit" class="button-icon danger" onclick="return confirm('Tem certeza que deseja excluir esta empresa?')" title="Remover">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
 
-{% for tenant in tenants %}
+            <!-- MODAL DETALHES -->
+            <dialog id="tenant_{{ tenant.id }}" class="modal">
+                <div class="modal-header">
+                    <h3>Detalhes da Empresa</h3>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="detail-item">
+                        <span class="detail-label">Nome:</span>
+                        <span class="detail-value">{{ tenant.name }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Plano:</span>
+                        <span class="detail-value">
+                            {% if tenant.plan %}
+                                {{ tenant.plan.name }}
+                            {% else %}
+                                Sem plano
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Criado em:</span>
+                        <span class="detail-value">
+                            {{ tenant.created_at.strftime('%d/%m/%Y às %H:%M') if tenant.created_at else '—' }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="button primary" onclick="document.getElementById('tenant_{{ tenant.id }}').close()">
+                        Fechar
+                    </button>
+                </div>
+            </dialog>
 
-<tr>
+            <!-- IMPORT DO MODAL DE EDIÇÃO -->
+            {% include "components/tenants/edit_tenant_modal.html" %}
 
-<td>{{ tenant.name }}</td>
-<td>{{ tenant.plan.name }}</td>
+            {% else %}
+            <tr>
+                <td colspan="3" class="empty-state">
+                    <div class="empty-state-content">
+                        <p>Nenhuma empresa encontrada</p>
+                        <button class="button primary" onclick="document.getElementById('createTenant').showModal()">
+                            Criar primeira empresa
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<td>
-
-<button onclick="document.getElementById('tenant_{{ tenant.id }}').showModal()">
-Detalhes
-</button>
-
-<a href="/tenants/{{ tenant.id }}/edit">
-<button>Editar</button>
-</a>
-
-<form method="POST" action="/tenants/{{ tenant.id }}/delete" style="display:inline;">
-<button type="submit">Remover</button>
-</form>
-
-</td>
-
-</tr>
-
-
-<dialog id="tenant_{{ tenant.id }}">
-
-<h3>Detalhes da Empresa</h3>
-
-<p><strong>Nome:</strong> {{ tenant.name }}</p>
-<p><strong>Plano:</strong> {{ tenant.plan.name }}</p>
-<p><strong>Criado em:</strong> {{ tenant.created_at }}</p>
-
-<button onclick="document.getElementById('tenant_{{ tenant.id }}').close()">
-Fechar
-</button>
-
-</dialog>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-
-<!-- MODAL CRIAR TENANT -->
-
-<dialog id="createTenant">
-
-<h3>Criar Empresa</h3>
-
-<form method="POST" action="/tenants/create">
-
-<label>Nome</label>
-<input type="text" name="name" required>
-
-<label>Plano</label>
-
-<select name="plan_id">
-
-<option value="">Sem plano</option>
-
-{% for plan in plans %}
-
-<option value="{{ plan.id }}">
-{{ plan.name }} ({{ plan.max_users }} usuários)
-</option>
-
-{% endfor %}
-
-</select>
-
-<br><br>
-
-<button type="submit">Criar</button>
-
-</form>
-
-<br>
-
-<button onclick="document.getElementById('createTenant').close()">
-Cancelar
-</button>
-
-</dialog>
+<!-- IMPORT DO MODAL DE CRIAÇÃO -->
+{% include "components/tenants/create_tenant_modal.html" %}
 
 {% endblock %}

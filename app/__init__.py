@@ -2,11 +2,13 @@ from flask import Flask, jsonify
 from .config import Config
 from .extensions import db, migrate, jwt
 from werkzeug.exceptions import HTTPException
+from datetime import datetime
 
 from app.routes.plan_routes import plan_bp
 from app.routes.router_routes import router_bp
 from app.routes.tenant_routes import tenant_bp
 from app.routes.user_routes import user_bp
+from app.routes.auth_routes import auth_bp
 
 from app.utils.logger import setup_logging
 
@@ -26,6 +28,7 @@ def create_app():
     app.logger.info("Aplicação iniciada")
 
     # Blueprints
+    app.register_blueprint(auth_bp)
     app.register_blueprint(plan_bp)
     app.register_blueprint(router_bp)
     app.register_blueprint(tenant_bp)
@@ -44,4 +47,8 @@ def create_app():
             "error": "Erro interno do servidor"
         }, 500
 
+    @app.context_processor
+    def inject_year():
+        return {'current_year': datetime.now().year}
+    
     return app

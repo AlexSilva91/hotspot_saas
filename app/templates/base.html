@@ -6,30 +6,68 @@
 
 <head>
     <title>{% block title %}Hotspot SaaS{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo_solveon_2.png') }}">
+    <!-- Bloco para CSS adicional -->
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
+    <div class="page-wrapper">
+        <header>
+            <div class="logo-container">
+                <span class="logo-main">SOLVEON</span>
+                <span class="logo-sub">TECHNOLOGY</span>
+            </div>
 
-<header>
+            <nav>
+                {% if session.get('user_id') %}
+                    {% if request.path != '/plans' %}
+                        <a href="/plans">Planos</a>
+                    {% endif %}
+                    
+                    {% if request.path != '/routers' %}
+                        <a href="/routers">Roteadores</a>
+                    {% endif %}
+                    
+                    {% if request.path != '/tenants' %}
+                        <a href="/tenants">Empresas</a>
+                    {% endif %}
+                    
+                    {% if request.path != '/users' %}
+                        <a href="/users">Usuários</a>
+                    {% endif %}
+                    
+                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+                {% else %}
+                    {% if request.path != url_for('auth.login_page') %}
+                        <a href="{{ url_for('auth.login_page') }}">Login</a>
+                    {% endif %}
+                {% endif %}
+            </nav>
+        </header>
 
-<h1>Hotspot SaaS</h1>
+        <hr>
 
-<nav>
-<a href="/plans">Plans</a>
-<a href="/routers">Routers</a>
-<a href="/tenants">Tenants</a>
-<a href="/users">Users</a>
-</nav>
+        <main class="main-content">
+        {% block content %}
+        {% endblock %}
+        </main>
 
-</header>
+        <!-- JavaScript global -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-<hr>
+        <!-- Bloco para JavaScript específico -->
+        {% block extra_js %}{% endblock %}
 
-<main>
-{% block content %}
-{% endblock %}
-</main>
-
+        <footer>
+            &copy; Solveon {{ current_year }}
+        </footer>
+    </div>
 </body>
 
 </html>

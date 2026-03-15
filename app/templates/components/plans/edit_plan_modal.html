@@ -1,14 +1,8 @@
-{% extends "base.html" %}
+<dialog id="edit_{{ plan.id }}">
 
-{% block title %}
-Editar Plano
-{% endblock %}
+<h3>Editar Plano: {{ plan.name }}</h3>
 
-{% block content %}
-
-<h2>Editar Plano</h2>
-
-<form method="POST">
+<form method="POST" action="/plans/{{ plan.id }}/edit">
 
 <label>Nome</label>
 <input type="text" name="name" value="{{ plan.name }}" required>
@@ -27,8 +21,8 @@ Editar Plano
 
 <br>
 
-<a href="/plans">
-<button>Voltar</button>
-</a>
+<button onclick="document.getElementById('edit_{{ plan.id }}').close()">
+Cancelar
+</button>
 
-{% endblock %}
+</dialog>

@@ -1,12 +1,14 @@
-from flask import Blueprint, request, render_template, redirect, url_for
+from flask import Blueprint, flash, request, render_template, redirect, url_for
 from app.services.tenant_service import TenantService
 from app.services.plan_service import PlanService
+from app.decorators.login_required import login_required
 
 tenant_bp = Blueprint("tenants", __name__)
 
 
 # LISTAR
 @tenant_bp.route("/tenants", methods=["GET"])
+@login_required
 def list_tenants():
 
     tenants = TenantService.list_tenants()
@@ -21,22 +23,27 @@ def list_tenants():
 
 # CRIAR
 @tenant_bp.route("/tenants/create", methods=["POST"])
+@login_required
 def create_tenant():
+    try:
+        plan_id = request.form.get("plan_id")
 
-    plan_id = request.form.get("plan_id")
+        data = {
+            "name": request.form.get("name"),
+            "plan_id": plan_id if plan_id else None
+        }
 
-    data = {
-        "name": request.form.get("name"),
-        "plan_id": plan_id if plan_id else None
-    }
-
-    TenantService.create_tenant(data)
+        TenantService.create_tenant(data)
+        flash('Empresa cadastrada com sucesso!', 'success')
+    except Exception as e:
+        flash('Não foi possível cadastrar empresa!', 'error')
 
     return redirect(url_for("tenants.list_tenants"))
 
 
 # PAGINA DE EDIÇÃO
 @tenant_bp.route("/tenants/<uuid:tenant_id>/edit", methods=["GET"])
+@login_required
 def edit_tenant_page(tenant_id):
 
     tenant = TenantService.get_tenant(tenant_id)
@@ -51,25 +58,31 @@ def edit_tenant_page(tenant_id):
 
 # ATUALIZAR
 @tenant_bp.route("/tenants/<uuid:tenant_id>/edit", methods=["POST"])
+@login_required
 def update_tenant(tenant_id):
+    try:
+        tenant = TenantService.get_tenant(tenant_id)
 
-    tenant = TenantService.get_tenant(tenant_id)
+        tenant.name = request.form.get("name")
 
-    tenant.name = request.form.get("name")
+        plan_id = request.form.get("plan_id")
+        tenant.plan_id = plan_id if plan_id else None
 
-    plan_id = request.form.get("plan_id")
-    tenant.plan_id = plan_id if plan_id else None
-
-    from app.extensions import db
-    db.session.commit()
-
+        from app.extensions import db
+        db.session.commit()
+        flash('Empresa atualizada com sucesso!', 'success')
+    except Exception as e:
+        flash('Não foi possível atualizar empresa!' ,'error')
     return redirect(url_for("tenants.list_tenants"))
 
 
 # REMOVER
 @tenant_bp.route("/tenants/<uuid:tenant_id>/delete", methods=["POST"])
+@login_required
 def delete_tenant(tenant_id):
-
-    TenantService.delete_tenant(tenant_id)
-
+    try:
+        TenantService.delete_tenant(tenant_id)
+        flash('Empresa deletada com sucesso!', 'success')
+    except Exception as e:
+        flash('Não foi possível remover empresa!' ,'error')
     return redirect(url_for("tenants.list_tenants"))

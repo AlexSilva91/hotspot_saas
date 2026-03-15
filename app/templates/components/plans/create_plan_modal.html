@@ -1,0 +1,28 @@
+<dialog id="createPlan">
+
+<h3>Criar Plano</h3>
+
+<form method="POST" action="/plans/create">
+
+<label>Nome</label>
+<input type="text" name="name" required>
+
+<label>Máx. Roteadores</label>
+<input type="number" name="max_routers" required>
+
+<label>Máx. Usuários</label>
+<input type="number" name="max_users" required>
+
+<br><br>
+
+<button type="submit">Criar</button>
+
+</form>
+
+<br>
+
+<button onclick="document.getElementById('createPlan').close()">
+Cancelar
+</button>
+
+</dialog>

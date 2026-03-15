@@ -6,102 +6,130 @@ Usuários
 
 {% block content %}
 
-<h2>Criar Usuário</h2>
+{% include "components/flash_messages.html" %}
 
-<form method="POST" action="/users/create">
-
-<input type="email" name="email" placeholder="E-mail">
-
-<input type="password" name="password" placeholder="Senha">
-
-<input type="text" name="role" placeholder="Função">
-
-<label>Empresa</label>
-
-<select name="tenant_id">
-
-<option value="">Sem empresa</option>
-
-{% for tenant in tenants %}
-
-<option value="{{ tenant.id }}">
-{{ tenant.name }}
-</option>
-
-{% endfor %}
-
-</select>
-
-<button type="submit">Criar</button>
-
-</form>
-<hr>
-
-<h2>Lista de Usuários</h2>
-
-<table border="1" width="50%">
-
-<thead>
-<tr>
-<th>E-mail</th>
-<th>Função</th>
-<th>Empresa</th>
-<th>Ações</th>
-</tr>
-</thead>
-
-<tbody>
-
-{% for user in users %}
-
-<tr>
-
-<td>{{ user.email }}</td>
-<td>{{ user.role }}</td>
-<td>{{ user.tenant.name }}</td>
-
-<td>
-
-<button onclick="document.getElementById('modal-{{ user.id }}').style.display='block'">
-Detalhes
-</button>
-
-<a href="/users/{{ user.id }}/edit">
-<button>Editar</button>
-</a>
-
-<form method="POST" action="/users/{{ user.id }}/delete" style="display:inline;">
-<button type="submit">Excluir</button>
-</form>
-
-</td>
-
-</tr>
-
-<tr>
-<td colspan="4">
-
-<div id="modal-{{ user.id }}" style="display:none; border:1px solid black; padding:10px;">
-
-<h3>Detalhes do Usuário</h3>
-
-<p>E-mail: {{ user.email }}</p>
-<p>Função: {{ user.role }}</p>
-<p>Empresa: {{ user.tenant.name }}</p>
-
-<button onclick="document.getElementById('modal-{{ user.id }}').style.display='none'">
-Fechar
-</button>
-
+<div class="page-header">
+    <h2>Lista de Usuários</h2>
+    <button class="button primary" onclick="document.getElementById('createUserModal').showModal()">
+        Criar Usuário
+    </button>
 </div>
 
-</td>
-</tr>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>E-mail</th>
+                <th>Função</th>
+                <th>Empresa</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td class="user-email">{{ user.email }}</td>
+                <td>
+                    <span class="badge 
+                        {% if user.role == 'admin' %}badge-danger
+                        {% elif user.role == 'manager' %}badge-warning
+                        {% elif user.role == 'user' %}badge-info
+                        {% else %}badge-secondary{% endif %}">
+                        {{ user.role }}
+                    </span>
+                </td>
+                <td>
+                    {% if user.tenant %}
+                        <span class="badge badge-info">{{ user.tenant.name }}</span>
+                    {% else %}
+                        <span class="badge">Sem empresa</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <!-- Botão Detalhes -->
+                    <button class="button-icon" onclick="document.getElementById('viewUser_{{ user.id }}').showModal()" title="Detalhes">
+                        Detalhes
+                    </button>
 
-{% endfor %}
+                    <!-- Botão Editar -->
+                    <button class="button-icon" onclick="document.getElementById('editUser_{{ user.id }}').showModal()" title="Editar">
+                        Editar
+                    </button>
 
-</tbody>
+                    <!-- Botão Excluir -->
+                    <form method="POST" action="/users/{{ user.id }}/delete" style="display:inline;">
+                        <button type="submit" class="button-icon danger" onclick="return confirm('Tem certeza que deseja excluir este usuário?')" title="Excluir">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
 
-</table>
+            <!-- MODAL DETALHES -->
+            <dialog id="viewUser_{{ user.id }}" class="modal">
+                <div class="modal-header">
+                    <h3>Detalhes do Usuário</h3>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="detail-item">
+                        <span class="detail-label">E-mail:</span>
+                        <span class="detail-value">{{ user.email }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Função:</span>
+                        <span class="detail-value">
+                            <span class="badge 
+                                {% if user.role == 'admin' %}badge-danger
+                                {% elif user.role == 'manager' %}badge-warning
+                                {% elif user.role == 'user' %}badge-info
+                                {% else %}badge-secondary{% endif %}">
+                                {{ user.role }}
+                            </span>
+                        </span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Empresa:</span>
+                        <span class="detail-value">
+                            {% if user.tenant %}
+                                {{ user.tenant.name }}
+                            {% else %}
+                                Sem empresa
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="button primary" onclick="document.getElementById('viewUser_{{ user.id }}').close()">
+                        Fechar
+                    </button>
+                </div>
+            </dialog>
+
+            <!-- IMPORT DOS MODAIS -->
+            {% include "components/users/edit_user_modal.html" %}
+
+            {% else %}
+            <tr>
+                <td colspan="4" class="empty-state">
+                    <div class="empty-state-content">
+                        <span class="empty-icon">👥</span>
+                        <p>Nenhum usuário encontrado</p>
+                        <button class="button primary" onclick="document.getElementById('createUserModal').showModal()">
+                            Criar primeiro usuário
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- IMPORT DO MODAL DE CRIAÇÃO (fora do loop) -->
+{% include "components/users/create_user_modal.html" %}
 
 {% endblock %}

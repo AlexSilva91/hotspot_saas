@@ -1,0 +1,39 @@
+            <dialog id="router_{{ router.id }}" class="modal">
+                <div class="modal-header">
+                    <h3>Detalhes do Router</h3>
+                </div>
+                
+                <div class="modal-body">
+                    <div class="detail-item">
+                        <span class="detail-label">Nome:</span>
+                        <span class="detail-value">{{ router.name }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">IP Address:</span>
+                        <span class="detail-value"><code>{{ router.ip_address }}</code></span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Username:</span>
+                        <span class="detail-value">{{ router.username or 'Não definido' }}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Empresa:</span>
+                        <span class="detail-value">
+                            {% if router.tenant %}
+                                {{ router.tenant.name }}
+                            {% else %}
+                                Sem empresa
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button class="button primary" onclick="document.getElementById('router_{{ router.id }}').close()">
+                        Fechar
+                    </button>
+                </div>
+            </dialog>

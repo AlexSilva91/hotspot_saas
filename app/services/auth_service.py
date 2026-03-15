@@ -8,7 +8,7 @@ def generate_token(user):
     payload = {
         "user_id": str(user.id),
         "tenant_id": str(user.tenant_id),
-        "exp": datetime.utcnow() + timedelta(hours=12)
+        "exp": datetime.now() + timedelta(hours=12)
     }
 
     token = jwt.encode(

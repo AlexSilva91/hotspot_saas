@@ -74,10 +74,15 @@ Repositories ────────── Acesso ao banco de dados
 ## 📁 Estrutura do Projeto
 
 ```
+```
 hotspot_saas
+├─ README.md
 ├─ app
 │  ├─ __init__.py
 │  ├─ config.py
+│  ├─ decorators
+│  │  ├─ __init__.py
+│  │  └─ login_required.py
 │  ├─ extensions.py
 │  ├─ integrations
 │  │  ├─ __init__.py
@@ -113,13 +118,50 @@ hotspot_saas
 │  │  ├─ router_service.py
 │  │  ├─ tenant_service.py
 │  │  └─ user_service.py
+│  ├─ static
+│  │  ├─ assets
+│  │  │  ├─ logo_solveon.png
+│  │  │  ├─ logo_solveon_2.png
+│  │  │  └─ logo_solveon_3.png
+│  │  ├─ css
+│  │  │  ├─ style.css
+│  │  │  └─ style_login.css
+│  │  └─ js
+│  │     └─ login.js
+│  ├─ templates
+│  │  ├─ auth
+│  │  │  └─ login.html
+│  │  ├─ base.html
+│  │  ├─ components
+│  │  │  ├─ flash_messages.html
+│  │  │  ├─ plans
+│  │  │  │  ├─ create_plan_modal.html
+│  │  │  │  └─ edit_plan_modal.html
+│  │  │  ├─ routers
+│  │  │  │  ├─ create_router_modal.html
+│  │  │  │  └─ edit_router_modal.html
+│  │  │  ├─ tenants
+│  │  │  │  ├─ create_tenant_modal.html
+│  │  │  │  └─ edit_tenant_modal.html
+│  │  │  └─ users
+│  │  │     ├─ create_user_modal.html
+│  │  │     └─ edit_user_modal.html
+│  │  ├─ plans
+│  │  │  └─ list.html
+│  │  ├─ routers
+│  │  │  └─ list.html
+│  │  ├─ tenants
+│  │  │  └─ list.html
+│  │  └─ users
+│  │     └─ list.html
 │  └─ utils
-│
-├── migrations/              # Migrações Alembic
-├── doc/                     # Documentação
-├── run.py
-├── requirements.txt
-└── README.md
+│     ├─ __init__.py
+│     └─ logger.py
+├─ doc
+├─ logs
+├─ requirements.txt
+├─ run.py
+└─ secret.py
 ```
 
 ---

@@ -6,159 +6,126 @@ Routers
 
 {% block content %}
 
-<h2>Routers</h2>
+{% include "components/flash_messages.html" %}
 
-<button onclick="document.getElementById('createRouter').showModal()">
-Criar Router
-</button>
+<div class="page-header">
+    <h2>Routers</h2>
+    <button class="button primary" onclick="document.getElementById('createRouter').showModal()">
+        Criar Router
+    </button>
+</div>
 
-<br><br>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>IP</th>
+                <th>Empresa</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for router in routers %}
+            <tr>
+                <td class="router-name">{{ router.name }}</td>
+                <td><code>{{ router.ip_address }}</code></td>
+                <td>
+                    {% if router.tenant %}
+                        <span class="badge badge-info">{{ router.tenant.name }}</span>
+                    {% else %}
+                        <span class="badge badge-secondary">Sem empresa</span>
+                    {% endif %}
+                </td>
+                <td class="actions">
+                    <!-- Botão Detalhes -->
+                    <button class="button-icon" onclick="document.getElementById('router_{{ router.id }}').showModal()" title="Detalhes">
+                        Detalhes
+                    </button>
 
-<table border="1" width="50%">
+                    <!-- Botão Editar -->
+                    <button class="button-icon" onclick="document.getElementById('editRouter_{{ router.id }}').showModal()" title="Editar">
+                       Editar
+                    </button>
 
-<thead>
+                    <!-- Botão Excluir -->
+                    <form method="POST" action="/routers/{{ router.id }}/delete" style="display:inline;">
+                        <button type="submit" class="button-icon danger" onclick="return confirm('Tem certeza que deseja excluir este router?')" title="Excluir">
+                            Delete
+                        </button>
+                    </form>
+                </td>
+            </tr>
 
-<tr>
-<th>Nome</th>
-<th>IP</th>
-<th>Empresa</th>
-<th>Ações</th>
-</tr>
+            <!-- MODAL DETALHES -->
+            {% include "components/routers/create_router_modal.html" %}
 
-</thead>
+            <!-- MODAL EDIÇÃO -->
+            {% include "components/routers/edit_router_modal.html" %}
 
-<tbody>
+            {% else %}
+            <tr>
+                <td colspan="4" class="empty-state">
+                    <div class="empty-state-content">
+                        <span class="empty-icon">📡</span>
+                        <p>Nenhum router encontrado</p>
+                        <button class="button primary" onclick="document.getElementById('createRouter').showModal()">
+                            Criar primeiro router
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-{% for router in routers %}
+<!-- MODAL CRIAR ROUTER -->
+<dialog id="createRouter" class="modal">
+    <div class="modal-header">
+        <h3>Criar Novo Router</h3>
+    </div>
 
-<tr>
+    <form method="POST" action="/routers/create" class="modal-form">
+        <div class="form-group">
+            <label for="name">Nome</label>
+            <input type="text" id="name" name="name" placeholder="Ex: Router Principal" required>
+        </div>
 
-<td>{{ router.name }}</td>
+        <div class="form-group">
+            <label for="ip_address">IP Address</label>
+            <input type="text" id="ip_address" name="ip_address" placeholder="Ex: 192.168.1.1" required>
+        </div>
 
-<td>{{ router.ip_address }}</td>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Usuário de acesso">
+        </div>
 
-<td>
-{% if router.tenant %}
-{{ router.tenant.name }}
-{% else %}
-Sem empresa
-{% endif %}
-</td>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Senha de acesso">
+        </div>
 
-<td>
+        <div class="form-group">
+            <label for="tenant_id">Empresa</label>
+            <select id="tenant_id" name="tenant_id">
+                <option value="">Sem empresa</option>
+                {% for tenant in tenants %}
+                <option value="{{ tenant.id }}">{{ tenant.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-<button onclick="document.getElementById('router_{{ router.id }}').showModal()">
-Detalhes
-</button>
-
-<a href="/routers/{{ router.id }}/edit">
-<button>Edit</button>
-</a>
-
-<form method="POST" action="/routers/{{ router.id }}/delete" style="display:inline;">
-<button type="submit">Delete</button>
-</form>
-
-</td>
-
-</tr>
-
-
-<!-- Modal de detalhes -->
-
-<dialog id="router_{{ router.id }}">
-
-<h3>Detalhes do Device</h3>
-
-<p><strong>Name:</strong> {{ router.name }}</p>
-
-<p><strong>IP Address:</strong> {{ router.ip_address }}</p>
-
-<p><strong>Username:</strong> {{ router.username }}</p>
-
-<p>
-<strong>Empresa:</strong>
-{% if router.tenant %}
-{{ router.tenant.name }}
-{% else %}
-Sem empresa
-{% endif %}
-</p>
-
-<br>
-
-<button onclick="document.getElementById('router_{{ router.id }}').close()">
-Close
-</button>
-
-</dialog>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
-
-<!-- Modal criar router -->
-
-<dialog id="createRouter">
-
-<h3>Criar Router</h3>
-
-<form method="POST" action="/routers/create">
-
-<label>Nome</label>
-<br>
-<input type="text" name="name" required>
-
-<br><br>
-
-<label>IP Address</label>
-<br>
-<input type="text" name="ip_address" required>
-
-<br><br>
-
-<label>Username</label>
-<br>
-<input type="text" name="username">
-
-<br><br>
-
-<label>Password</label>
-<br>
-<input type="text" name="password">
-
-<br><br>
-
-<label>Empresa</label>
-<br>
-
-<select name="tenant_id">
-
-<option value="">Sem empresa</option>
-
-{% for tenant in tenants %}
-
-<option value="{{ tenant.id }}">
-{{ tenant.name }}
-</option>
-
-{% endfor %}
-
-</select>
-
-<br><br>
-
-<button type="submit">Criar</button>
-
-<button type="button" onclick="document.getElementById('createRouter').close()">
-Cancelar
-</button>
-
-</form>
-
+        <div class="modal-footer">
+            <button type="button" class="button secondary" onclick="document.getElementById('createRouter').close()">
+                Cancelar
+            </button>
+            <button type="submit" class="button primary">
+                Criar Router
+            </button>
+        </div>
+    </form>
 </dialog>
 
 {% endblock %}
