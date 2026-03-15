@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}
+Hotspot Users
+{% endblock %}
+
+{% block content %}
+
+{% include "components/flash_messages.html" %}
+
+<div class="page-header">
+
+    <h2>Usuários Hotspot</h2>
+
+    <button class="button primary"
+            onclick="document.getElementById('createHotspotUser').showModal()">
+        Criar Usuário
+    </button>
+
+    {% include "components/hotspot_users/create_hotspot_user_modal.html" %}
+
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+    <th>Roteador</th>
+    <th>Usuário</th>
+    <th>Uptime</th>
+    <th>Rate Limit</th>
+    <th>Status</th>
+    <th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for user in users %}
+
+<tr>
+<td>
+    <span class="badge badge-info">{{ user.router.name }} - {{ user.router.ip_address }}</span>
+</td>
+<td class="user-email">
+    {{ user.username }}
+</td>
+
+<td>
+    {% if user.limit_uptime %}
+        <span class="badge badge-info">
+            {{ user.limit_uptime }}
+        </span>
+    {% else %}
+        <span class="badge badge-secondary">
+            Ilimitado
+        </span>
+    {% endif %}
+</td>
+
+<td>
+    {% if user.rate_limit %}
+        <span class="badge badge-warning">
+            {{ user.rate_limit }}
+        </span>
+    {% else %}
+        <span class="badge badge-secondary">
+            Sem limite
+        </span>
+    {% endif %}
+</td>
+
+<td>
+    {% if user.active %}
+        <span class="badge badge-success">Ativo</span>
+    {% else %}
+        <span class="badge badge-danger">Inativo</span>
+    {% endif %}
+</td>
+
+<td class="actions">
+
+<button class="button-icon"
+        onclick="document.getElementById('editHotspotUser_{{ user.id }}').showModal()">
+    Editar
+</button>
+
+<form method="POST"
+      action="/hotspot-users/{{ user.id }}/delete"
+      style="display:inline;">
+
+<button type="submit"
+        class="button-icon danger"
+        onclick="return confirm('Remover este usuário?')">
+    Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% include "components/hotspot_users/edit_hotspot_user_modal.html" %}
+
+{% else %}
+
+<tr>
+<td colspan="5" class="empty-state">
+
+<div class="empty-state-content">
+
+<span class="empty-icon">📶</span>
+
+<p>Nenhum usuário hotspot encontrado</p>
+
+<button class="button primary"
+        onclick="document.getElementById('createHotspotUser').showModal()">
+    Criar primeiro usuário
+</button>
+
+</div>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

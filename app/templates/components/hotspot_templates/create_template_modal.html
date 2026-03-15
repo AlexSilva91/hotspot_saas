@@ -1,0 +1,57 @@
+<dialog id="createTemplate" class="modal">
+
+        <div class="modal-header">
+        <h3>Criar Template Hotspot</h3>
+        </div>
+
+        <form method="POST" action="/hotspot-templates/create">
+
+                <div class="modal-body">
+
+                        <label>Empresa</label>
+                        <select name="tenant_id" required>
+
+                                <option value="">Selecione uma empresa</option>
+
+                                {% for tenant in tenants %}
+                                        <option value="{{ tenant.id }}">
+                                                {{ tenant.name }}
+                                        </option>
+                                {% endfor %}
+
+                        </select>
+
+                        <label>Nome do Template</label>
+                        <input type="text" name="name" required>
+
+                        <label>URL do Logo</label>
+                        <input type="text" name="logo_url" placeholder="https://...">
+
+                        <label>HTML Login</label>
+                        <textarea name="login_html"
+                                rows="6"
+                                placeholder="<html>...</html>"></textarea>
+
+                        <label>HTML Status</label>
+                        <textarea name="status_html"
+                                rows="6"
+                                placeholder="<html>...</html>"></textarea>
+
+                </div>
+
+                <div class="modal-footer">
+
+                        <button type="submit" class="button primary">
+                                Criar
+                        </button>
+
+                        <button type="button"
+                                onclick="document.getElementById('createTemplate').close()">
+                                Cancelar
+                        </button>
+
+                </div>
+
+        </form>
+
+</dialog>

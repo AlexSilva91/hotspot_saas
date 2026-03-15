@@ -9,6 +9,11 @@ from app.routes.router_routes import router_bp
 from app.routes.tenant_routes import tenant_bp
 from app.routes.user_routes import user_bp
 from app.routes.auth_routes import auth_bp
+from app.routes.hotspot_user_routes import hotspot_user_bp
+from app.routes.hotspot_template_routes import hotspot_template_bp
+from app.routes.bypass_device_routes import bypass_device_bp
+from app.routes.ip_pool_routes import ip_pool_bp
+from app.routes.active_session_routes import active_session_bp
 
 from app.utils.logger import setup_logging
 
@@ -33,6 +38,11 @@ def create_app():
     app.register_blueprint(router_bp)
     app.register_blueprint(tenant_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(hotspot_user_bp)
+    app.register_blueprint(hotspot_template_bp)
+    app.register_blueprint(bypass_device_bp)
+    app.register_blueprint(ip_pool_bp)
+    app.register_blueprint(active_session_bp)
 
     # Global Exception Handler
     @app.errorhandler(Exception)

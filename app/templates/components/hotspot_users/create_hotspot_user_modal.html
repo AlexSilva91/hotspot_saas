@@ -1,0 +1,57 @@
+<dialog id="createHotspotUser" class="modal">
+
+       <div class="modal-header">
+              <h3>Criar Usuário Hotspot</h3>
+       </div>
+
+       <form method="POST" action="/hotspot-users/create">
+
+              <div class="modal-body">
+
+                     <label>Roteador</label>
+                     <select name="router_id" required>
+
+                            <option value="">Selecione um roteador</option>
+
+                            {% for router in routers %}
+                            <option value="{{ router.id }}">
+                                   {{ router.name }} ({{ router.ip_address }})
+                            </option>
+                            {% endfor %}
+
+                     </select>
+
+                     <label>Usuário</label>
+                     <input type="text" name="username" required>
+
+                     <label>Senha</label>
+                     <input type="password" name="password" required>
+
+                     <label>Limite de Uptime</label>
+                     <input type="text"
+                            name="limit_uptime"
+                            placeholder="1h / 30m / 1d">
+
+                     <label>Rate Limit</label>
+                     <input type="text"
+                            name="rate_limit"
+                            placeholder="1M/1M">
+
+              </div>
+
+              <div class="modal-footer">
+
+                     <button type="submit" class="button primary">
+                     Criar
+                     </button>
+
+                     <button type="button"
+                     onclick="document.getElementById('createHotspotUser').close()">
+                     Cancelar
+                     </button>
+
+              </div>
+
+       </form>
+
+</dialog>

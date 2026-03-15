@@ -13,6 +13,7 @@ Empresas
     <button class="button primary" onclick="document.getElementById('createTenant').showModal()">
         Criar Empresa
     </button>
+    {% include "components/tenants/create_tenant_modal.html" %}
 </div>
 
 <div class="table-container">
@@ -21,6 +22,7 @@ Empresas
             <tr>
                 <th>Nome</th>
                 <th>Plano</th>
+                <th>Status</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -33,6 +35,13 @@ Empresas
                         <span class="badge badge-info">{{ tenant.plan.name }}</span>
                     {% else %}
                         <span class="badge">Sem plano</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if tenant.active %}
+                        <span class="badge badge-success">Ativo</span>
+                    {% else %}
+                        <span class="badge badge-danger">Inativo</span>
                     {% endif %}
                 </td>
                 <td class="actions">
@@ -56,42 +65,7 @@ Empresas
             </tr>
 
             <!-- MODAL DETALHES -->
-            <dialog id="tenant_{{ tenant.id }}" class="modal">
-                <div class="modal-header">
-                    <h3>Detalhes da Empresa</h3>
-                </div>
-                
-                <div class="modal-body">
-                    <div class="detail-item">
-                        <span class="detail-label">Nome:</span>
-                        <span class="detail-value">{{ tenant.name }}</span>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <span class="detail-label">Plano:</span>
-                        <span class="detail-value">
-                            {% if tenant.plan %}
-                                {{ tenant.plan.name }}
-                            {% else %}
-                                Sem plano
-                            {% endif %}
-                        </span>
-                    </div>
-                    
-                    <div class="detail-item">
-                        <span class="detail-label">Criado em:</span>
-                        <span class="detail-value">
-                            {{ tenant.created_at.strftime('%d/%m/%Y às %H:%M') if tenant.created_at else '—' }}
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button class="button primary" onclick="document.getElementById('tenant_{{ tenant.id }}').close()">
-                        Fechar
-                    </button>
-                </div>
-            </dialog>
+            {% include "components/tenants/details_tenant_modal.html" %}
 
             <!-- IMPORT DO MODAL DE EDIÇÃO -->
             {% include "components/tenants/edit_tenant_modal.html" %}
@@ -111,8 +85,5 @@ Empresas
         </tbody>
     </table>
 </div>
-
-<!-- IMPORT DO MODAL DE CRIAÇÃO -->
-{% include "components/tenants/create_tenant_modal.html" %}
 
 {% endblock %}

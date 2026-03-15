@@ -3,6 +3,7 @@ from app.repositories.tenant_repository import TenantRepository
 
 class TenantService:
 
+
     @staticmethod
     def create_tenant(data):
 
@@ -24,6 +25,20 @@ class TenantService:
             raise Exception("Tenant não encontrado")
 
         return tenant
+
+
+    @staticmethod
+    def update_tenant(tenant_id, data):
+
+        tenant = TenantRepository.get_by_id(tenant_id)
+
+        if not tenant:
+            raise Exception("Tenant não encontrado")
+
+        for key, value in data.items():
+            setattr(tenant, key, value)
+
+        return TenantRepository.save(tenant)
 
 
     @staticmethod

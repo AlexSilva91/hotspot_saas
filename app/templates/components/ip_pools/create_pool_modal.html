@@ -1,0 +1,51 @@
+<dialog id="createPoolModal" class="modal">
+
+        <div class="modal-header">
+                <h3>Criar IP Pool</h3>
+        </div>
+
+        <form method="POST" action="/ip-pools/create">
+
+                <div class="modal-body">
+
+                        <label>Roteador</label>
+                        <select name="router_id" required>
+
+                                <option value="">Selecione um roteador</option>
+
+                                {% for router in routers %}
+                                        <option value="{{ router.id }}">
+                                                {{ router.name }} ({{ router.ip_address }})
+                                        </option>
+                                {% endfor %}
+
+                        </select>
+
+                        <label>Nome</label>
+                        <input type="text" name="name" required>
+
+                        <label>Range Inicial</label>
+                        <input type="text" name="range_start" placeholder="192.168.10.10" required>
+
+                        <label>Range Final</label>
+                        <input type="text" name="range_end" placeholder="192.168.10.200" required>
+
+                </div>
+
+                <div class="modal-footer">
+
+                        <button type="submit" class="button primary">
+                                Criar
+                        </button>
+
+                        <button type="button"
+                                class="button"
+                                onclick="document.getElementById('createPoolModal').close()">
+                                Cancelar
+                        </button>
+
+                </div>
+
+        </form>
+
+</dialog>

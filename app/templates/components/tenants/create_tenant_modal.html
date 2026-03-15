@@ -1,33 +1,58 @@
 <dialog id="createTenant" class="modal">
+
     <div class="modal-header">
         <h3>Criar Empresa</h3>
     </div>
 
     <form method="POST" action="/tenants/create" class="modal-form">
+
         <div class="form-group">
             <label for="name">Nome</label>
-            <input type="text" id="name" name="name" placeholder="Nome da empresa" required>
+            <input type="text"
+                   id="name"
+                   name="name"
+                   placeholder="Nome da empresa"
+                   required>
         </div>
 
         <div class="form-group">
             <label for="plan_id">Plano</label>
             <select id="plan_id" name="plan_id">
+
                 <option value="">Sem plano</option>
+
                 {% for plan in plans %}
                 <option value="{{ plan.id }}">
                     {{ plan.name }} ({{ plan.max_users }} usuários)
                 </option>
                 {% endfor %}
+
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="active">Status</label>
+            <select id="active" name="active">
+                <option value="true" selected>Ativo</option>
+                <option value="false">Inativo</option>
             </select>
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="button secondary" onclick="document.getElementById('createTenant').close()">
+
+            <button type="button"
+                    class="button secondary"
+                    onclick="document.getElementById('createTenant').close()">
                 Cancelar
             </button>
-            <button type="submit" class="button primary">
+
+            <button type="submit"
+                    class="button primary">
                 Criar
             </button>
+
         </div>
+
     </form>
+
 </dialog>

@@ -1,0 +1,52 @@
+<dialog id="createBypassDevice" class="modal">
+
+       <div class="modal-header">
+              <h3>Adicionar Dispositivo em Bypass</h3>
+       </div>
+
+       <form method="POST" action="/bypass-devices/create">
+
+              <div class="modal-body">
+
+                     <label>Roteador</label>
+                     <select name="router_id" required>
+
+                            <option value="">Selecione um roteador</option>
+
+                            {% for router in routers %}
+                                   <option value="{{ router.id }}">
+                                          {{ router.name }} ({{ router.ip_address }})
+                                   </option>
+                            {% endfor %}
+
+                     </select>
+
+                     <label>MAC Address</label>
+                     <input type="text"
+                            name="mac_address"
+                            placeholder="AA:BB:CC:DD:EE:FF"
+                            required>
+
+                     <label>Comentário</label>
+                     <input type="text"
+                            name="comment"
+                            placeholder="Ex: Impressora escritório">
+
+              </div>
+
+              <div class="modal-footer">
+
+                     <button type="submit" class="button primary">
+                            Adicionar
+                     </button>
+
+                     <button type="button"
+                            onclick="document.getElementById('createBypassDevice').close()">
+                            Cancelar
+                     </button>
+
+              </div>
+
+       </form>
+
+</dialog>

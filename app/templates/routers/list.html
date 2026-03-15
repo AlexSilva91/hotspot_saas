@@ -13,6 +13,9 @@ Routers
     <button class="button primary" onclick="document.getElementById('createRouter').showModal()">
         Criar Router
     </button>
+    <!-- MODAL DETALHES -->
+    {% include "components/routers/create_router_modal.html" %}
+
 </div>
 
 <div class="table-container">
@@ -21,6 +24,8 @@ Routers
             <tr>
                 <th>Nome</th>
                 <th>IP</th>
+                <th>Porta</th>
+                <th>Localização</th>
                 <th>Empresa</th>
                 <th>Ações</th>
             </tr>
@@ -30,6 +35,8 @@ Routers
             <tr>
                 <td class="router-name">{{ router.name }}</td>
                 <td><code>{{ router.ip_address }}</code></td>
+                <td>{{ router.api_port }}</td>
+                <td>{{ router.location or "—" }}</td>
                 <td>
                     {% if router.tenant %}
                         <span class="badge badge-info">{{ router.tenant.name }}</span>
@@ -56,10 +63,8 @@ Routers
                     </form>
                 </td>
             </tr>
-
-            <!-- MODAL DETALHES -->
-            {% include "components/routers/create_router_modal.html" %}
-
+            <!-- MODAL EDIÇÃO -->
+            {% include "components/routers/details_router_modal.html" %}
             <!-- MODAL EDIÇÃO -->
             {% include "components/routers/edit_router_modal.html" %}
 
@@ -79,53 +84,5 @@ Routers
         </tbody>
     </table>
 </div>
-
-<!-- MODAL CRIAR ROUTER -->
-<dialog id="createRouter" class="modal">
-    <div class="modal-header">
-        <h3>Criar Novo Router</h3>
-    </div>
-
-    <form method="POST" action="/routers/create" class="modal-form">
-        <div class="form-group">
-            <label for="name">Nome</label>
-            <input type="text" id="name" name="name" placeholder="Ex: Router Principal" required>
-        </div>
-
-        <div class="form-group">
-            <label for="ip_address">IP Address</label>
-            <input type="text" id="ip_address" name="ip_address" placeholder="Ex: 192.168.1.1" required>
-        </div>
-
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Usuário de acesso">
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Senha de acesso">
-        </div>
-
-        <div class="form-group">
-            <label for="tenant_id">Empresa</label>
-            <select id="tenant_id" name="tenant_id">
-                <option value="">Sem empresa</option>
-                {% for tenant in tenants %}
-                <option value="{{ tenant.id }}">{{ tenant.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="modal-footer">
-            <button type="button" class="button secondary" onclick="document.getElementById('createRouter').close()">
-                Cancelar
-            </button>
-            <button type="submit" class="button primary">
-                Criar Router
-            </button>
-        </div>
-    </form>
-</dialog>
 
 {% endblock %}

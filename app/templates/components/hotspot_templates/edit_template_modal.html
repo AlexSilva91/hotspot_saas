@@ -1,0 +1,61 @@
+<dialog id="editTemplate_{{ template.id }}" class="modal">
+
+       <div class="modal-header">
+       <h3>Editar Template</h3>
+       </div>
+
+       <form method="POST" action="/hotspot-templates/{{ template.id }}/edit">
+
+              <div class="modal-body">
+
+                     <label>Empresa</label>
+                     <select name="tenant_id">
+
+                            {% for tenant in tenants %}
+                                   <option value="{{ tenant.id }}"
+                                          {% if template.tenant_id == tenant.id %}selected{% endif %}>
+                                          {{ tenant.name }}
+                                   </option>
+                            {% endfor %}
+
+                     </select>
+
+                     <label>Nome</label>
+                     <input type="text"
+                            name="name"
+                            value="{{ template.name }}"
+                            required>
+
+                     <label>URL do Logo</label>
+                     <input type="text"
+                            name="logo_url"
+                            value="{{ template.logo_url }}">
+
+                     <label>HTML Login</label>
+                     <textarea name="login_html" rows="6">
+                            {{ template.login_html }}
+                     </textarea>
+
+                     <label>HTML Status</label>
+                     <textarea name="status_html" rows="6">
+                            {{ template.status_html }}
+                     </textarea>
+
+              </div>
+
+              <div class="modal-footer">
+
+                     <button type="submit" class="button primary">
+                            Salvar
+                     </button>
+
+                     <button type="button"
+                            onclick="document.getElementById('editTemplate_{{ template.id }}').close()">
+                            Cancelar
+                     </button>
+
+              </div>
+
+       </form>
+
+</dialog>

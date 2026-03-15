@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}
+Hotspot Templates
+{% endblock %}
+
+{% block content %}
+
+{% include "components/flash_messages.html" %}
+
+<div class="page-header">
+
+    <h2>Templates de Hotspot</h2>
+
+    <button class="button primary"
+            onclick="document.getElementById('createTemplate').showModal()">
+        Criar Template
+    </button>
+
+    {% include "components/hotspot_templates/create_template_modal.html" %}
+
+</div>
+
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+    <th>Nome</th>
+    <th>Logo</th>
+    <th>Empresa</th>
+    <th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for template in templates %}
+
+<tr>
+
+<td>
+    {{ template.name }}
+</td>
+
+<td>
+    {% if template.logo_url %}
+        <img src="{{ template.logo_url }}"
+             style="height:40px;border-radius:6px;">
+    {% else %}
+        <span class="badge badge-secondary">
+            Sem logo
+        </span>
+    {% endif %}
+</td>
+
+<td>
+    {% if template.tenant %}
+        <span class="badge badge-info">
+            {{ template.tenant.name }}
+        </span>
+    {% else %}
+        <span class="badge badge-secondary">
+            Global
+        </span>
+    {% endif %}
+</td>
+
+<td class="actions">
+
+<button class="button-icon"
+        onclick="document.getElementById('editTemplate_{{ template.id }}').showModal()">
+    Editar
+</button>
+
+<form method="POST"
+      action="/hotspot-templates/{{ template.id }}/delete"
+      style="display:inline;">
+
+<button type="submit"
+        class="button-icon danger"
+        onclick="return confirm('Remover este template?')">
+    Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% include "components/hotspot_templates/edit_template_modal.html" %}
+
+{% else %}
+
+<tr>
+<td colspan="4" class="empty-state">
+
+<div class="empty-state-content">
+
+<span class="empty-icon">🎨</span>
+
+<p>Nenhum template encontrado</p>
+
+<button class="button primary"
+        onclick="document.getElementById('createTemplate').showModal()">
+    Criar primeiro template
+</button>
+
+</div>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

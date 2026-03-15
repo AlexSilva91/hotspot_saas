@@ -26,29 +26,50 @@
 
             <nav>
                 {% if session.get('user_id') %}
+
                     {% if request.path != '/plans' %}
                         <a href="/plans">Planos</a>
                     {% endif %}
-                    
+
                     {% if request.path != '/routers' %}
                         <a href="/routers">Roteadores</a>
                     {% endif %}
-                    
+
                     {% if request.path != '/tenants' %}
                         <a href="/tenants">Empresas</a>
                     {% endif %}
-                    
+
                     {% if request.path != '/users' %}
                         <a href="/users">Usuários</a>
                     {% endif %}
-                    
+
+                    {% if request.path != '/ip-pools' %}
+                        <a href="/ip-pools">IP Pools</a>
+                    {% endif %}
+
+                    {% if request.path != '/hotspot-users' %}
+                        <a href="/hotspot-users">Hotspot Users</a>
+                    {% endif %}
+
+                    {% if request.path != '/hotspot-templates' %}
+                        <a href="/hotspot-templates">Templates</a>
+                    {% endif %}
+
+                    {% if request.path != '/bypass-devices' %}
+                        <a href="/bypass-devices">Bypass Devices</a>
+                    {% endif %}
+
                     <a href="{{ url_for('auth.logout') }}">Logout</a>
+
                 {% else %}
+
                     {% if request.path != url_for('auth.login_page') %}
                         <a href="{{ url_for('auth.login_page') }}">Login</a>
                     {% endif %}
+
                 {% endif %}
-            </nav>
+
+                </nav>
         </header>
 
         <hr>
@@ -59,7 +80,7 @@
         </main>
 
         <!-- JavaScript global -->
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/login.js') }}"></script>
 
         <!-- Bloco para JavaScript específico -->
         {% block extra_js %}{% endblock %}

@@ -1,0 +1,58 @@
+<dialog id="editPool_{{ pool.id }}" class="modal">
+
+<div class="modal-header">
+<h3>Editar IP Pool</h3>
+</div>
+
+       <form method="POST" action="/ip-pools/{{ pool.id }}/edit">
+
+              <div class="modal-body">
+
+                     <label>Roteador</label>
+                     <select name="router_id">
+
+                     {% for router in routers %}
+                            <option value="{{ router.id }}"
+                                   {% if pool.router_id == router.id %}selected{% endif %}>
+                                   {{ router.name }} ({{ router.ip_address }})
+                            </option>
+                     {% endfor %}
+
+                     </select>
+
+                     <label>Nome</label>
+                     <input type="text"
+                     name="name"
+                     value="{{ pool.name }}"
+                     required>
+
+                     <label>Range Inicial</label>
+                     <input type="text"
+                     name="range_start"
+                     value="{{ pool.range_start }}"
+                     required>
+
+                     <label>Range Final</label>
+                     <input type="text"
+                     name="range_end"
+                     value="{{ pool.range_end }}"
+                     required>
+
+              </div>
+
+              <div class="modal-footer">
+
+                     <button type="submit" class="button primary">
+                            Salvar
+                     </button>
+
+                     <button type="button"
+                            onclick="document.getElementById('editPool_{{ pool.id }}').close()">
+                            Cancelar
+                     </button>
+
+              </div>
+
+       </form>
+
+</dialog>

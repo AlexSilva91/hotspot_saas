@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}
+IP Pools
+{% endblock %}
+
+{% block content %}
+
+{% include "components/flash_messages.html" %}
+
+<div class="page-header">
+
+    <h2>IP Pools</h2>
+
+    <button class="button primary"
+            onclick="document.getElementById('createPoolModal').showModal()">
+        Criar IP Pool
+    </button>
+
+    {% include "components/ip_pools/create_pool_modal.html" %}
+
+</div>
+
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+    <th>Nome</th>
+    <th>Range Inicial</th>
+    <th>Range Final</th>
+    <th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for pool in pools %}
+
+<tr>
+
+<td>
+    {{ pool.name }}
+</td>
+
+<td>
+    {{ pool.range_start }}
+</td>
+
+<td>
+    {{ pool.range_end }}
+</td>
+
+<td class="actions">
+
+    <button class="button-icon"
+        onclick="document.getElementById('editPool_{{ pool.id }}').showModal()">
+        Editar
+    </button>
+
+    <form method="POST"
+          action="/ip-pools/{{ pool.id }}/delete"
+          style="display:inline;">
+
+        <button type="submit"
+                class="button-icon danger"
+                onclick="return confirm('Remover este IP Pool?')">
+            Delete
+        </button>
+
+    </form>
+
+</td>
+
+</tr>
+
+{% include "components/ip_pools/edit_pool_modal.html" %}
+
+{% else %}
+
+<tr>
+<td colspan="4" class="empty-state">
+
+<div class="empty-state-content">
+
+<span class="empty-icon">🌐</span>
+
+<p>Nenhum IP Pool encontrado</p>
+
+<button class="button primary"
+        onclick="document.getElementById('createPoolModal').showModal()">
+    Criar primeiro IP Pool
+</button>
+
+</div>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

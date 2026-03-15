@@ -74,7 +74,6 @@ Repositories ────────── Acesso ao banco de dados
 ## 📁 Estrutura do Projeto
 
 ```
-```
 hotspot_saas
 ├─ README.md
 ├─ app
@@ -94,12 +93,22 @@ hotspot_saas
 │  │  └─ tenant_middleware.py
 │  ├─ models
 │  │  ├─ __init__.py
+│  │  ├─ active_session.py
+│  │  ├─ bypass_device.py
+│  │  ├─ hotspot_template.py
+│  │  ├─ hotspot_user.py
+│  │  ├─ ip_pool.py
 │  │  ├─ plan.py
 │  │  ├─ router.py
 │  │  ├─ tenant.py
 │  │  └─ user.py
 │  ├─ repositories
 │  │  ├─ __init__.py
+│  │  ├─ active_session_repository.py
+│  │  ├─ bypass_device_repository.py
+│  │  ├─ hotspot_template_repository.py
+│  │  ├─ hotspot_user_repository.py
+│  │  ├─ ip_pool_repository.py
 │  │  ├─ plan_repository.py
 │  │  ├─ router_repository.py
 │  │  ├─ tenant_repository.py
@@ -107,6 +116,7 @@ hotspot_saas
 │  ├─ routes
 │  │  ├─ __init__.py
 │  │  ├─ auth_routes.py
+│  │  ├─ ip_pool_routes.py
 │  │  ├─ plan_routes.py
 │  │  ├─ router_routes.py
 │  │  ├─ tenant_routes.py
@@ -114,6 +124,8 @@ hotspot_saas
 │  ├─ services
 │  │  ├─ __init__.py
 │  │  ├─ auth_service.py
+│  │  ├─ hotspot_user_service.py
+│  │  ├─ ip_pool_service.py
 │  │  ├─ plan_service.py
 │  │  ├─ router_service.py
 │  │  ├─ tenant_service.py
@@ -139,9 +151,11 @@ hotspot_saas
 │  │  │  │  └─ edit_plan_modal.html
 │  │  │  ├─ routers
 │  │  │  │  ├─ create_router_modal.html
+│  │  │  │  ├─ details_router_modal.html
 │  │  │  │  └─ edit_router_modal.html
 │  │  │  ├─ tenants
 │  │  │  │  ├─ create_tenant_modal.html
+│  │  │  │  ├─ details_tenant_modal.html
 │  │  │  │  └─ edit_tenant_modal.html
 │  │  │  └─ users
 │  │  │     ├─ create_user_modal.html

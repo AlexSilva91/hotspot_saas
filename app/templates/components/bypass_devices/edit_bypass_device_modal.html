@@ -1,0 +1,51 @@
+<dialog id="editDevice_{{ device.id }}" class="modal">
+
+       <div class="modal-header">
+              <h3>Editar Dispositivo</h3>
+       </div>
+
+       <form method="POST" action="/bypass-devices/{{ device.id }}/edit">
+
+              <div class="modal-body">
+
+                     <label>Roteador</label>
+                     <select name="router_id">
+
+                            {% for router in routers %}
+                                   <option value="{{ router.id }}"
+                                          {% if device.router_id == router.id %}selected{% endif %}>
+                                          {{ router.name }} ({{ router.ip_address }})
+                                   </option>
+                            {% endfor %}
+
+                     </select>
+
+                     <label>MAC Address</label>
+                     <input type="text"
+                            name="mac_address"
+                            value="{{ device.mac_address }}"
+                            required>
+
+                     <label>Comentário</label>
+                     <input type="text"
+                            name="comment"
+                            value="{{ device.comment }}">
+
+              </div>
+
+              <div class="modal-footer">
+
+                     <button type="submit" class="button primary">
+                            Salvar
+                     </button>
+
+                     <button type="button"
+                            onclick="document.getElementById('editDevice_{{ device.id }}').close()">
+                            Cancelar
+                     </button>
+
+              </div>
+
+       </form>
+
+</dialog>

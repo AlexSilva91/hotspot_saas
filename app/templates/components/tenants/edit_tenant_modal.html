@@ -1,39 +1,74 @@
 <dialog id="editTenant_{{ tenant.id }}" class="modal">
+
     <div class="modal-header">
-        <h3>Editar Empresa: {{ tenant.name }}</h3>
+        <h3>Editar Empresa</h3>
     </div>
 
-    <form method="POST" action="/tenants/{{ tenant.id }}/edit" class="modal-form">
+    <form method="POST"
+          action="/tenants/{{ tenant.id }}/edit"
+          class="modal-form">
+
         <div class="form-group">
             <label for="edit_name_{{ tenant.id }}">Nome</label>
-            <input type="text" 
-                   id="edit_name_{{ tenant.id }}" 
-                   name="name" 
-                   value="{{ tenant.name }}" 
-                   placeholder="Nome da empresa" 
+            <input type="text"
+                   id="edit_name_{{ tenant.id }}"
+                   name="name"
+                   value="{{ tenant.name }}"
                    required>
         </div>
 
         <div class="form-group">
             <label for="edit_plan_{{ tenant.id }}">Plano</label>
+
             <select id="edit_plan_{{ tenant.id }}" name="plan_id">
+
                 <option value="">Sem plano</option>
+
                 {% for plan in plans %}
-                <option value="{{ plan.id }}" 
+                <option value="{{ plan.id }}"
                         {% if tenant.plan_id == plan.id %}selected{% endif %}>
                     {{ plan.name }}
                 </option>
                 {% endfor %}
+
             </select>
+
+        </div>
+
+        <div class="form-group">
+            <label for="edit_active_{{ tenant.id }}">Status</label>
+
+            <select id="edit_active_{{ tenant.id }}" name="active">
+
+                <option value="true"
+                        {% if tenant.active %}selected{% endif %}>
+                    Ativo
+                </option>
+
+                <option value="false"
+                        {% if not tenant.active %}selected{% endif %}>
+                    Inativo
+                </option>
+
+            </select>
+
         </div>
 
         <div class="modal-footer">
-            <button type="button" class="button secondary" onclick="document.getElementById('editTenant_{{ tenant.id }}').close()">
+
+            <button type="button"
+                    class="button secondary"
+                    onclick="document.getElementById('editTenant_{{ tenant.id }}').close()">
                 Cancelar
             </button>
-            <button type="submit" class="button primary">
+
+            <button type="submit"
+                    class="button primary">
                 Salvar
             </button>
+
         </div>
+
     </form>
+
 </dialog>

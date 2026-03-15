@@ -27,21 +27,26 @@ def list_routers():
 @login_required
 def create_router():
     try:
+
         data = {
             "name": request.form.get("name"),
             "ip_address": request.form.get("ip_address"),
+            "api_port": request.form.get("api_port") or 8728,
             "username": request.form.get("username"),
             "password": request.form.get("password"),
+            "location": request.form.get("location"),
             "tenant_id": request.form.get("tenant_id")
         }
 
         RouterService.create_router(data)
-        flash('Roteador cadastrado com sucesso!', 'success')
+
+        flash("Roteador cadastrado com sucesso!", "success")
+
     except Exception as e:
-        flash('Não foi possível cadastrar roteador!', 'error')
+        db.session.rollback()
+        flash("Não foi possível cadastrar o roteador.", "error")
 
     return redirect(url_for("routers.list_routers"))
-
 
 # PAGINA EDITAR
 @router_bp.route("/routers/<uuid:router_id>/edit", methods=["GET"])
@@ -62,24 +67,27 @@ def edit_router_page(router_id):
 @router_bp.route("/routers/<uuid:router_id>/edit", methods=["POST"])
 @login_required
 def update_router(router_id):
+
     try:
-        router = RouterService.get_router(router_id)
 
-        router.name = request.form.get("name")
-        router.ip_address = request.form.get("ip_address")
-        router.username = request.form.get("username")
+        data = {
+            "name": request.form.get("name"),
+            "ip_address": request.form.get("ip_address"),
+            "api_port": request.form.get("api_port"),
+            "username": request.form.get("username"),
+            "password": request.form.get("password"),
+            "location": request.form.get("location"),
+            "tenant_id": request.form.get("tenant_id")
+        }
 
-        password = request.form.get("password")
-        if password:
-            router.password = password
+        RouterService.update_router(router_id, data)
 
-        router.tenant_id = request.form.get("tenant_id")
+        flash("Roteador atualizado com sucesso!", "success")
 
-        db.session.commit()
-        flash('Roteador atualizado com sucesso!', 'success')
     except Exception as e:
-        flash('Não foi possível atualizar roteador!', 'error')
-        
+        db.session.rollback()
+        flash("Não foi possível atualizar o roteador.", "error")
+
     return redirect(url_for("routers.list_routers"))
 
 

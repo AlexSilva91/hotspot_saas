@@ -22,17 +22,23 @@ class Tenant(db.Model):
         db.ForeignKey("plans.id")
     )
 
+    active = db.Column(db.Boolean, default=True)
+
     created_at = db.Column(
         db.DateTime,
         server_default=db.func.now()
     )
 
-    plan = db.relationship(
-        "Plan",
-        lazy="joined"
-    )
+    plan = db.relationship("Plan", lazy="joined")
 
     users = db.relationship(
         "User",
-        back_populates="tenant"
+        back_populates="tenant",
+        cascade="all, delete"
+    )
+
+    routers = db.relationship(
+        "Router",
+        back_populates="tenant",
+        cascade="all, delete"
     )

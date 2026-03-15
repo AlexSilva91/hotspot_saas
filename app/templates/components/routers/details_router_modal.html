@@ -1,0 +1,73 @@
+<dialog id="router_{{ router.id }}" class="modal">
+
+    <div class="modal-header">
+        <h3>Detalhes do Router</h3>
+    </div>
+
+    <div class="modal-body">
+
+        <div class="detail-item">
+            <span class="detail-label">Nome:</span>
+            <span class="detail-value">{{ router.name }}</span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">IP Address:</span>
+            <span class="detail-value">
+                <code>{{ router.ip_address }}</code>
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">API Port:</span>
+            <span class="detail-value">
+                {{ router.api_port }}
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Username:</span>
+            <span class="detail-value">
+                {{ router.username or "Não definido" }}
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Localização:</span>
+            <span class="detail-value">
+                {{ router.location or "Não definida" }}
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Empresa:</span>
+            <span class="detail-value">
+
+                {% if router.tenant %}
+                    {{ router.tenant.name }}
+                {% else %}
+                    —
+                {% endif %}
+
+            </span>
+        </div>
+
+        <div class="detail-item">
+            <span class="detail-label">Criado em:</span>
+            <span class="detail-value">
+                {{ router.created_at.strftime('%d/%m/%Y %H:%M') if router.created_at }}
+            </span>
+        </div>
+
+    </div>
+
+    <div class="modal-footer">
+
+        <button class="button primary"
+                onclick="document.getElementById('router_{{ router.id }}').close()">
+            Fechar
+        </button>
+
+    </div>
+
+</dialog>

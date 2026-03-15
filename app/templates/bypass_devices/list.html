@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}
+Bypass Devices
+{% endblock %}
+
+{% block content %}
+
+{% include "components/flash_messages.html" %}
+
+<div class="page-header">
+
+    <h2>Dispositivos em Bypass</h2>
+
+    <button class="button primary"
+            onclick="document.getElementById('createBypassDevice').showModal()">
+        Adicionar Dispositivo
+    </button>
+
+    {% include "components/bypass_devices/create_bypass_device_modal.html" %}
+
+</div>
+
+<div class="table-container">
+
+<table>
+
+<thead>
+<tr>
+    <th>Roteador</th>
+    <th>MAC Address</th>
+    <th>Comentário</th>
+    <th>Ações</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for device in devices %}
+
+<tr>
+<td>
+    <span class="badge badge-info"> {{ device.router.name }} - {{ device.router.ip_address }}</span>
+</td>
+<td>
+    <span class="badge badge-info">
+        {{ device.mac_address }}
+    </span>
+</td>
+
+<td>
+    {{ device.comment if device.comment else "-" }}
+</td>
+
+<td class="actions">
+
+<button class="button-icon"
+        onclick="document.getElementById('editDevice_{{ device.id }}').showModal()">
+    Editar
+</button>
+
+<form method="POST"
+      action="/bypass-devices/{{ device.id }}/delete"
+      style="display:inline;">
+
+<button type="submit"
+        class="button-icon danger"
+        onclick="return confirm('Remover dispositivo?')">
+    Delete
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% include "components/bypass_devices/edit_bypass_device_modal.html" %}
+
+{% else %}
+
+<tr>
+<td colspan="3" class="empty-state">
+
+<div class="empty-state-content">
+
+<span class="empty-icon">📱</span>
+
+<p>Nenhum dispositivo em bypass</p>
+
+<button class="button primary"
+        onclick="document.getElementById('createBypassDevice').showModal()">
+    Adicionar primeiro dispositivo
+</button>
+
+</div>
+
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,63 @@
+<dialog id="editHotspotUser_{{ user.id }}" class="modal">
+
+       <div class="modal-header">
+              <h3>Editar Usuário Hotspot</h3>
+       </div>
+
+       <form method="POST" action="/hotspot-users/{{ user.id }}/edit">
+
+              <div class="modal-body">
+
+                     <label>Roteador</label>
+                     <select name="router_id">
+
+                            {% for router in routers %}
+                                   <option value="{{ router.id }}"
+                                          {% if user.router_id == router.id %}selected{% endif %}>
+                                          {{ router.name }} ({{ router.ip_address }})
+                                   </option>
+                            {% endfor %}
+
+                     </select>
+
+                     <label>Usuário</label>
+                     <input type="text"
+                            name="username"
+                            value="{{ user.username }}"
+                            required>
+
+                     <label>Senha</label>
+                     <input type="password"
+                            name="password"
+                            placeholder="Deixe vazio para manter">
+
+                     <label>Limite de Uptime</label>
+                     <input type="text"
+                            name="limit_uptime"
+                            value="{{ user.limit_uptime }}"
+                            placeholder="1h / 30m / 1d">
+
+                     <label>Rate Limit</label>
+                     <input type="text"
+                            name="rate_limit"
+                            value="{{ user.rate_limit }}"
+                            placeholder="1M/1M">
+
+              </div>
+
+              <div class="modal-footer">
+
+                     <button type="submit" class="button primary">
+                     Salvar
+                     </button>
+
+                     <button type="button"
+                     onclick="document.getElementById('editHotspotUser_{{ user.id }}').close()">
+                     Cancelar
+                     </button>
+
+              </div>
+
+       </form>
+
+</dialog>

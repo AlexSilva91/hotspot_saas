@@ -4,6 +4,7 @@ from app.models.plan import Plan
 
 class PlanRepository:
 
+
     @staticmethod
     def create(data):
 
@@ -18,13 +19,22 @@ class PlanRepository:
     @staticmethod
     def get_all():
 
-        return Plan.query.all()
+        return Plan.query.order_by(Plan.created_at.desc()).all()
 
 
     @staticmethod
     def get_by_id(plan_id):
 
         return Plan.query.get(plan_id)
+
+
+    @staticmethod
+    def save(plan):
+
+        db.session.add(plan)
+        db.session.commit()
+
+        return plan
 
 
     @staticmethod

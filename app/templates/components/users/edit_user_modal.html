@@ -1,58 +1,128 @@
 <dialog id="editUser_{{ user.id }}" class="modal">
+
     <div class="modal-header">
-        <h3>Editar Usuário: {{ user.email }}</h3>
+        <h3>Editar Usuário</h3>
     </div>
 
-    <form method="POST" action="/users/{{ user.id }}/edit" class="modal-form">
+    <form method="POST"
+          action="/users/{{ user.id }}/edit"
+          class="modal-form">
+
         <div class="form-group">
-            <label for="edit_email_{{ user.id }}">E-mail</label>
-            <input type="email" 
-                   id="edit_email_{{ user.id }}" 
-                   name="email" 
-                   value="{{ user.email }}" 
-                   placeholder="exemplo@email.com" 
+
+            <label>E-mail</label>
+
+            <input type="email"
+                   name="email"
+                   value="{{ user.email }}"
                    required>
+
         </div>
 
-        <div class="form-group">
-            <label for="edit_password_{{ user.id }}">Nova Senha</label>
-            <input type="password" 
-                   id="edit_password_{{ user.id }}" 
-                   name="password" 
-                   placeholder="Deixe em branco para manter a atual">
-            <small class="form-text">Preencha apenas se quiser alterar a senha</small>
-        </div>
 
         <div class="form-group">
-            <label for="edit_role_{{ user.id }}">Função</label>
-            <select id="edit_role_{{ user.id }}" name="role" required>
-                <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
-                <option value="manager" {% if user.role == 'manager' %}selected{% endif %}>Manager</option>
-                <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
-                <option value="viewer" {% if user.role == 'viewer' %}selected{% endif %}>Viewer</option>
-            </select>
+
+            <label>Nova senha</label>
+
+            <input type="password"
+                   name="password">
+
+            <small>
+                Deixe em branco para manter a atual
+            </small>
+
         </div>
 
+
         <div class="form-group">
-            <label for="edit_tenant_{{ user.id }}">Empresa</label>
-            <select id="edit_tenant_{{ user.id }}" name="tenant_id">
-                <option value="">Sem empresa</option>
-                {% for tenant in tenants %}
-                <option value="{{ tenant.id }}" 
-                        {% if user.tenant_id == tenant.id %}selected{% endif %}>
-                    {{ tenant.name }}
+
+            <label>Função</label>
+
+            <select name="role">
+
+                <option value="admin"
+                        {% if user.role == 'admin' %}selected{% endif %}>
+                    Admin
                 </option>
-                {% endfor %}
+
+                <option value="manager"
+                        {% if user.role == 'manager' %}selected{% endif %}>
+                    Manager
+                </option>
+
+                <option value="user"
+                        {% if user.role == 'user' %}selected{% endif %}>
+                    User
+                </option>
+
+                <option value="viewer"
+                        {% if user.role == 'viewer' %}selected{% endif %}>
+                    Viewer
+                </option>
+
             </select>
+
         </div>
+
+
+        <div class="form-group">
+
+            <label>Empresa</label>
+
+            <select name="tenant_id">
+
+                <option value="">Sem empresa</option>
+
+                {% for tenant in tenants %}
+
+                    <option value="{{ tenant.id }}"
+                            {% if user.tenant_id == tenant.id %}selected{% endif %}>
+                        {{ tenant.name }}
+                    </option>
+
+                {% endfor %}
+
+            </select>
+
+        </div>
+
+
+        <div class="form-group">
+
+            <label>Status</label>
+
+            <select name="active">
+
+                <option value="true"
+                        {% if user.active %}selected{% endif %}>
+                    Ativo
+                </option>
+
+                <option value="false"
+                        {% if not user.active %}selected{% endif %}>
+                    Inativo
+                </option>
+
+            </select>
+
+        </div>
+
 
         <div class="modal-footer">
-            <button type="button" class="button secondary" onclick="document.getElementById('editUser_{{ user.id }}').close()">
+
+            <button type="button"
+                    class="button secondary"
+                    onclick="document.getElementById('editUser_{{ user.id }}').close()">
                 Cancelar
             </button>
-            <button type="submit" class="button primary">
-                Salvar Alterações
+
+            <button type="submit"
+                    class="button primary">
+                Salvar
             </button>
+
         </div>
+
     </form>
+
 </dialog>
