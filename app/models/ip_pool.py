@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class IpPool(db.Model):
+class IpPool(UserMixin, db.Model):
 
     __tablename__ = "ip_pools"
 

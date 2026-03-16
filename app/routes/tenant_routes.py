@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, request, render_template, redirect, url_for
 from app.services.tenant_service import TenantService
 from app.services.plan_service import PlanService
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 tenant_bp = Blueprint("tenants", __name__)
 

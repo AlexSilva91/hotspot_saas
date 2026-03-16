@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from app.services.hotspot_user_service import HotspotUserService
 from app.services.router_service import RouterService
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 hotspot_user_bp = Blueprint("hotspot_users", __name__)
 

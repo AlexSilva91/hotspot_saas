@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class BypassDevice(db.Model):
+class BypassDevice(UserMixin, db.Model):
 
     __tablename__ = "bypass_devices"
 

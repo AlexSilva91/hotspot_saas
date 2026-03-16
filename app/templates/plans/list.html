@@ -10,14 +10,15 @@ Planos
 
 <h2>Planos</h2>
 
+{% if current_user.role in ['ADMIN', 'MANAGER'] %}
 <button class="button primary" onclick="document.getElementById('createPlan').showModal()">
-Criar Plano
+    Criar Plano
 </button>
 
 {% include "components/plans/create_plan_modal.html" %}
+{% endif %}
 
 <table border="1" width="60%">
-
 <thead>
 <tr>
 <th>Nome</th>
@@ -26,53 +27,48 @@ Criar Plano
 <th>Ações</th>
 </tr>
 </thead>
-
 <tbody>
 
 {% for plan in plans %}
-
 <tr>
-
 <td>{{ plan.name }}</td>
 <td>{{ plan.max_routers }}</td>
 <td>{{ plan.max_users }}</td>
 
 <td>
-
 <button onclick="document.getElementById('view_{{ plan.id }}').showModal()">
-Detalhes
+    Detalhes
 </button>
 
+{% if current_user.role in ['ADMIN', 'MANAGER'] %}
 <button onclick="document.getElementById('edit_{{ plan.id }}').showModal()">
     Editar
 </button>
 
 <form method="POST" action="/plans/{{ plan.id }}/delete" style="display:inline;">
-<button type="submit">Remover</button>
+    <button type="submit">Remover</button>
 </form>
+{% endif %}
 
 </td>
-
 </tr>
 
 <dialog id="view_{{ plan.id }}">
-
 <h3>Detalhes do Plano</h3>
-
-<p><strong>Nome: {{ plan.name }}</p>
+<p><strong>Nome:</strong> {{ plan.name }}</p>
 <p><strong>Máx. Roteadores:</strong> {{ plan.max_routers }}</p>
 <p><strong>Máx. Usuários:</strong> {{ plan.max_users }}</p>
-
 <button onclick="document.getElementById('view_{{ plan.id }}').close()">
-Fechar
+    Fechar
 </button>
-
 </dialog>
+
+{% if current_user.role in ['ADMIN', 'MANAGER'] %}
     {% include "components/plans/edit_plan_modal.html" %}
+{% endif %}
+
 {% endfor %}
-
 </tbody>
-
 </table>
 
 {% endblock %}

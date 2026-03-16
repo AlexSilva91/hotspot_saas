@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class Router(db.Model):
+class Router(UserMixin, db.Model):
 
     __tablename__ = "routers"
 

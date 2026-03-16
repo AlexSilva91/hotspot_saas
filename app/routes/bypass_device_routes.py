@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from app.services.bypass_device_service import BypassDeviceService
 from app.services.router_service import RouterService
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 bypass_device_bp = Blueprint("bypass_devices", __name__)
 

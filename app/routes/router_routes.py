@@ -2,7 +2,7 @@ from flask import Blueprint, flash, request, render_template, redirect, url_for
 from app.services.router_service import RouterService
 from app.services.tenant_service import TenantService
 from app.extensions import db
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 router_bp = Blueprint("routers", __name__)
 

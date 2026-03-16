@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 from app.services.active_session_service import ActiveSessionService
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 active_session_bp = Blueprint("active_sessions", __name__)
 

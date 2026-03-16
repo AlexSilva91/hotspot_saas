@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class Plan(db.Model):
+class Plan(UserMixin, db.Model):
 
     __tablename__ = "plans"
 

@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class HotspotTemplate(db.Model):
+class HotspotTemplate(UserMixin, db.Model):
 
     __tablename__ = "hotspot_templates"
 

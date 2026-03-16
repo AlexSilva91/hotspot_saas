@@ -1,7 +1,7 @@
 from flask import Blueprint, request, redirect, url_for, flash, render_template
 from app.services.ip_pool_service import IpPoolService
 from app.services.router_service import RouterService
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 ip_pool_bp = Blueprint("ip_pools", __name__)
 

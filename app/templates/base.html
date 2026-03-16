@@ -12,83 +12,79 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo_solveon_2.png') }}">
-    <!-- Bloco para CSS adicional -->
     {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-    <div class="page-wrapper">
-        <header>
-            <div class="logo-container">
-                <span class="logo-main">SOLVEON</span>
-                <span class="logo-sub">TECHNOLOGY</span>
-            </div>
+<div class="page-wrapper">
+    <header>
+        <div class="logo-container">
+            <span class="logo-main">SOLVEON</span>
+            <span class="logo-sub">TECHNOLOGY</span>
+        </div>
 
-            <nav>
-                {% if session.get('user_id') %}
+        <nav>
+            {% if current_user.is_authenticated %}
+            {% set role = current_user.role.name %}
 
-                    {% if request.path != '/plans' %}
-                        <a href="/plans">Planos</a>
-                    {% endif %}
+            {# Menus visíveis para todos usuários logados #}
 
-                    {% if request.path != '/routers' %}
-                        <a href="/routers">Roteadores</a>
-                    {% endif %}
+             {% if request.path != '/users' %}
+                    <a href="/users">Usuários</a>
+            {% endif %}
 
-                    {% if request.path != '/tenants' %}
-                        <a href="/tenants">Empresas</a>
-                    {% endif %}
+            {% if request.path != '/plans' %}
+                <a href="/plans">Planos</a>
+            {% endif %}
 
-                    {% if request.path != '/users' %}
-                        <a href="/users">Usuários</a>
-                    {% endif %}
+            {% if request.path != '/routers' %}
+                <a href="/routers">Roteadores</a>
+            {% endif %}
 
-                    {% if request.path != '/ip-pools' %}
-                        <a href="/ip-pools">IP Pools</a>
-                    {% endif %}
+             {% if request.path != '/ip-pools' %}
+                    <a href="/ip-pools">IP Pools</a>
+            {% endif %}
 
-                    {% if request.path != '/hotspot-users' %}
-                        <a href="/hotspot-users">Hotspot Users</a>
-                    {% endif %}
+            {% if request.path != '/hotspot-users' %}
+                <a href="/hotspot-users">Hotspot Users</a>
+            {% endif %}
 
-                    {% if request.path != '/hotspot-templates' %}
-                        <a href="/hotspot-templates">Templates</a>
-                    {% endif %}
+            {% if request.path != '/hotspot-templates' %}
+                <a href="/hotspot-templates">Templates</a>
+            {% endif %}
 
-                    {% if request.path != '/bypass-devices' %}
-                        <a href="/bypass-devices">Bypass Devices</a>
-                    {% endif %}
+            {% if request.path != '/bypass-devices' %}
+                <a href="/bypass-devices">Bypass Devices</a>
+            {% endif %}
 
-                    <a href="{{ url_for('auth.logout') }}">Logout</a>
+            {% if role in ['ADMIN', 'MANAGER'] %}
+                {# Menus restritos para ADMIN/MANAGER #}
 
-                {% else %}
-
-                    {% if request.path != url_for('auth.login_page') %}
-                        <a href="{{ url_for('auth.login_page') }}">Login</a>
-                    {% endif %}
-
+                {% if request.path != '/tenants' %}
+                    <a href="/tenants">Empresas</a>
                 {% endif %}
 
-                </nav>
-        </header>
+            {% endif %}
 
-        <hr>
+            <a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.email }})</a>
+        {% else %}
+            <a href="{{ url_for('auth.login_page') }}">Login</a>
+        {% endif %}
+        </nav>
+    </header>
 
-        <main class="main-content">
-        {% block content %}
-        {% endblock %}
-        </main>
+    <hr>
 
-        <!-- JavaScript global -->
-        <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
 
-        <!-- Bloco para JavaScript específico -->
-        {% block extra_js %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+    {% block extra_js %}{% endblock %}
 
-        <footer>
-            &copy; Solveon {{ current_year }}
-        </footer>
-    </div>
+    <footer>
+        &copy; Solveon {{ current_year }}
+    </footer>
+</div>
 </body>
-
 </html>

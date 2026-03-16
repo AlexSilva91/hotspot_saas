@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash
 from app.services.hotspot_template_service import HotspotTemplateService
 from app.services.tenant_service import TenantService
-from app.decorators.login_required import login_required
+from flask_login import login_required
 
 hotspot_template_bp = Blueprint("hotspot_templates", __name__)
 

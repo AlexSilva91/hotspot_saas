@@ -44,17 +44,16 @@ Usuários
 
                         <td>
                             <span class="badge
-                                {% if user.role == 'admin' %}
+                                {% if user.role.value == 'ADMIN' %}
                                     badge-danger
-                                {% elif user.role == 'manager' %}
+                                {% elif user.role.value == 'MANAGER' %}
                                     badge-warning
-                                {% elif user.role == 'user' %}
+                                {% elif user.role.value == 'USER' %}
                                     badge-info
                                 {% else %}
                                     badge-secondary
-                                {% endif %}
-                            ">
-                                {{ user.role }}
+                                {% endif %} ">
+                                {{ user.role.value|capitalize }}
                             </span>
                         </td>
 
@@ -123,8 +122,8 @@ Usuários
                             </div>
 
                             <div class="detail-item">
-                                <span class="detail-label">Função:</span>
-                                <span class="detail-value">{{ user.role }}</span>
+                                <span class="detail-label">Permissão:</span>
+                                <span class="detail-value">{{ user.role.value|capitalize }}</span>
                             </div>
 
                             <div class="detail-item">

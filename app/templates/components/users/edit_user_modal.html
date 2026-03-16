@@ -35,34 +35,20 @@
 
 
         <div class="form-group">
+        <label>Permissão</label>
+        <select name="role">
+            {% set current_role = current_user.role.name %}
+            {% set selected_role = form_data.role if form_data.role is defined else '' %}
 
-            <label>Função</label>
+            {% if current_role in ['ADMIN', 'MANAGER'] %}
+                <option value="ADMIN" {% if selected_role == 'ADMIN' %}selected{% endif %}>Admin</option>
+                <option value="MANAGER" {% if selected_role == 'MANAGER' %}selected{% endif %}>Manager</option>
+            {% endif %}
 
-            <select name="role">
-
-                <option value="admin"
-                        {% if user.role == 'admin' %}selected{% endif %}>
-                    Admin
-                </option>
-
-                <option value="manager"
-                        {% if user.role == 'manager' %}selected{% endif %}>
-                    Manager
-                </option>
-
-                <option value="user"
-                        {% if user.role == 'user' %}selected{% endif %}>
-                    User
-                </option>
-
-                <option value="viewer"
-                        {% if user.role == 'viewer' %}selected{% endif %}>
-                    Viewer
-                </option>
-
-            </select>
-
-        </div>
+            <option value="USER" {% if selected_role == 'USER' %}selected{% endif %}>User</option>
+            <option value="VIEWER" {% if selected_role == 'VIEWER' %}selected{% endif %}>Viewer</option>
+        </select>
+    </div>
 
 
         <div class="form-group">

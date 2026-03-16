@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class ActiveSession(db.Model):
+class ActiveSession(UserMixin ,db.Model):
 
     __tablename__ = "active_sessions"
 

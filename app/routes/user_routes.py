@@ -1,8 +1,9 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
+from flask_login import login_required
 from werkzeug.security import generate_password_hash
 from app.services.user_service import UserService
 from app.services.tenant_service import TenantService
-from app.decorators.login_required import login_required
+
 
 user_bp = Blueprint("users", __name__)
 
@@ -16,7 +17,7 @@ def list_users():
 
     form_data = session.pop("form_data", {})
     form_errors = session.pop("form_errors", {})
-
+    
     return render_template(
         "users/list.html",
         users=users,

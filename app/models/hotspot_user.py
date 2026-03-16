@@ -1,8 +1,8 @@
 import uuid
 from app.extensions import db
+from flask_login import UserMixin
 
-
-class HotspotUser(db.Model):
+class HotspotUser(UserMixin, db.Model):
 
     __tablename__ = "hotspot_users"
 

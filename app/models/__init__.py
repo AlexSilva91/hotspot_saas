@@ -6,4 +6,4 @@ from .ip_pool import IpPool
 from .plan import Plan
 from .router import Router
 from .tenant import Tenant
-from .user import User
+from .user import User, UserRole
