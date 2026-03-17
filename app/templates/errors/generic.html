@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}
+Erro {{ code }}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/error_pages.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="error-wrapper">
+
+    <div class="network-bg"></div>
+
+    <div class="error-card">
+
+        <div class="radar"></div>
+
+        <div class="error-code">
+            {{ code }}
+        </div>
+
+        <h1 class="error-title">
+            {{ title }}
+        </h1>
+
+        <p class="error-message">
+            {{ message }}
+        </p>
+
+        <div class="wifi-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <a href="/" class="error-button">
+            Voltar ao painel
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

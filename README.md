@@ -75,107 +75,145 @@ Repositories ────────── Acesso ao banco de dados
 
 ```
 hotspot_saas
-├─ README.md
-├─ app
-│  ├─ __init__.py
-│  ├─ config.py
-│  ├─ decorators
-│  │  ├─ __init__.py
-│  │  └─ login_required.py
-│  ├─ extensions.py
-│  ├─ integrations
-│  │  ├─ __init__.py
-│  │  └─ mikrotik_api.py
-│  ├─ middleware
-│  │  ├─ __init__.py
-│  │  ├─ auth_middleware.py
-│  │  ├─ plan_limit.py
-│  │  └─ tenant_middleware.py
-│  ├─ models
-│  │  ├─ __init__.py
-│  │  ├─ active_session.py
-│  │  ├─ bypass_device.py
-│  │  ├─ hotspot_template.py
-│  │  ├─ hotspot_user.py
-│  │  ├─ ip_pool.py
-│  │  ├─ plan.py
-│  │  ├─ router.py
-│  │  ├─ tenant.py
-│  │  └─ user.py
-│  ├─ repositories
-│  │  ├─ __init__.py
-│  │  ├─ active_session_repository.py
-│  │  ├─ bypass_device_repository.py
-│  │  ├─ hotspot_template_repository.py
-│  │  ├─ hotspot_user_repository.py
-│  │  ├─ ip_pool_repository.py
-│  │  ├─ plan_repository.py
-│  │  ├─ router_repository.py
-│  │  ├─ tenant_repository.py
-│  │  └─ user_repository.py
-│  ├─ routes
-│  │  ├─ __init__.py
-│  │  ├─ auth_routes.py
-│  │  ├─ ip_pool_routes.py
-│  │  ├─ plan_routes.py
-│  │  ├─ router_routes.py
-│  │  ├─ tenant_routes.py
-│  │  └─ user_routes.py
-│  ├─ services
-│  │  ├─ __init__.py
-│  │  ├─ auth_service.py
-│  │  ├─ hotspot_user_service.py
-│  │  ├─ ip_pool_service.py
-│  │  ├─ plan_service.py
-│  │  ├─ router_service.py
-│  │  ├─ tenant_service.py
-│  │  └─ user_service.py
-│  ├─ static
-│  │  ├─ assets
-│  │  │  ├─ logo_solveon.png
-│  │  │  ├─ logo_solveon_2.png
-│  │  │  └─ logo_solveon_3.png
-│  │  ├─ css
-│  │  │  ├─ style.css
-│  │  │  └─ style_login.css
-│  │  └─ js
-│  │     └─ login.js
-│  ├─ templates
-│  │  ├─ auth
-│  │  │  └─ login.html
-│  │  ├─ base.html
-│  │  ├─ components
-│  │  │  ├─ flash_messages.html
-│  │  │  ├─ plans
-│  │  │  │  ├─ create_plan_modal.html
-│  │  │  │  └─ edit_plan_modal.html
-│  │  │  ├─ routers
-│  │  │  │  ├─ create_router_modal.html
-│  │  │  │  ├─ details_router_modal.html
-│  │  │  │  └─ edit_router_modal.html
-│  │  │  ├─ tenants
-│  │  │  │  ├─ create_tenant_modal.html
-│  │  │  │  ├─ details_tenant_modal.html
-│  │  │  │  └─ edit_tenant_modal.html
-│  │  │  └─ users
-│  │  │     ├─ create_user_modal.html
-│  │  │     └─ edit_user_modal.html
-│  │  ├─ plans
-│  │  │  └─ list.html
-│  │  ├─ routers
-│  │  │  └─ list.html
-│  │  ├─ tenants
-│  │  │  └─ list.html
-│  │  └─ users
-│  │     └─ list.html
-│  └─ utils
-│     ├─ __init__.py
-│     └─ logger.py
-├─ doc
-├─ logs
-├─ requirements.txt
-├─ run.py
-└─ secret.py
+├── app
+│   ├── decorators
+│   │   ├── __init__.py
+│   │   └── login_required.py
+│   ├── integrations
+│   │   ├── __init__.py
+│   │   └── mikrotik_api.py
+│   ├── middleware
+│   │   ├── __init__.py
+│   │   ├── auth_middleware.py
+│   │   ├── plan_limit.py
+│   │   └── tenant_middleware.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── active_session.py
+│   │   ├── bypass_device.py
+│   │   ├── hotspot_template.py
+│   │   ├── hotspot_user.py
+│   │   ├── ip_pool.py
+│   │   ├── plan.py
+│   │   ├── router.py
+│   │   ├── tenant.py
+│   │   └── user.py
+│   ├── repositories
+│   │   ├── __init__.py
+│   │   ├── active_session_repository.py
+│   │   ├── bypass_device_repository.py
+│   │   ├── hotspot_template_repository.py
+│   │   ├── hotspot_user_repository.py
+│   │   ├── ip_pool_repository.py
+│   │   ├── plan_repository.py
+│   │   ├── router_repository.py
+│   │   ├── tenant_repository.py
+│   │   └── user_repository.py
+│   ├── routes
+│   │   ├── __init__.py
+│   │   ├── active_session_routes.py
+│   │   ├── auth_routes.py
+│   │   ├── bypass_device_routes.py
+│   │   ├── error_test_routes.py
+│   │   ├── hotspot_template_routes.py
+│   │   ├── hotspot_user_routes.py
+│   │   ├── ip_pool_routes.py
+│   │   ├── plan_routes.py
+│   │   ├── router_routes.py
+│   │   ├── tenant_routes.py
+│   │   └── user_routes.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   ├── active_session_service.py
+│   │   ├── auth_service.py
+│   │   ├── bypass_device_service.py
+│   │   ├── hotspot_template_service.py
+│   │   ├── hotspot_user_service.py
+│   │   ├── ip_pool_service.py
+│   │   ├── plan_service.py
+│   │   ├── router_service.py
+│   │   ├── tenant_service.py
+│   │   └── user_service.py
+│   ├── static
+│   │   ├── assets
+│   │   │   ├── logo_solveon.png
+│   │   │   ├── logo_solveon_2.png
+│   │   │   └── logo_solveon_3.png
+│   │   ├── css
+│   │   │   ├── error_pages.css
+│   │   │   ├── style.css
+│   │   │   └── style_login.css
+│   │   └── js
+│   │       └── login.js
+│   ├── templates
+│   │   ├── auth
+│   │   │   └── login.html
+│   │   ├── bypass_devices
+│   │   │   └── list.html
+│   │   ├── components
+│   │   │   ├── bypass_devices
+│   │   │   │   ├── create_bypass_device_modal.html
+│   │   │   │   └── edit_bypass_device_modal.html
+│   │   │   ├── hotspot_templates
+│   │   │   │   ├── create_template_modal.html
+│   │   │   │   └── edit_template_modal.html
+│   │   │   ├── hotspot_users
+│   │   │   │   ├── create_hotspot_user_modal.html
+│   │   │   │   └── edit_hotspot_user_modal.html
+│   │   │   ├── ip_pools
+│   │   │   │   ├── create_pool_modal.html
+│   │   │   │   └── edit_pool_modal.html
+│   │   │   ├── plans
+│   │   │   │   ├── create_plan_modal.html
+│   │   │   │   └── edit_plan_modal.html
+│   │   │   ├── routers
+│   │   │   │   ├── create_router_modal.html
+│   │   │   │   ├── details_router_modal.html
+│   │   │   │   └── edit_router_modal.html
+│   │   │   ├── tenants
+│   │   │   │   ├── create_tenant_modal.html
+│   │   │   │   ├── details_tenant_modal.html
+│   │   │   │   └── edit_tenant_modal.html
+│   │   │   ├── users
+│   │   │   │   ├── create_user_modal.html
+│   │   │   │   └── edit_user_modal.html
+│   │   │   └── flash_messages.html
+│   │   ├── errors
+│   │   │   ├── 400.html
+│   │   │   ├── 401.html
+│   │   │   ├── 403.html
+│   │   │   ├── 404.html
+│   │   │   ├── 405.html
+│   │   │   ├── 500.html
+│   │   │   └── generic.html
+│   │   ├── hotspot_templates
+│   │   │   └── list.html
+│   │   ├── hotspot_users
+│   │   │   └── list.html
+│   │   ├── ip_pools
+│   │   │   └── list.html
+│   │   ├── plans
+│   │   │   └── list.html
+│   │   ├── routers
+│   │   │   └── list.html
+│   │   ├── tenants
+│   │   │   └── list.html
+│   │   ├── users
+│   │   │   └── list.html
+│   │   └── base.html
+│   ├── utils
+│   │   ├── __init__.py
+│   │   ├── error_handlers.py
+│   │   └── logger.py
+│   ├── __init__.py
+│   ├── config.py
+│   └── extensions.py
+├── logs
+├── .gitignore
+├── README.md
+├── requirements.txt
+├── run.py
+└── secret.py
 ```
 
 ---

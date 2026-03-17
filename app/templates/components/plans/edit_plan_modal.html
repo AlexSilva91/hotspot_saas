@@ -1,28 +1,33 @@
 <dialog id="edit_{{ plan.id }}">
 
-<h3>Editar Plano: {{ plan.name }}</h3>
+    <h3>Editar Plano: {{ plan.name }}</h3>
 
-<form method="POST" action="/plans/{{ plan.id }}/edit">
+    <form method="POST" action="/plans/{{ plan.id }}/edit">
 
-<label>Nome</label>
-<input type="text" name="name" value="{{ plan.name }}" required>
+        <label>Nome</label>
+        <input type="text" name="name" value="{{ plan.name }}" required >
 
-<label>Máx. Roteadores</label>
-<input type="number" name="max_routers" value="{{ plan.max_routers }}" required>
+        <label>Máx. Roteadores</label>
+        <input type="number" name="max_routers" value="{{ plan.max_routers }}" min="1" required>
 
-<label>Máx. Usuários</label>
-<input type="number" name="max_users" value="{{ plan.max_users }}" required>
+        <label>Máx. Usuários do Sistema</label>
+        <input type="number" name="max_users" value="{{ plan.max_users }}" min="1" required>
 
-<br><br>
+        <label>Máx. Usuários Hotspot</label>
+        <input type="number" name="max_hotspot_users" value="{{ plan.max_hotspot_users }}" min="1" required >
 
-<button type="submit">Salvar</button>
+        <br><br>
 
-</form>
+        <button type="submit">
+            Salvar
+        </button>
 
-<br>
+    </form>
 
-<button onclick="document.getElementById('edit_{{ plan.id }}').close()">
-Cancelar
-</button>
+    <br>
+
+    <button onclick="document.getElementById('edit_{{ plan.id }}').close()">
+        Cancelar
+    </button>
 
 </dialog>

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard | SOLVEON TECHNOLOGY
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <!-- HEADER -->
+
+    <div class="dashboard-header">
+
+        <div>
+            <h1>Dashboard</h1>
+            <p class="tenant-label">
+                Empresa: <strong>{{ tenant.name }}</strong>
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- KPIs -->
+
+    <div class="kpi-grid">
+
+        <div class="kpi-card">
+            <span>Routers</span>
+            <strong>{{ routers_count }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Usuários do Sistema</span>
+            <strong>{{ users_count }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Hotspot Users</span>
+            <strong>{{ hotspot_users_count }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Sessões Ativas</span>
+            <strong>{{ active_sessions_count }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>IP Pools</span>
+            <strong>{{ ip_pools_count }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Bypass Devices</span>
+            <strong>{{ bypass_devices_count }}</strong>
+        </div>
+
+        <div class="kpi-card">
+            <span>Templates</span>
+            <strong>{{ templates_count }}</strong>
+        </div>
+
+    </div>
+
+
+    <!-- GRID DE SEÇÕES -->
+
+    <div class="dashboard-grid">
+
+        <!-- PLANO -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+                Plano Atual
+            </div>
+
+            <div class="card-body">
+
+                <div class="plan-info">
+
+                    <div class="plan-row">
+                        <span>Plano</span>
+                        <span class="badge">{{ tenant.plan.name }}</span>
+                    </div>
+
+                    <div class="plan-row">
+                        <span>Routers Permitidos</span>
+                        <strong>{{ tenant.plan.max_routers }}</strong>
+                    </div>
+
+                    <div class="plan-row">
+                        <span>Usuários Sistema</span>
+                        <strong>{{ tenant.plan.max_users }}</strong>
+                    </div>
+
+                    <div class="plan-row">
+                        <span>Hotspot Users</span>
+                        <strong>{{ tenant.plan.max_hotspot_users }}</strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ROUTERS -->
+
+        <div class="dashboard-card">
+
+            <div class="card-header">
+                Routers Recentes
+            </div>
+
+            <div class="card-body">
+
+                <table class="dashboard-table">
+
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>IP</th>
+                            <th>Localização</th>
+                            <th>Criado</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for router in routers %}
+
+                        <tr>
+                            <td>{{ router.name }}</td>
+                            <td>{{ router.ip_address }}</td>
+                            <td>{{ router.location }}</td>
+                            <td>{{ router.created_at | datetime_br }}</td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="4" class="empty">
+                                Nenhum router cadastrado
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

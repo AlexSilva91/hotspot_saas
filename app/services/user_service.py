@@ -7,6 +7,7 @@ from psycopg2.errors import UniqueViolation
 from app.repositories.user_repository import UserRepository
 from app.extensions import db
 from app.models.user import UserRole
+from app.decorators.plan_limit import enforce_plan_limits
 
 # Roles com acesso global
 GLOBAL_ROLES = {"ADMIN", "MANAGER"}
@@ -16,7 +17,6 @@ class UserService:
 
     @staticmethod
     def validate_email(email, user_id=None):
-
         if not email:
             return False, "E-mail é obrigatório"
 
@@ -32,7 +32,6 @@ class UserService:
 
     @staticmethod
     def validate_role(role):
-
         if not role:
             return False, "Função é obrigatória"
 
@@ -48,7 +47,6 @@ class UserService:
     def validate_tenant_id(tenant_id):
         if tenant_id:
             from app.services.tenant_service import TenantService
-
             tenant = TenantService.get_tenant(
                 uuid.UUID(tenant_id) if isinstance(tenant_id, str) else tenant_id
             )
@@ -58,9 +56,12 @@ class UserService:
         return True, ""
 
     @staticmethod
+    @enforce_plan_limits
     def create_user(data):
-        # Força tenant_id do usuário logado se não for admin/manager
-        if hasattr(g, "current_user") and g.current_user.role not in GLOBAL_ROLES:
+        """
+        Cria um usuário, respeitando tenant do usuário logado se não for ADMIN/MANAGER.
+        """
+        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
             data["tenant_id"] = g.current_user.tenant_id
 
         errors = {}
@@ -92,19 +93,18 @@ class UserService:
 
     @staticmethod
     def list_users():
-        # Filtra por tenant se não for admin/manager
-        if hasattr(g, "current_user") and g.current_user.role not in GLOBAL_ROLES:
-            return UserRepository.get_all()
+        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
+            return UserRepository.get_by_tenant(g.current_user.tenant_id)
         return UserRepository.get_all()
 
     @staticmethod
+    @enforce_plan_limits
     def update_user(user_id, data):
         user = UserRepository.get_by_id(user_id)
         if not user:
             raise Exception("Usuário não encontrado")
 
-        # Verificação de permissionamento
-        if hasattr(g, "current_user") and g.current_user.role not in GLOBAL_ROLES:
+        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
             if str(user.tenant_id) != str(g.current_user.tenant_id):
                 raise Exception("Você não tem permissão para atualizar este usuário")
             data["tenant_id"] = g.current_user.tenant_id
@@ -137,8 +137,7 @@ class UserService:
         if not user:
             raise Exception("Usuário não encontrado")
 
-        # Verificação de permissionamento
-        if hasattr(g, "current_user") and g.current_user.role not in GLOBAL_ROLES:
+        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
             if str(user.tenant_id) != str(g.current_user.tenant_id):
                 raise Exception("Você não tem permissão para deletar este usuário")
 

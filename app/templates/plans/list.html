@@ -10,7 +10,7 @@ Planos
 
 <h2>Planos</h2>
 
-{% if current_user.role in ['ADMIN', 'MANAGER'] %}
+{% if current_user.is_staff %}
 <button class="button primary" onclick="document.getElementById('createPlan').showModal()">
     Criar Plano
 </button>
@@ -19,56 +19,101 @@ Planos
 {% endif %}
 
 <table border="1" width="60%">
+
 <thead>
-<tr>
-<th>Nome</th>
-<th>Máx. Roteadores</th>
-<th>Máx. Usuários</th>
-<th>Ações</th>
-</tr>
+    <tr>
+        <th>Nome</th>
+        <th>Máx. Roteadores</th>
+        <th>Máx. Usuários</th>
+        <th>Máx. Hotspot Users</th>
+        <th>Ações</th>
+    </tr>
 </thead>
+
 <tbody>
 
-{% for plan in plans %}
-<tr>
-<td>{{ plan.name }}</td>
-<td>{{ plan.max_routers }}</td>
-<td>{{ plan.max_users }}</td>
+    {% for plan in plans %}
 
-<td>
-<button onclick="document.getElementById('view_{{ plan.id }}').showModal()">
-    Detalhes
-</button>
+    <tr>
 
-{% if current_user.role in ['ADMIN', 'MANAGER'] %}
-<button onclick="document.getElementById('edit_{{ plan.id }}').showModal()">
-    Editar
-</button>
+        <td>{{ plan.name }}</td>
+        <td>{{ plan.max_routers }}</td>
+        <td>{{ plan.max_users }}</td>
+        <td>{{ plan.max_hotspot_users }}</td>
 
-<form method="POST" action="/plans/{{ plan.id }}/delete" style="display:inline;">
-    <button type="submit">Remover</button>
-</form>
-{% endif %}
+        <td>
 
-</td>
-</tr>
+            <button
+                onclick="document.getElementById('view_{{ plan.id }}').showModal()"
+            >
+                Detalhes
+            </button>
 
-<dialog id="view_{{ plan.id }}">
-<h3>Detalhes do Plano</h3>
-<p><strong>Nome:</strong> {{ plan.name }}</p>
-<p><strong>Máx. Roteadores:</strong> {{ plan.max_routers }}</p>
-<p><strong>Máx. Usuários:</strong> {{ plan.max_users }}</p>
-<button onclick="document.getElementById('view_{{ plan.id }}').close()">
-    Fechar
-</button>
-</dialog>
 
-{% if current_user.role in ['ADMIN', 'MANAGER'] %}
-    {% include "components/plans/edit_plan_modal.html" %}
-{% endif %}
+            {% if current_user.is_staff %}
 
-{% endfor %}
+            <button
+                onclick="document.getElementById('edit_{{ plan.id }}').showModal()">
+                Editar
+            </button>
+
+            <form
+                method="POST"
+                action="/plans/{{ plan.id }}/delete"
+                style="display:inline;">
+                <button type="submit">
+                    Remover
+                </button>
+            </form>
+
+            {% endif %}
+
+        </td>
+
+    </tr>
+
+
+    <!-- Modal Detalhes -->
+
+    <dialog id="view_{{ plan.id }}">
+
+        <h3>Detalhes do Plano</h3>
+
+        <p>
+            <strong>Nome:</strong>
+            {{ plan.name }}
+        </p>
+
+        <p>
+            <strong>Máx. Roteadores:</strong>
+            {{ plan.max_routers }}
+        </p>
+
+        <p>
+            <strong>Máx. Usuários:</strong>
+            {{ plan.max_users }}
+        </p>
+        <p>
+            <strong>Máx. Hotspot Users:</strong>
+           {{ plan.max_hotspot_users }}
+        </p>
+        <button
+            onclick="document.getElementById('view_{{ plan.id }}').close()"
+        >
+            Fechar
+        </button>
+
+    </dialog>
+
+
+    {% if current_user.is_staff %}
+        {% include "components/plans/edit_plan_modal.html" %}
+    {% endif %}
+
+    {% endfor %}
+
 </tbody>
+
 </table>
 
 {% endblock %}

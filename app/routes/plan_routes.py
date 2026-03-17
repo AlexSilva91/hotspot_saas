@@ -26,9 +26,10 @@ def create_plan():
     try:
 
         data = {
-            "name": request.form.get("name"),
-            "max_routers": int(request.form.get("max_routers", 1)),
-            "max_users": int(request.form.get("max_users", 5))
+            "name": request.form["name"],
+            "max_routers": request.form["max_routers"],
+            "max_users": request.form["max_users"],
+            "max_hotspot_users": request.form["max_hotspot_users"],
         }
 
         PlanService.create_plan(data)
@@ -62,9 +63,10 @@ def update_plan(plan_id):
     try:
 
         data = {
-            "name": request.form.get("name"),
-            "max_routers": int(request.form.get("max_routers", 1)),
-            "max_users": int(request.form.get("max_users", 5))
+            "name": request.form["name"],
+            "max_routers": request.form["max_routers"],
+            "max_users": request.form["max_users"],
+            "max_hotspot_users": request.form["max_hotspot_users"],
         }
 
         PlanService.update_plan(plan_id, data)

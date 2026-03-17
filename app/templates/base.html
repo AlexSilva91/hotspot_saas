@@ -5,12 +5,13 @@
 <html>
 
 <head>
-    <title>{% block title %}Hotspot SaaS{% endblock %}</title>
+    <title>{% block title %}SOLVEON TECHNOLOGY{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style_login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/logo_solveon_2.png') }}">
     {% block extra_css %}{% endblock %}
 </head>
@@ -29,7 +30,11 @@
 
             {# Menus visíveis para todos usuários logados #}
 
-             {% if request.path != '/users' %}
+            {% if request.path != '/dashboard' %}
+                    <a href="/dashboard">Dashboard</a>
+            {% endif %}
+
+            {% if request.path != '/users' %}
                     <a href="/users">Usuários</a>
             {% endif %}
 
@@ -68,7 +73,7 @@
 
             <a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.email }})</a>
         {% else %}
-            <a href="{{ url_for('auth.login_page') }}">Login</a>
+            <a href="{{ url_for('auth.login') }}">Login</a>
         {% endif %}
         </nav>
     </header>

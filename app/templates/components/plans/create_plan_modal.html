@@ -1,28 +1,31 @@
 <dialog id="createPlan">
 
-<h3>Criar Plano</h3>
+    <h3>Criar Plano</h3>
 
-<form method="POST" action="/plans/create">
+    <form method="POST" action="/plans/create">
 
-<label>Nome</label>
-<input type="text" name="name" required>
+        <label>Nome</label>
+        <input type="text" name="name" required>
 
-<label>Máx. Roteadores</label>
-<input type="number" name="max_routers" required>
+        <label>Máx. Roteadores</label>
+        <input type="number" name="max_routers" min="1" required>
 
-<label>Máx. Usuários</label>
-<input type="number" name="max_users" required>
+        <label>Máx. Usuários do Sistema</label>
+        <input type="number" name="max_users" min="1" required>
 
-<br><br>
+        <label>Máx. Usuários Hotspot</label>
+        <input type="number" name="max_hotspot_users" min="1" required>
 
-<button type="submit">Criar</button>
+        <br><br>
 
-</form>
+        <button type="submit">Criar</button>
 
-<br>
+    </form>
 
-<button onclick="document.getElementById('createPlan').close()">
-Cancelar
-</button>
+    <br>
+
+    <button onclick="document.getElementById('createPlan').close()">
+        Cancelar
+    </button>
 
 </dialog>

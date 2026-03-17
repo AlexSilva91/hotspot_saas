@@ -5,110 +5,80 @@
     </div>
 
     <form method="POST"
-          action="/users/{{ user.id }}/edit"
+          action="{{ url_for('users.update_user', user_id=user.id) }}"
           class="modal-form">
 
+        <!-- E-mail -->
         <div class="form-group">
-
             <label>E-mail</label>
-
             <input type="email"
                    name="email"
-                   value="{{ user.email }}"
+                   value="{{ form_data.email if form_data.email is defined else user.email }}"
                    required>
-
         </div>
 
-
+        <!-- Senha -->
         <div class="form-group">
-
             <label>Nova senha</label>
-
             <input type="password"
                    name="password">
-
-            <small>
-                Deixe em branco para manter a atual
-            </small>
-
+            <small>Deixe em branco para manter a atual</small>
         </div>
 
-
+        <!-- Permissão -->
         <div class="form-group">
-        <label>Permissão</label>
-        <select name="role">
-            {% set current_role = current_user.role.name %}
-            {% set selected_role = form_data.role if form_data.role is defined else '' %}
+            <label>Permissão</label>
+            <select name="role">
+                {% set current_role = current_user.role.name %}
+                {% set selected_role = form_data.role if form_data.role is defined else user.role.value %}
 
-            {% if current_role in ['ADMIN', 'MANAGER'] %}
-                <option value="ADMIN" {% if selected_role == 'ADMIN' %}selected{% endif %}>Admin</option>
-                <option value="MANAGER" {% if selected_role == 'MANAGER' %}selected{% endif %}>Manager</option>
-            {% endif %}
+                {% if current_role in ['ADMIN', 'MANAGER'] %}
+                    <option value="ADMIN" {% if selected_role == 'ADMIN' %}selected{% endif %}>Admin</option>
+                    <option value="MANAGER" {% if selected_role == 'MANAGER' %}selected{% endif %}>Manager</option>
+                {% endif %}
 
-            <option value="USER" {% if selected_role == 'USER' %}selected{% endif %}>User</option>
-            <option value="VIEWER" {% if selected_role == 'VIEWER' %}selected{% endif %}>Viewer</option>
-        </select>
-    </div>
+                <option value="USER" {% if selected_role == 'USER' %}selected{% endif %}>User</option>
+                <option value="VIEWER" {% if selected_role == 'VIEWER' %}selected{% endif %}>Viewer</option>
+            </select>
+        </div>
 
-
+        <!-- Empresa / Tenant -->
+        {% if current_role in ['ADMIN', 'MANAGER'] %}
         <div class="form-group">
-
             <label>Empresa</label>
-
             <select name="tenant_id">
-
-                <option value="">Sem empresa</option>
-
+                <option value="">Selecione a empresa</option>
                 {% for tenant in tenants %}
-
                     <option value="{{ tenant.id }}"
-                            {% if user.tenant_id == tenant.id %}selected{% endif %}>
+                            {% if form_data.tenant_id == tenant.id|string or user.tenant_id == tenant.id %}selected{% endif %}>
                         {{ tenant.name }}
                     </option>
-
                 {% endfor %}
-
             </select>
-
         </div>
+        {% endif %}
 
-
+        <!-- Status -->
         <div class="form-group">
-
             <label>Status</label>
-
             <select name="active">
-
-                <option value="true"
-                        {% if user.active %}selected{% endif %}>
-                    Ativo
-                </option>
-
-                <option value="false"
-                        {% if not user.active %}selected{% endif %}>
-                    Inativo
-                </option>
-
+                <option value="true" {% if (form_data.active|default(user.active|string)) == 'true' %}selected{% endif %}>Ativo</option>
+                <option value="false" {% if (form_data.active|default(user.active|string)) == 'false' %}selected{% endif %}>Inativo</option>
             </select>
-
         </div>
 
-
+        <!-- Footer -->
         <div class="modal-footer">
-
             <button type="button"
                     class="button secondary"
                     onclick="document.getElementById('editUser_{{ user.id }}').close()">
                 Cancelar
             </button>
-
             <button type="submit"
                     class="button primary">
                 Salvar
             </button>
-
         </div>
 
     </form>
-
 </dialog>

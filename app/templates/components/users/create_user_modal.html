@@ -5,27 +5,27 @@
     </div>
 
     <form method="POST"
-          action="/users/create"
+          action="{{ url_for('users.create_user') }}"
           class="modal-form">
 
+        <!-- E-mail -->
         <div class="form-group">
             <label>E-mail</label>
-
             <input type="email"
                    name="email"
+                   value="{{ form_data.email if form_data.email is defined else '' }}"
                    required>
         </div>
 
-
+        <!-- Senha -->
         <div class="form-group">
             <label>Senha</label>
-
             <input type="password"
                    name="password"
                    required>
         </div>
 
-
+        <!-- Permissão -->
         <div class="form-group">
             <label>Permissão</label>
             <select name="role">
@@ -42,53 +42,43 @@
             </select>
         </div>
 
-
+        <!-- Empresa / Tenant -->
+        {% if current_role in ['ADMIN', 'MANAGER'] %}
         <div class="form-group">
-
             <label>Empresa</label>
-
             <select name="tenant_id">
-
-                <option value="">Sem empresa</option>
-
+                <option value="">Selecione a empresa</option>
                 {% for tenant in tenants %}
-                    <option value="{{ tenant.id }}">
+                    <option value="{{ tenant.id }}"
+                            {% if form_data.tenant_id == tenant.id|string %}selected{% endif %}>
                         {{ tenant.name }}
                     </option>
                 {% endfor %}
-
             </select>
-
         </div>
+        {% endif %}
 
-
+        <!-- Status -->
         <div class="form-group">
-
             <label>Status</label>
-
             <select name="active">
-                <option value="true">Ativo</option>
-                <option value="false">Inativo</option>
+                <option value="true" {% if form_data.active|default('true') == 'true' %}selected{% endif %}>Ativo</option>
+                <option value="false" {% if form_data.active|default('true') == 'false' %}selected{% endif %}>Inativo</option>
             </select>
-
         </div>
 
-
+        <!-- Footer -->
         <div class="modal-footer">
-
             <button type="button"
                     class="button secondary"
                     onclick="document.getElementById('createUserModal').close()">
                 Cancelar
             </button>
-
             <button type="submit"
                     class="button primary">
                 Criar Usuário
             </button>
-
         </div>
 
     </form>
-
 </dialog>

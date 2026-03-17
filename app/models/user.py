@@ -86,3 +86,15 @@ class User(UserMixin, db.Model):
         if users is None:
             users = cls.query.all()
         return [user.to_dict() for user in users]
+    
+    @property
+    def is_admin(self):
+        return self.role == UserRole.ADMIN
+
+    @property
+    def is_manager(self):
+        return self.role == UserRole.MANAGER
+
+    @property
+    def is_staff(self):
+        return self.role in {UserRole.ADMIN, UserRole.MANAGER}

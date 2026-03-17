@@ -24,6 +24,11 @@ class UserRepository:
         return query.all()
 
     @staticmethod
+    def get_by_tenant(tenant_id):
+        query = User.query.filter_by(tenant_id=tenant_id).order_by(User.created_at.desc())
+        return query.all()
+
+    @staticmethod
     def get_by_id(user_id):
         query = User.query.filter_by(id=user_id)
         query = tenant_filter(query)
