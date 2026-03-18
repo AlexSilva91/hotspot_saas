@@ -76,16 +76,23 @@ Repositories ────────── Acesso ao banco de dados
 ```
 hotspot_saas
 ├── app
+│   ├── cli
+│   │   ├── __init__.py
+│   │   └── user_cli.py
+│   ├── controller
+│   │   ├── __init__.py
+│   │   └── base_controller.py
 │   ├── decorators
 │   │   ├── __init__.py
-│   │   └── login_required.py
+│   │   ├── login_required.py
+│   │   └── plan_limit.py
 │   ├── integrations
 │   │   ├── __init__.py
 │   │   └── mikrotik_api.py
 │   ├── middleware
 │   │   ├── __init__.py
 │   │   ├── auth_middleware.py
-│   │   ├── plan_limit.py
+│   │   ├── routes_error_handlers_middleware.py
 │   │   └── tenant_middleware.py
 │   ├── models
 │   │   ├── __init__.py
@@ -101,6 +108,7 @@ hotspot_saas
 │   ├── repositories
 │   │   ├── __init__.py
 │   │   ├── active_session_repository.py
+│   │   ├── base_repository.py
 │   │   ├── bypass_device_repository.py
 │   │   ├── hotspot_template_repository.py
 │   │   ├── hotspot_user_repository.py
@@ -114,6 +122,7 @@ hotspot_saas
 │   │   ├── active_session_routes.py
 │   │   ├── auth_routes.py
 │   │   ├── bypass_device_routes.py
+│   │   ├── dashboard_routes.py
 │   │   ├── error_test_routes.py
 │   │   ├── hotspot_template_routes.py
 │   │   ├── hotspot_user_routes.py
@@ -126,6 +135,7 @@ hotspot_saas
 │   │   ├── __init__.py
 │   │   ├── active_session_service.py
 │   │   ├── auth_service.py
+│   │   ├── base_service.py
 │   │   ├── bypass_device_service.py
 │   │   ├── hotspot_template_service.py
 │   │   ├── hotspot_user_service.py
@@ -140,6 +150,7 @@ hotspot_saas
 │   │   │   ├── logo_solveon_2.png
 │   │   │   └── logo_solveon_3.png
 │   │   ├── css
+│   │   │   ├── dashboard.css
 │   │   │   ├── error_pages.css
 │   │   │   ├── style.css
 │   │   │   └── style_login.css
@@ -178,6 +189,8 @@ hotspot_saas
 │   │   │   │   ├── create_user_modal.html
 │   │   │   │   └── edit_user_modal.html
 │   │   │   └── flash_messages.html
+│   │   ├── dashboard
+│   │   │   └── index.html
 │   │   ├── errors
 │   │   │   ├── 400.html
 │   │   │   ├── 401.html
@@ -204,6 +217,7 @@ hotspot_saas
 │   ├── utils
 │   │   ├── __init__.py
 │   │   ├── error_handlers.py
+│   │   ├── filters.py
 │   │   └── logger.py
 │   ├── __init__.py
 │   ├── config.py
