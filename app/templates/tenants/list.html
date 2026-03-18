@@ -32,7 +32,7 @@ Empresas
                 <td class="tenant-name">{{ tenant.name }}</td>
                 <td>
                     {% if tenant.plan %}
-                        <span class="badge badge-info">{{ tenant.plan.name }}</span>
+                        <span class="badge {{ tenant_color(tenant.plan.name) }}">{{ tenant.plan.name }}</span>
                     {% else %}
                         <span class="badge">Sem plano</span>
                     {% endif %}

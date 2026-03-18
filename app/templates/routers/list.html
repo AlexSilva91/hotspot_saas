@@ -39,7 +39,7 @@ Routers
                 <td>{{ router.location or "—" }}</td>
                 <td>
                     {% if router.tenant %}
-                        <span class="badge badge-info">{{ router.tenant.name }}</span>
+                        <span class="badge {{ tenant_color(router.tenant.name) }}">{{ router.tenant.name }}</span>
                     {% else %}
                         <span class="badge badge-secondary">Sem empresa</span>
                     {% endif %}

@@ -655,9 +655,9 @@ dialog button {
 .badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.2rem 0.65rem;
-    border-radius: 3px;
-    font-size: 0.68rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -665,46 +665,92 @@ dialog button {
     font-family: 'Rajdhani', var(--font-sans);
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(6px);
 }
 
+/* Shine animado */
 .badge::before {
     content: '';
     position: absolute;
     top: -50%; left: -50%;
     width: 200%; height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.08), transparent);
     transform: rotate(45deg);
-    animation: shine 4s infinite;
+    animation: shine 5s linear infinite;
 }
 
-@keyframes shine {
-    0%   { transform: translateX(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) rotate(45deg); }
+/* ===== CORES BASE ===== */
+
+.badge-info {
+    background: rgba(0, 149, 224, 0.18);
+    color: #60C8F0;
+    border-color: rgba(0, 149, 224, 0.5);
+    box-shadow: 0 0 10px rgba(0, 149, 224, 0.25);
 }
 
 .badge-success {
-    background: rgba(13, 158, 106, 0.15);
-    color: #5FD9A8;
-    border-color: rgba(13, 158, 106, 0.3);
+    background: rgba(13, 158, 106, 0.18);
+    color: #00FFB3;
+    border-color: rgba(13, 158, 106, 0.5);
+    box-shadow: 0 0 10px rgba(13, 158, 106, 0.25);
 }
 
 .badge-warning {
-    background: rgba(212, 134, 10, 0.15);
-    color: #F0B840;
-    border-color: rgba(212, 134, 10, 0.3);
+    background: rgba(212, 134, 10, 0.18);
+    color: #FFD166;
+    border-color: rgba(212, 134, 10, 0.5);
+    box-shadow: 0 0 10px rgba(212, 134, 10, 0.25);
 }
 
 .badge-danger {
-    background: rgba(192, 57, 43, 0.15);
-    color: #F4A49D;
-    border-color: rgba(192, 57, 43, 0.3);
+    background: rgba(192, 57, 43, 0.18);
+    color: #FF6B6B;
+    border-color: rgba(192, 57, 43, 0.5);
+    box-shadow: 0 0 10px rgba(192, 57, 43, 0.25);
 }
 
-.badge-info {
-    background: rgba(0, 149, 224, 0.15);
-    color: #60C8F0;
-    border-color: rgba(0, 149, 224, 0.3);
-    box-shadow: 0 0 8px rgba(0, 149, 224, 0.15);
+/* ===== CORES EXTRA (ANTI-COLISÃO HASH) ===== */
+
+.badge-purple {
+    background: rgba(128, 0, 255, 0.18);
+    color: #C77DFF;
+    border-color: rgba(128, 0, 255, 0.5);
+    box-shadow: 0 0 10px rgba(128, 0, 255, 0.25);
+}
+
+.badge-pink {
+    background: rgba(255, 0, 128, 0.18);
+    color: #FF70A6;
+    border-color: rgba(255, 0, 128, 0.5);
+    box-shadow: 0 0 10px rgba(255, 0, 128, 0.25);
+}
+
+.badge-cyan {
+    background: rgba(0, 255, 255, 0.18);
+    color: #00F5FF;
+    border-color: rgba(0, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.25);
+}
+
+.badge-orange {
+    background: rgba(255, 140, 0, 0.18);
+    color: #FFA94D;
+    border-color: rgba(255, 140, 0, 0.5);
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.25);
+}
+
+/* ===== HOVER EFFECT ===== */
+.badge:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.2);
+    box-shadow: 0 0 18px rgba(0, 168, 232, 0.35);
+}
+
+/* ===== VARIANTE NEON (opcional premium) ===== */
+.badge-neon {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 12px var(--neon-cyan), inset 0 0 6px rgba(0, 212, 255, 0.2);
+    color: var(--neon-cyan);
 }
 
 /* ===== SCROLLBAR ===== */

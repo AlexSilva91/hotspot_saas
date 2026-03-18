@@ -46,14 +46,14 @@
               </div>
 
               <div class="modal-footer">
-
-                     <button type="submit" class="button primary">
-                     Salvar
+                     <button type="button" class="button secondary" 
+                     onclick="document.getElementById('editHotspotUser_{{ user.id }}').close()">
+                            Cancelar
                      </button>
 
-                     <button type="button"
-                     onclick="document.getElementById('editHotspotUser_{{ user.id }}').close()">
-                     Cancelar
+
+                     <button type="submit" class="button primary">
+                            Salvar
                      </button>
 
               </div>

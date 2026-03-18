@@ -2,6 +2,7 @@ from flask import Flask, g
 from datetime import datetime
 
 from app.utils.filters import datetime_br
+from app.utils.tenant_color import tenant_color
 
 # Extensions
 from .extensions import db, migrate, jwt, login_manager
@@ -79,6 +80,10 @@ def create_app():
     @app.context_processor
     def inject_year():
         return {"current_year": datetime.now().year}
+
+    @app.context_processor
+    def inject_utils():
+        return dict(tenant_color=tenant_color)
 
     # -------------------- BEFORE REQUEST --------------------
     @app.before_request
