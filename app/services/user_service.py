@@ -1,144 +1,94 @@
-import uuid
-import re
 from flask import g
 from sqlalchemy.exc import IntegrityError
 from psycopg2.errors import UniqueViolation
+import re
 
+from app.services.base_service import BaseService
 from app.repositories.user_repository import UserRepository
-from app.extensions import db
-from app.models.user import UserRole
 from app.decorators.plan_limit import enforce_plan_limits
 
-# Roles com acesso global
 GLOBAL_ROLES = {"ADMIN", "MANAGER"}
 
 
-class UserService:
+class UserService(BaseService):
+    repository = UserRepository
+    not_found_message = "Usuário não encontrado"
+    allowed_update_fields = ["email", "password_hash", "role", "tenant_id", "active"]
 
     @staticmethod
     def validate_email(email, user_id=None):
         if not email:
             return False, "E-mail é obrigatório"
 
-        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_regex, email):
-            return False, "Formato de e-mail inválido"
+        regex = r'^[^@]+@[^@]+\.[^@]+$'
+        if not re.match(regex, email):
+            return False, "Formato inválido"
 
-        existing_user = UserRepository.get_by_email(email)
-        if existing_user and str(existing_user.id) != str(user_id):
-            return False, "Já existe um usuário com este e-mail"
-
-        return True, ""
-
-    @staticmethod
-    def validate_role(role):
-        if not role:
-            return False, "Função é obrigatória"
-
-        allowed_roles = ["ADMIN", "MANAGER", "USER", "VIEWER"]
-        role_upper = role.upper()
-
-        if role_upper not in allowed_roles:
-            return False, f"Função inválida. Deve ser uma das: {', '.join(allowed_roles)}"
+        existing = UserRepository.get_by_email(email)
+        if existing and str(existing.id) != str(user_id):
+            return False, "E-mail já cadastrado"
 
         return True, ""
 
-    @staticmethod
-    def validate_tenant_id(tenant_id):
-        if tenant_id:
-            from app.services.tenant_service import TenantService
-            tenant = TenantService.get_tenant(
-                uuid.UUID(tenant_id) if isinstance(tenant_id, str) else tenant_id
-            )
-            if not tenant:
-                return False, "Empresa não encontrada"
-
-        return True, ""
-
-    @staticmethod
-    @enforce_plan_limits
-    def create_user(data):
-        """
-        Cria um usuário, respeitando tenant do usuário logado se não for ADMIN/MANAGER.
-        """
-        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
+    @classmethod
+    @enforce_plan_limits(resource="user")
+    def create(cls, data):
+        # Aplica regra de tenant para não-admins
+        if g.current_user.role.value not in GLOBAL_ROLES:
             data["tenant_id"] = g.current_user.tenant_id
 
-        errors = {}
-
-        email_valid, email_error = UserService.validate_email(data.get("email"))
-        if not email_valid:
-            errors["email"] = email_error
-
-        role_valid, role_error = UserService.validate_role(data.get("role"))
-        if not role_valid:
-            errors["role"] = role_error
-
-        tenant_valid, tenant_error = UserService.validate_tenant_id(data.get("tenant_id"))
-        if not tenant_valid:
-            errors["tenant_id"] = tenant_error
-
-        if errors:
-            return {"success": False, "errors": errors}
+        # Valida email
+        valid, msg = cls.validate_email(data.get("email"))
+        if not valid:
+            return {"success": False, "errors": {"email": msg}}
 
         try:
-            user = UserRepository.create(data)
-            return {"success": True, "user": user}
-
+            # Usa o método create do BaseService
+            return super().create(data)
         except IntegrityError as e:
+            from app.extensions import db
             db.session.rollback()
             if isinstance(e.orig, UniqueViolation):
-                return {"success": False, "errors": {"email": "Já existe um usuário com este e-mail"}}
-            return {"success": False, "errors": {"general": "Erro de integridade no banco"}}
+                return {"success": False, "errors": {"email": "E-mail já cadastrado"}}
+            return {"success": False, "errors": {"general": "Erro no banco de dados"}}
 
-    @staticmethod
-    def list_users():
-        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
-            return UserRepository.get_by_tenant(g.current_user.tenant_id)
-        return UserRepository.get_all()
+    @classmethod
+    def list(cls):
+        # Filtra por tenant para não-admins
+        if g.current_user.role.value not in GLOBAL_ROLES:
+            users = cls.repository.get_by_tenant(g.current_user.tenant_id)
+            return {"success": True, "data": users}
 
-    @staticmethod
-    @enforce_plan_limits
-    def update_user(user_id, data):
-        user = UserRepository.get_by_id(user_id)
-        if not user:
-            raise Exception("Usuário não encontrado")
+        # Admins veem tudo
+        return super().list()
 
-        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
-            if str(user.tenant_id) != str(g.current_user.tenant_id):
-                raise Exception("Você não tem permissão para atualizar este usuário")
-            data["tenant_id"] = g.current_user.tenant_id
+    @classmethod
+    def update(cls, obj_id, data):
+        # Busca o usuário
+        obj = cls.repository.get_by_id(obj_id)
 
-        errors = {}
-        email_valid, email_error = UserService.validate_email(data.get("email"), user_id)
-        if not email_valid:
-            errors["email"] = email_error
+        if not obj:
+            return {
+                "success": False,
+                "errors": {"not_found": cls.not_found_message}
+            }
 
-        role_valid, role_error = UserService.validate_role(data.get("role"))
-        if not role_valid:
-            errors["role"] = role_error
+        # Verifica permissão para não-admins
+        if g.current_user.role.value not in GLOBAL_ROLES:
+            if str(obj.tenant_id) != str(g.current_user.tenant_id):
+                return {"success": False, "errors": {"permission": "Acesso negado"}}
 
-        tenant_valid, tenant_error = UserService.validate_tenant_id(data.get("tenant_id"))
-        if not tenant_valid:
-            errors["tenant_id"] = tenant_error
+        # Converte password para password_hash se necessário
+        if "password" in data:
+            from werkzeug.security import generate_password_hash
+            data["password_hash"] = generate_password_hash(data.pop("password"))
 
-        if errors:
-            return {"success": False, "errors": errors}
-
-        for key, value in data.items():
-            setattr(user, key, value)
-
-        UserRepository.save(user)
-        return {"success": True}
-
-    @staticmethod
-    def delete_user(user_id):
-        user = UserRepository.get_by_id(user_id)
-        if not user:
-            raise Exception("Usuário não encontrado")
-
-        if hasattr(g, "current_user") and g.current_user.role.value not in GLOBAL_ROLES:
-            if str(user.tenant_id) != str(g.current_user.tenant_id):
-                raise Exception("Você não tem permissão para deletar este usuário")
-
-        UserRepository.delete(user)
+        try:
+            # Usa o método update do BaseService
+            return super().update(obj_id, data)
+        except IntegrityError as e:
+            from app.extensions import db
+            db.session.rollback()
+            if isinstance(e.orig, UniqueViolation):
+                return {"success": False, "errors": {"email": "E-mail já cadastrado"}}
+            return {"success": False, "errors": {"general": "Erro no banco de dados"}}

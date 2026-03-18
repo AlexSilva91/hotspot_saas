@@ -1,17 +1,23 @@
-from flask import Blueprint, request, render_template, redirect, url_for, flash, session, g
+from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from flask_login import login_required
 from werkzeug.security import generate_password_hash
+from app.controller.base_controller import BaseController
 from app.services.user_service import UserService
 from app.services.tenant_service import TenantService
 
+
 user_bp = Blueprint("users", __name__)
+
 
 # LISTAR
 @user_bp.route("/users", methods=["GET"])
 @login_required
 def list_users():
-    users = UserService.list_users()
-    tenants = TenantService.list_tenants()
+    result = UserService.list()
+    users = result.get("data", [])
+    
+    tenants_result = TenantService.list()
+    tenants = tenants_result.get("data", [])
 
     form_data = session.pop("form_data", {})
     form_errors = session.pop("form_errors", {})
@@ -24,6 +30,7 @@ def list_users():
         form_errors=form_errors
     )
 
+
 # CRIAR
 @user_bp.route("/users/create", methods=["POST"])
 @login_required
@@ -35,12 +42,15 @@ def create_user():
     active = request.form.get("active", "true") == "true"
 
     errors = {}
-    if not email: errors["email"] = "E-mail é obrigatório"
-    if not password: errors["password"] = "Senha é obrigatória"
-    if not role: errors["role"] = "Função é obrigatória"
+    if not email:
+        errors["email"] = "E-mail é obrigatório"
+    if not password:
+        errors["password"] = "Senha é obrigatória"
+    if not role:
+        errors["role"] = "Função é obrigatória"
 
     if errors:
-        session["form_data"] = {"email": email, "role": role, "tenant_id": tenant_id}
+        session["form_data"] = {"email": email, "role": role, "tenant_id": tenant_id, "active": active}
         session["form_errors"] = errors
         flash("Por favor, corrija os erros no formulário", "error")
         return redirect(url_for("users.list_users"))
@@ -53,17 +63,16 @@ def create_user():
         "active": active
     }
 
-    result = UserService.create_user(data)
+    result = UserService.create(data)
 
-    if result["success"]:
-        flash("Usuário criado com sucesso!", "success")
-    else:
-        session["form_data"] = {"email": email, "role": role, "tenant_id": tenant_id}
-        session["form_errors"] = result.get("errors", {})
-        for msg in result.get("errors", {}).values():
-            flash(msg, "error")
+    return BaseController.handle_result(
+        result=result,
+        success_message="Usuário criado com sucesso!",
+        error_default="Erro ao criar usuário",
+        redirect_to="users.list_users",
+        form_data={"email": email, "role": role, "tenant_id": tenant_id, "active": active}
+    )
 
-    return redirect(url_for("users.list_users"))
 
 # ATUALIZAR
 @user_bp.route("/users/<uuid:user_id>/edit", methods=["POST"])
@@ -76,37 +85,45 @@ def update_user(user_id):
     active = request.form.get("active", "true") == "true"
 
     errors = {}
-    if not email: errors["email"] = "E-mail é obrigatório"
-    if not role: errors["role"] = "Função é obrigatória"
+    if not email:
+        errors["email"] = "E-mail é obrigatório"
+    if not role:
+        errors["role"] = "Função é obrigatória"
 
     if errors:
         for msg in errors.values():
             flash(msg, "error")
         return redirect(url_for("users.list_users"))
 
-    data = {"email": email, "role": role, "tenant_id": tenant_id, "active": active}
-    if password: data["password_hash"] = generate_password_hash(password)
+    data = {
+        "email": email, 
+        "role": role, 
+        "tenant_id": tenant_id, 
+        "active": active
+    }
+    
+    if password:
+        data["password_hash"] = generate_password_hash(password)
 
-    result = UserService.update_user(user_id, data)
+    result = UserService.update(user_id, data)
 
-    if result["success"]:
-        flash("Usuário atualizado com sucesso!", "success")
-    else:
-        for msg in result.get("errors", {}).values():
-            flash(msg, "error")
+    return BaseController.handle_result(
+        result=result,
+        success_message="Usuário atualizado com sucesso!",
+        error_default="Erro ao atualizar usuário",
+        redirect_to="users.list_users"
+    )
 
-    return redirect(url_for("users.list_users"))
 
 # DELETAR
 @user_bp.route("/users/<uuid:user_id>/delete", methods=["POST"])
 @login_required
 def delete_user(user_id):
-    result = UserService.delete_user(user_id)
+    result = UserService.delete(user_id)
 
-    if result.get("success", False):
-        flash("Usuário excluído com sucesso!", "success")
-    else:
-        for msg in result.get("errors", {}).values():
-            flash(msg, "error")
-
-    return redirect(url_for("users.list_users"))
+    return BaseController.handle_result(
+        result=result,
+        success_message="Usuário excluído com sucesso!",
+        error_default="Erro ao excluir usuário",
+        redirect_to="users.list_users"
+    )

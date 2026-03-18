@@ -1,52 +1,25 @@
+from app.services.base_service import BaseService
 from app.repositories.hotspot_user_repository import HotspotUserRepository
+from app.decorators.plan_limit import enforce_plan_limits
 
 
-class HotspotUserService:
+class HotspotUserService(BaseService):
+    repository = HotspotUserRepository
+    not_found_message = "Usuário hotspot não encontrado"
 
+    allowed_update_fields = [
+        "username",
+        "password",
+        "limit_uptime",
+        "rate_limit",
+        "router_id"
+    ]
 
-    @staticmethod
-    def create_user(data):
+    @classmethod
+    @enforce_plan_limits(resource="hotspot_user")
+    def create(cls, data):
+        return super().create(data)
 
-        return HotspotUserRepository.create(data)
-
-
-    @staticmethod
-    def list_users():
-
-        return HotspotUserRepository.get_all()
-
-
-    @staticmethod
-    def get_user(user_id):
-
-        user = HotspotUserRepository.get_by_id(user_id)
-
-        if not user:
-            raise Exception("Usuário hotspot não encontrado")
-
-        return user
-
-
-    @staticmethod
-    def update_user(user_id, data):
-
-        user = HotspotUserRepository.get_by_id(user_id)
-
-        if not user:
-            raise Exception("Usuário hotspot não encontrado")
-
-        for key, value in data.items():
-            setattr(user, key, value)
-
-        return HotspotUserRepository.save(user)
-
-
-    @staticmethod
-    def delete_user(user_id):
-
-        user = HotspotUserRepository.get_by_id(user_id)
-
-        if not user:
-            raise Exception("Usuário hotspot não encontrado")
-
-        HotspotUserRepository.delete(user)
+    @classmethod
+    def update(cls, obj_id, data):
+        return super().update(obj_id, data)

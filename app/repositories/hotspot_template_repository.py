@@ -1,35 +1,12 @@
 from app.models.hotspot_template import HotspotTemplate
-from app.extensions import db
+from app.repositories.base_repository import BaseRepository
 from app.middleware.tenant_middleware import tenant_filter
 
-class HotspotTemplateRepository:
+class HotspotTemplateRepository(BaseRepository):
+    model = HotspotTemplate
 
-    @staticmethod
-    def create(data):
-        template = HotspotTemplate(**data)
-        db.session.add(template)
-        db.session.commit()
-        return template
-
-    @staticmethod
-    def get_all():
-        query = HotspotTemplate.query
+    @classmethod
+    def get_all(cls):
+        query = cls.model.query
         query = tenant_filter(query)
         return query.all()
-
-    @staticmethod
-    def get_by_id(template_id):
-        query = HotspotTemplate.query.filter_by(id=template_id)
-        query = tenant_filter(query)
-        return query.first()
-
-    @staticmethod
-    def save(template):
-        db.session.add(template)
-        db.session.commit()
-        return template
-
-    @staticmethod
-    def delete(template):
-        db.session.delete(template)
-        db.session.commit()

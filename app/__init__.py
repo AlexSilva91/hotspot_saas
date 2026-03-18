@@ -29,7 +29,7 @@ from app.cli import register_cli
 # Utils
 from app.utils.logger import setup_logging
 from app.utils.error_handlers import register_error_handlers
-
+from app.middleware.routes_error_handlers_middleware import register_error_handlers_routes
 
 def create_app():
 
@@ -56,6 +56,7 @@ def create_app():
 
     # -------------------- ERROR HANDLERS --------------------
     register_error_handlers(app)
+    register_error_handlers_routes(app)
 
     # -------------------- BLUEPRINTS --------------------
     app.register_blueprint(auth_bp)
@@ -86,7 +87,6 @@ def create_app():
         Define variáveis globais da requisição.
         Muito útil para arquitetura multi-tenant.
         """
-
         g.current_user = None
         g.tenant_id = None
 
@@ -95,5 +95,5 @@ def create_app():
         if current_user.is_authenticated:
             g.current_user = current_user
             g.tenant_id = current_user.tenant_id
-
+            
     return app

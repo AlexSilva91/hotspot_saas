@@ -1,69 +1,40 @@
+from app.services.base_service import BaseService
 from app.repositories.plan_repository import PlanRepository
 from sqlalchemy.exc import IntegrityError
 
 
-class PlanService:
+class PlanService(BaseService):
+    repository = PlanRepository
+    not_found_message = "Plano não encontrado"
 
+    @classmethod
+    def delete(cls, obj_id):
+        obj = cls.repository.get_by_id(obj_id)
 
-    @staticmethod
-    def create_plan(data):
+        if not obj:
+            return {
+                "success": False,
+                "errors": {"not_found": cls.not_found_message}
+            }
 
-        return PlanRepository.create(data)
+        if obj.tenants and len(obj.tenants) > 0:
+            tenant_names = [t.name for t in obj.tenants]
 
-
-    @staticmethod
-    def list_plans():
-
-        return PlanRepository.get_all()
-
-
-    @staticmethod
-    def get_plan(plan_id):
-
-        plan = PlanRepository.get_by_id(plan_id)
-
-        if not plan:
-            raise Exception("Plano não encontrado")
-
-        return plan
-
-
-    @staticmethod
-    def update_plan(plan_id, data):
-
-        plan = PlanRepository.get_by_id(plan_id)
-
-        if not plan:
-            raise Exception("Plano não encontrado")
-
-        for key, value in data.items():
-            setattr(plan, key, value)
-
-        return PlanRepository.save(plan)
-
-
-    @staticmethod
-    def delete_plan(plan_id):
-
-        plan = PlanRepository.get_by_id(plan_id)
-
-        if not plan:
-            raise Exception("Plano não encontrado")
-
-        if plan.tenants and len(plan.tenants) > 0:
-
-            tenant_names = [tenant.name for tenant in plan.tenants]
-
-            raise Exception(
-                f"Não é possível excluir este plano pois está vinculado às seguintes empresas: {', '.join(tenant_names)}"
-            )
+            return {
+                "success": False,
+                "errors": {
+                    "general": f"Plano vinculado às empresas: {', '.join(tenant_names)}"
+                }
+            }
 
         try:
-
-            PlanRepository.delete(plan)
+            cls.repository.delete(obj)
+            return {"success": True}
 
         except IntegrityError:
-
-            raise Exception(
-                "Não é possível excluir este plano pois existem empresas vinculadas a ele"
-            )
+            return {
+                "success": False,
+                "errors": {
+                    "general": "Existem empresas vinculadas a este plano"
+                }
+            }
