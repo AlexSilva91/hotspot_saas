@@ -1,11 +1,27 @@
-from librouteros import connect
+import paramiko
 
-def connect_router(router):
+class MikroTikSSH:
+    def __init__(self, host, username, password, port=22):
+        self.host = host
+        self.username = username
+        self.password = password
+        self.port = port
 
-    api = connect(
-        host=router.ip_address,
-        username=router.username,
-        password=router.password
-    )
+    def connect(self):
+        self.client = paramiko.SSHClient()
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    return api
+        self.client.connect(
+            hostname=self.host,
+            port=self.port,
+            username=self.username,
+            password=self.password,
+            timeout=10
+        )
+
+    def run(self, command):
+        stdin, stdout, stderr = self.client.exec_command(command)
+        return stdout.read().decode(), stderr.read().decode()
+
+    def close(self):
+        self.client.close()
