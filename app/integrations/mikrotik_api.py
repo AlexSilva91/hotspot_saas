@@ -1,27 +1,40 @@
-import paramiko
+import asyncssh
+
 
 class MikroTikSSH:
-    def __init__(self, host, username, password, port=22):
+    def __init__(self, host, username, password, port=22, timeout=10):
         self.host = host
         self.username = username
         self.password = password
         self.port = port
+        self.timeout = timeout
+        self.conn = None
 
-    def connect(self):
-        self.client = paramiko.SSHClient()
-        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-        self.client.connect(
-            hostname=self.host,
+    async def connect(self):
+        self.conn = await asyncssh.connect(
+            self.host,
             port=self.port,
             username=self.username,
             password=self.password,
-            timeout=10
+            known_hosts=None,
+            login_timeout=self.timeout,
+            kex_algs=[
+                'diffie-hellman-group14-sha1',
+                'diffie-hellman-group1-sha1'
+            ],
+            encryption_algs=[
+                'aes128-ctr',
+                'aes192-ctr',
+                'aes256-ctr'
+            ],
+            server_host_key_algs=['ssh-rsa']
         )
 
-    def run(self, command):
-        stdin, stdout, stderr = self.client.exec_command(command)
-        return stdout.read().decode(), stderr.read().decode()
+    async def run(self, command):
+        result = await self.conn.run(command)
+        return result.stdout, result.stderr
 
-    def close(self):
-        self.client.close()
+    async def close(self):
+        if self.conn:
+            self.conn.close()
+            await self.conn.wait_closed()
