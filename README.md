@@ -77,6 +77,9 @@ Repositories ────────── Acesso ao banco de dados
 hotspot_saas
 ├── app
 │   ├── cli
+│   │   ├── radius
+│   │   │   ├── __init__.py
+│   │   │   └── radius_cli.py
 │   │   ├── __init__.py
 │   │   └── user_cli.py
 │   ├── controller
@@ -95,6 +98,11 @@ hotspot_saas
 │   │   ├── routes_error_handlers_middleware.py
 │   │   └── tenant_middleware.py
 │   ├── models
+│   │   ├── radius
+│   │   │   ├── __init__.py
+│   │   │   ├── radius_accounting.py
+│   │   │   ├── radius_reply.py
+│   │   │   └── radius_user.py
 │   │   ├── __init__.py
 │   │   ├── active_session.py
 │   │   ├── bypass_device.py
@@ -106,6 +114,11 @@ hotspot_saas
 │   │   ├── tenant.py
 │   │   └── user.py
 │   ├── repositories
+│   │   ├── radius
+│   │   │   ├── __init__.py
+│   │   │   ├── radius_accounting_repository.py
+│   │   │   ├── radius_reply_repository.py
+│   │   │   └── radius_user_repository.py
 │   │   ├── __init__.py
 │   │   ├── active_session_repository.py
 │   │   ├── base_repository.py
@@ -132,6 +145,11 @@ hotspot_saas
 │   │   ├── tenant_routes.py
 │   │   └── user_routes.py
 │   ├── services
+│   │   ├── radius
+│   │   │   ├── __init__.py
+│   │   │   ├── radius_accounting_service.py
+│   │   │   ├── radius_reply_service.py
+│   │   │   └── radius_user_service.py
 │   │   ├── __init__.py
 │   │   ├── active_session_service.py
 │   │   ├── auth_service.py
@@ -140,6 +158,7 @@ hotspot_saas
 │   │   ├── hotspot_template_service.py
 │   │   ├── hotspot_user_service.py
 │   │   ├── ip_pool_service.py
+│   │   ├── mikrotik_ssh_service.py
 │   │   ├── plan_service.py
 │   │   ├── router_service.py
 │   │   ├── tenant_service.py
@@ -218,11 +237,18 @@ hotspot_saas
 │   │   ├── __init__.py
 │   │   ├── error_handlers.py
 │   │   ├── filters.py
-│   │   └── logger.py
+│   │   ├── logger.py
+│   │   └── tenant_color.py
 │   ├── __init__.py
 │   ├── config.py
 │   └── extensions.py
 ├── logs
+├── scripts
+│   ├── check_env.py
+│   └── generate_keys.py
+├── tests
+│   ├── __init__.py
+│   └── connection_mk.py
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
