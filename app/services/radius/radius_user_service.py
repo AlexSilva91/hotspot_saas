@@ -1,9 +1,10 @@
-from flask import g
+from flask import g, current_app
 from app.services.base_service import BaseService
 from app.repositories.radius.radius_user_repository import RadiusUserRepository
 from app.repositories.radius.radius_reply_repository import RadiusReplyRepository
 from app.services.radius.radius_reply_service import RadiusReplyService
 from app.extensions import db
+
 
 class RadiusUserService(BaseService):
     repository = RadiusUserRepository
@@ -13,10 +14,6 @@ class RadiusUserService(BaseService):
     @classmethod
     def create(cls, data):
         """Cria um novo usuário no radcheck"""
-        # Garante tenant_id do contexto
-        if 'tenant_id' not in data or not data['tenant_id']:
-            data['tenant_id'] = g.current_user.tenant_id
-
         # Define valores padrão
         if 'attribute' not in data:
             data['attribute'] = 'Cleartext-Password'
@@ -26,16 +23,12 @@ class RadiusUserService(BaseService):
         return super().create(data)
 
     @classmethod
-    def create_with_rate_limit(cls, username, password, rate_limit=None, tenant_id=None):
+    def create_with_rate_limit(cls, username, password, rate_limit=None):
         """Cria usuário com senha e opcionalmente limite de banda"""
-        if not tenant_id:
-            tenant_id = g.current_user.tenant_id
-
         # Cria usuário
         user_result = cls.create({
             'username': username,
-            'value': password,
-            'tenant_id': tenant_id
+            'value': password
         })
 
         if not user_result['success']:
@@ -44,11 +37,14 @@ class RadiusUserService(BaseService):
         # Cria rate limit se especificado
         if rate_limit:
             rate_result = RadiusReplyService.create_or_update_rate_limit(
-                username, rate_limit, tenant_id
+                username, rate_limit
             )
             if not rate_result['success']:
-                # Rollback? Opcional
-                pass
+                # Em modo híbrido, loga o erro mas não falha
+                if current_app.config.get('HYBRID_MODE', True):
+                    current_app.logger.warning(
+                        f"RADIUS: erro ao criar rate limit para {username}: {rate_result.get('errors')}"
+                    )
 
         return user_result
 
@@ -71,3 +67,9 @@ class RadiusUserService(BaseService):
         # Remove user
         count = cls.repository.delete_by_username(username)
         return {"success": True, "deleted_count": count}
+
+    @classmethod
+    def get_user_rate_limit(cls, username):
+        """Retorna o rate limit do usuário se existir"""
+        rate_limit = RadiusReplyRepository.get_rate_limit(username)
+        return {"success": True, "data": rate_limit}

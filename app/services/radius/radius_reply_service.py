@@ -1,7 +1,8 @@
-from flask import g
+from flask import g, current_app
 from app.services.base_service import BaseService
 from app.repositories.radius.radius_reply_repository import RadiusReplyRepository
 from app.extensions import db
+
 
 class RadiusReplyService(BaseService):
     repository = RadiusReplyRepository
@@ -11,19 +12,14 @@ class RadiusReplyService(BaseService):
     @classmethod
     def create(cls, data):
         """Cria um novo atributo de resposta"""
-        if 'tenant_id' not in data or not data['tenant_id']:
-            data['tenant_id'] = g.current_user.tenant_id
         if 'op' not in data:
             data['op'] = ':='
 
         return super().create(data)
 
     @classmethod
-    def create_or_update_rate_limit(cls, username, rate_limit, tenant_id=None):
+    def create_or_update_rate_limit(cls, username, rate_limit):
         """Cria ou atualiza o rate limit de um usuário"""
-        if not tenant_id:
-            tenant_id = g.current_user.tenant_id
-
         existing = cls.repository.get_by_username_and_attribute(
             username, "Mikrotik-Rate-Limit"
         )
@@ -36,8 +32,7 @@ class RadiusReplyService(BaseService):
             return cls.create({
                 'username': username,
                 'attribute': 'Mikrotik-Rate-Limit',
-                'value': rate_limit,
-                'tenant_id': tenant_id
+                'value': rate_limit
             })
 
     @classmethod
@@ -45,3 +40,15 @@ class RadiusReplyService(BaseService):
         """Retorna todos os atributos de um usuário"""
         attributes = cls.repository.get_by_username(username)
         return {"success": True, "data": attributes}
+
+    @classmethod
+    def get_user_rate_limit(cls, username):
+        """Retorna apenas o rate limit do usuário"""
+        rate_limit = cls.repository.get_rate_limit(username)
+        return {"success": True, "data": rate_limit}
+
+    @classmethod
+    def delete_rate_limit(cls, username):
+        """Remove o rate limit de um usuário"""
+        deleted = cls.repository.delete_rate_limit(username)
+        return {"success": deleted, "data": {"deleted": deleted}}

@@ -24,6 +24,7 @@ from app.routes.bypass_device_routes import bypass_device_bp
 from app.routes.ip_pool_routes import ip_pool_bp
 from app.routes.active_session_routes import active_session_bp
 from app.routes.dashboard_routes import dashboard_bp
+from app.routes.radius.radius_stats_routes import radius_stats_bp
 from app.routes.error_test_routes import error_test_bp
 
 # CLI
@@ -94,6 +95,7 @@ def create_app():
     app.register_blueprint(bypass_device_bp)
     app.register_blueprint(ip_pool_bp)
     app.register_blueprint(active_session_bp)
+    app.register_blueprint(radius_stats_bp)
     app.register_blueprint(error_test_bp)  # blueprint apenas para testar erros
 
     # -------------------- JINJA FILTERS --------------------

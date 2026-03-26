@@ -15,17 +15,15 @@
 
         <label>Máx. Usuários Hotspot</label>
         <input type="number" name="max_hotspot_users" value="{{ plan.max_hotspot_users }}" min="1" required >
+        <div class="modal-footer">
+            <button type="button" class="button secondary" onclick="document.getElementById('edit_{{ plan.id }}').close()">
+                Cancelar
+            </button>
 
+            <button type="submit" class="button primary">
+                Salvar
+            </button>
+        </div>
     </form>
-    <div class="modal-footer">
-        <button type="button" class="button secondary" onclick="document.getElementById('edit_{{ plan.id }}').close()">
-            Cancelar
-        </button>
-
-        <button type="submit" class="button primary">
-            Salvar
-        </button>
-    </div>
-    
 
 </dialog>

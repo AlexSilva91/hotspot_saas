@@ -4,7 +4,7 @@ from app.middleware.tenant_middleware import tenant_filter
 from flask import has_request_context
 from datetime import datetime, timedelta
 from app.extensions import db
-from sqlalchemy import func
+from sqlalchemy import func, and_
 
 class RadiusAccountingRepository(BaseRepository):
     model = RadiusAccounting
@@ -31,6 +31,15 @@ class RadiusAccountingRepository(BaseRepository):
         ).order_by(RadiusAccounting.acctstarttime.desc())
         query = cls._apply_tenant_filter(query)
         return query.all()
+
+    @classmethod
+    def get_active_sessions_count(cls):
+        """Retorna número de sessões ativas"""
+        query = cls.model.query.filter(
+            RadiusAccounting.acctstoptime.is_(None)
+        )
+        query = cls._apply_tenant_filter(query)
+        return query.count()
 
     @classmethod
     def get_sessions_by_user(cls, username, limit=100):
@@ -68,9 +77,36 @@ class RadiusAccountingRepository(BaseRepository):
 
         return {
             'total_time': result.total_time or 0,
+            'total_time_hours': round((result.total_time or 0) / 3600, 2),
             'total_input': result.total_input or 0,
             'total_output': result.total_output or 0,
+            'total_traffic': (result.total_input or 0) + (result.total_output or 0),
+            'total_input_mb': round((result.total_input or 0) / (1024 * 1024), 2),
+            'total_output_mb': round((result.total_output or 0) / (1024 * 1024), 2),
+            'total_traffic_mb': round(((result.total_input or 0) + (result.total_output or 0)) / (1024 * 1024), 2),
             'session_count': result.session_count or 0
+        }
+
+    @classmethod
+    def get_today_traffic(cls):
+        """Retorna tráfego de hoje"""
+        today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        query = cls.model.query.filter(
+            RadiusAccounting.acctstarttime >= today
+        )
+        query = cls._apply_tenant_filter(query)
+        
+        result = query.with_entities(
+            func.sum(RadiusAccounting.acctinputoctets).label('input'),
+            func.sum(RadiusAccounting.acctoutputoctets).label('output')
+        ).first()
+        
+        return {
+            'input': result.input or 0,
+            'output': result.output or 0,
+            'input_mb': round((result.input or 0) / (1024 * 1024), 2),
+            'output_mb': round((result.output or 0) / (1024 * 1024), 2),
+            'total_mb': round(((result.input or 0) + (result.output or 0)) / (1024 * 1024), 2)
         }
 
     @classmethod
@@ -90,8 +126,10 @@ class RadiusAccountingRepository(BaseRepository):
         """Remove sessões mais antigas que X dias"""
         cutoff = datetime.now() - timedelta(days=days)
         query = cls.model.query.filter(
-            RadiusAccounting.acctstarttime < cutoff,
-            RadiusAccounting.acctstoptime.isnot(None)
+            and_(
+                RadiusAccounting.acctstarttime < cutoff,
+                RadiusAccounting.acctstoptime.isnot(None)
+            )
         )
         # Não aplica tenant_filter na limpeza para garantir que remove todas
         count = query.delete()
@@ -102,3 +140,13 @@ class RadiusAccountingRepository(BaseRepository):
     def get_all_by_tenant(cls, tenant_id):
         """Retorna todas as sessões de um tenant específico (usado em CLI)"""
         return cls.model.query.filter_by(tenant_id=tenant_id).all()
+
+    @classmethod
+    def get_user_current_session(cls, username):
+        """Retorna a sessão atual de um usuário se estiver online"""
+        return cls.model.query.filter(
+            and_(
+                RadiusAccounting.username == username,
+                RadiusAccounting.acctstoptime.is_(None)
+            )
+        ).first()

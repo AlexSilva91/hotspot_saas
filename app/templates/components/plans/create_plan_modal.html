@@ -1,9 +1,7 @@
 <dialog id="createPlan">
-
     <h3>Criar Plano</h3>
 
     <form method="POST" action="/plans/create">
-
         <label>Nome</label>
         <input type="text" name="name" required>
 
@@ -16,14 +14,12 @@
         <label>Máx. Usuários Hotspot</label>
         <input type="number" name="max_hotspot_users" min="1" required>
 
+        <div class="modal-footer">
+            <button type="button" class="button secondary"
+                        onclick="document.getElementById('createPlan').close()">
+                Cancelar
+            </button>
+            <button type="submit" class="button primary">Cadastrar</button>
+        </div>
     </form>
-    <div class="modal-footer">
-        <button type="button" class="button secondary"
-                    onclick="document.getElementById('createPlan').close()">
-            Cancelar
-        </button>
-        <button type="submit" class="button primary">Cadastrar</button>
-    </div>
-   
-
 </dialog>

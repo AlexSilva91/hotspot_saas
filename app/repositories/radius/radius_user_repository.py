@@ -1,8 +1,9 @@
 from app.models.radius.radius_user import RadiusUser
 from app.repositories.base_repository import BaseRepository
 from app.middleware.tenant_middleware import tenant_filter
-from flask import g, has_request_context
+from flask import has_request_context
 from app.extensions import db
+
 
 class RadiusUserRepository(BaseRepository):
     model = RadiusUser
@@ -16,9 +17,8 @@ class RadiusUserRepository(BaseRepository):
 
     @classmethod
     def get_by_username(cls, username):
-        """Busca um usuário RADIUS pelo nome, respeitando tenant apenas em contexto web"""
+        """Busca um usuário RADIUS pelo nome"""
         query = cls.model.query.filter_by(username=username)
-        query = cls._apply_tenant_filter(query)
         return query.first()
 
     @classmethod
@@ -28,33 +28,34 @@ class RadiusUserRepository(BaseRepository):
             username=username,
             attribute=attribute
         )
-        query = cls._apply_tenant_filter(query)
         return query.first()
 
     @classmethod
     def get_all(cls):
-        """Lista todos os usuários RADIUS com filtro de tenant apenas em contexto web"""
-        query = cls.model.query
-        query = cls._apply_tenant_filter(query)
-        return query.all()
-
-    @classmethod
-    def get_all_by_tenant(cls, tenant_id):
-        """Lista todos os usuários de um tenant específico (usado em CLI)"""
-        return cls.model.query.filter_by(tenant_id=tenant_id).all()
+        """Lista todos os usuários RADIUS"""
+        return cls.model.query.all()
 
     @classmethod
     def get_by_id(cls, obj_id):
-        """Busca por ID com filtro de tenant apenas em contexto web"""
-        query = cls.model.query.filter_by(id=obj_id)
-        query = cls._apply_tenant_filter(query)
-        return query.first()
+        """Busca por ID"""
+        return cls.model.query.filter_by(id=obj_id).first()
 
     @classmethod
     def delete_by_username(cls, username):
         """Remove todos os registros de um usuário"""
         query = cls.model.query.filter_by(username=username)
-        query = cls._apply_tenant_filter(query)
         count = query.delete()
         db.session.commit()
         return count
+
+    @classmethod
+    def get_user_with_rate_limit(cls, username):
+        """Retorna usuário com seu rate limit (se existir)"""
+        user = cls.get_by_username(username)
+        if user:
+            from app.repositories.radius.radius_reply_repository import RadiusReplyRepository
+            rate_limit = RadiusReplyRepository.get_by_username_and_attribute(
+                username, "Mikrotik-Rate-Limit"
+            )
+            return user, rate_limit
+        return None, None
