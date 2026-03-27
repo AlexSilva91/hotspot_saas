@@ -1,3 +1,5 @@
+# app/middleware/tenant_middleware.py
+
 from flask_login import current_user
 from app.models.user import UserRole
 from app.models.tenant import Tenant
@@ -30,14 +32,21 @@ def tenant_filter(query):
     # Caso especial: Plan → Tenant
     if entity.__name__ == "Plan":
         alias = aliased(Tenant)
-        # Join Plan -> Tenant via Tenant.plan_id, filtra pelo tenant atual
         return query.join(alias, alias.plan_id == entity.id).filter(alias.id == current_user.tenant_id)
+
+    # Para modelos RADIUS que usam username com prefixo
+    if hasattr(entity, "username") and entity.__name__ in ['RadiusUser', 'RadiusReply', 'RadiusAccounting', 'RadiusPostAuth']:
+        from app.services.radius.tenant_prefix_service import TenantPrefixService
+        like_pattern = TenantPrefixService.get_like_pattern(current_user.tenant_id)
+        if like_pattern:
+            return query.filter(entity.username.like(like_pattern))
+        return query.filter(False)
 
     # Verifica FKs relacionadas com tenant_id
     if hasattr(entity, "__mapper__"):
         for rel in entity.__mapper__.relationships.values():
             rel_class = rel.mapper.class_
-            if "tenant_id" in rel_class.__table__.columns.keys():
+            if hasattr(rel_class, "tenant_id"):
                 alias_name = f"{rel_class.__tablename__}_alias"
                 alias = aliased(rel_class, name=alias_name)
                 return query.join(alias).filter(alias.tenant_id == current_user.tenant_id)

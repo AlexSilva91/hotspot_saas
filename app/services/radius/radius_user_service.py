@@ -1,9 +1,12 @@
+# app/services/radius/radius_user_service.py
+
 from flask import g, current_app
 from app.services.base_service import BaseService
 from app.repositories.radius.radius_user_repository import RadiusUserRepository
 from app.repositories.radius.radius_reply_repository import RadiusReplyRepository
 from app.services.radius.radius_reply_service import RadiusReplyService
 from app.extensions import db
+from app.services.radius.tenant_prefix_service import TenantPrefixService
 
 
 class RadiusUserService(BaseService):
@@ -73,3 +76,24 @@ class RadiusUserService(BaseService):
         """Retorna o rate limit do usuário se existir"""
         rate_limit = RadiusReplyRepository.get_rate_limit(username)
         return {"success": True, "data": rate_limit}
+
+    @classmethod
+    def list(cls):
+        """Lista usuários com username limpo para exibição"""
+        result = super().list()
+        
+        if result['success']:
+            for user in result['data']:
+                user.display_username = TenantPrefixService.decode(user.username)
+        
+        return result
+    
+    @classmethod
+    def get(cls, obj_id):
+        """Retorna um usuário com username limpo"""
+        result = super().get(obj_id)
+        
+        if result['success'] and result['data']:
+            result['data'].display_username = TenantPrefixService.decode(result['data'].username)
+        
+        return result
