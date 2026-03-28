@@ -719,3 +719,189 @@ class MikroTikSSHService:
         for key, label in labels.items():
             print(f"\n{label}:")
             print(data.get(key, "(vazio)") or "(vazio)")
+            
+    # =========================================================================
+    # GERENCIAMENTO DE USUÁRIOS (BLOQUEIO/DESBLOQUEIO)
+    # =========================================================================
+    # =========================================================================
+    # HELPERS
+    # =========================================================================
+
+    async def _build_where(self, field, value, server="all"):
+        where = f'where {field}="{value}"'
+        if server != "all":
+            where += f' and server="{server}"'
+        return where
+
+
+    async def ensure_profile(self, rate_limit):
+        """
+        Garante que exista um profile com rate-limit
+        """
+        profile_name = f"profile_{rate_limit.replace('/', '_')}"
+
+        try:
+            cmd = f'/ip hotspot user profile add name="{profile_name}" rate-limit="{rate_limit}"'
+            await self.exec(cmd)
+        except:
+            pass  # já existe
+
+        return profile_name
+
+
+    # =========================================================================
+    # GERENCIAMENTO DE USUÁRIOS
+    # =========================================================================
+
+    async def disable_hotspot_user(self, username, server="all"):
+        try:
+            where = await self._build_where("name", username, server)
+            cmd = f'/ip hotspot user disable [find {where}]'
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao desabilitar usuário {username}: {e}")
+            return False
+
+
+    async def enable_hotspot_user(self, username, server="all"):
+        try:
+            where = await self._build_where("name", username, server)
+            cmd = f'/ip hotspot user enable [find {where}]'
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao habilitar usuário {username}: {e}")
+            return False
+
+
+    async def create_hotspot_user(self, username, password, server="all", profile=None):
+        try:
+            cmd = f'/ip hotspot user add name="{username}" password="{password}" server="{server}"'
+            if profile:
+                cmd += f' profile="{profile}"'
+
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao criar usuário {username}: {e}")
+            return False
+
+
+    # =========================================================================
+    # LIMPEZA / SESSÕES
+    # =========================================================================
+
+    async def remove_hotspot_cookie(self, username, server="all"):
+        try:
+            where = await self._build_where("user", username, server)
+            cmd = f'/ip hotspot cookie remove [find {where}]'
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao remover cookie do usuário {username}: {e}")
+            return False
+
+
+    async def remove_hotspot_host(self, username, server="all"):
+        try:
+            where = await self._build_where("user", username, server)
+            cmd = f'/ip hotspot host remove [find {where}]'
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao remover host do usuário {username}: {e}")
+            return False
+
+
+    async def remove_hotspot_active(self, username, server="all"):
+        try:
+            where = await self._build_where("user", username, server)
+            cmd = f'/ip hotspot active remove [find {where}]'
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao remover sessão ativa do usuário {username}: {e}")
+            return False
+
+
+    async def remove_hotspot_ip_binding(self, username, server="all"):
+        try:
+            where = f'where comment="{username}"'
+            cmd = f'/ip hotspot ip-binding remove [find {where}]'
+            await self.exec(cmd)
+            return True
+
+        except Exception as e:
+            print(f"Erro ao remover IP binding do usuário {username}: {e}")
+            return False
+
+
+    # =========================================================================
+    # RATE LIMIT (CORRETO VIA PROFILE)
+    # =========================================================================
+
+    async def set_user_rate_limit(self, username, rate_limit, server="all"):
+        """
+        Aplica rate-limit via profile (forma correta no hotspot)
+        """
+        try:
+            profile = await self.ensure_profile(rate_limit)
+            where = await self._build_where("name", username, server)
+
+            cmd = f'/ip hotspot user set [find {where}] profile="{profile}"'
+            await self.exec(cmd)
+
+            return True
+
+        except Exception as e:
+            print(f"Erro ao aplicar rate-limit no usuário {username}: {e}")
+            return False
+
+
+    # =========================================================================
+    # FLUXOS COMPLETOS
+    # =========================================================================
+
+    async def full_disconnect_hotspot_user(self, username, server="all"):
+        try:
+            await self.remove_hotspot_active(username, server)
+            await self.remove_hotspot_cookie(username, server)
+            await self.remove_hotspot_host(username, server)
+            await self.disable_hotspot_user(username, server)
+
+            return True
+
+        except Exception as e:
+            print(f"Erro ao desconectar usuário {username}: {e}")
+            return False
+
+
+    async def full_unblock_hotspot_user(
+        self,
+        username,
+        password,
+        server="all",
+        profile=None,
+        rate_limit=None
+    ):
+        try:
+            await self.enable_hotspot_user(username, server)
+
+            if not await self.exists("/ip hotspot user", f'name="{username}"'):
+                await self.create_hotspot_user(username, password, server, profile)
+
+            if rate_limit:
+                await self.set_user_rate_limit(username, rate_limit, server)
+
+            return True
+
+        except Exception as e:
+            print(f"Erro ao desbloquear usuário {username}: {e}")
+            return False

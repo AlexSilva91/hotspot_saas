@@ -1,4 +1,5 @@
 # app/middleware/tenant_middleware.py
+
 from flask_login import current_user
 from app.models.user import UserRole
 from app.models.tenant import Tenant
@@ -20,7 +21,7 @@ def tenant_filter(query):
 
     entity = query.column_descriptions[0]["entity"]
 
-    # PRIORIDADE 1: Entidade com tenant_id direto (RADIUS models agora têm)
+    # Entidade com tenant_id direto
     if hasattr(entity, "tenant_id"):
         return query.filter(entity.tenant_id == current_user.tenant_id)
 
@@ -32,14 +33,6 @@ def tenant_filter(query):
     if entity.__name__ == "Plan":
         alias = aliased(Tenant)
         return query.join(alias, alias.plan_id == entity.id).filter(alias.id == current_user.tenant_id)
-
-    # FALLBACK: Para modelos que ainda usam prefixo (durante migração)
-    if hasattr(entity, "username") and entity.__name__ in ['RadiusUser', 'RadiusReply', 'RadiusAccounting', 'RadiusPostAuth']:
-        from app.services.radius.tenant_prefix_service import TenantPrefixService
-        like_pattern = TenantPrefixService.get_like_pattern(current_user.tenant_id)
-        if like_pattern:
-            return query.filter(entity.username.like(like_pattern))
-        return query.filter(False)
 
     # Verifica FKs relacionadas com tenant_id
     if hasattr(entity, "__mapper__"):

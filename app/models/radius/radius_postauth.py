@@ -24,7 +24,7 @@ class RadiusPostAuth(db.Model):
     class_ = db.Column("class", db.Text)
     
     # NOVO: Campo tenant_id
-    tenant_id = db.Column(UUID(as_uuid=True), nullable=False)
+    tenant_id = db.Column(UUID(as_uuid=True), nullable=True)
 
     def to_dict(self):
         return {

@@ -4,7 +4,6 @@ from app.repositories.base_repository import BaseRepository
 from app.middleware.tenant_middleware import tenant_filter
 from flask import has_request_context, g
 from app.extensions import db
-from app.services.radius.tenant_prefix_service import TenantPrefixService
 
 
 class RadiusUserRepository(BaseRepository):
@@ -81,12 +80,9 @@ class RadiusUserRepository(BaseRepository):
         tenant_id = cls._get_tenant_id()
         if tenant_id:
             data['tenant_id'] = tenant_id
-        
-        # Opcional: manter prefixo para compatibilidade durante migração
-        if 'username' in data and tenant_id:
-            # Se ainda estiver em modo híbrido, adiciona prefixo
-            if not TenantPrefixService.SEPARATOR in data['username']:
-                data['username'] = TenantPrefixService.encode(data['username'], tenant_id)
+        elif 'tenant_id' not in data:
+            # Se não tem tenant_id em lugar nenhum, erro
+            raise ValueError("tenant_id é obrigatório para criar usuário RADIUS")
         
         return super().create(data)
 

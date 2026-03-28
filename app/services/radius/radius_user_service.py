@@ -1,18 +1,16 @@
 # app/services/radius/radius_user_service.py
-
 from flask import g, current_app
 from app.services.base_service import BaseService
 from app.repositories.radius.radius_user_repository import RadiusUserRepository
 from app.repositories.radius.radius_reply_repository import RadiusReplyRepository
 from app.services.radius.radius_reply_service import RadiusReplyService
 from app.extensions import db
-from app.services.radius.tenant_prefix_service import TenantPrefixService
 
 
 class RadiusUserService(BaseService):
     repository = RadiusUserRepository
     not_found_message = "Usuário RADIUS não encontrado"
-    allowed_update_fields = ["username", "value", "attribute", "op"]
+    allowed_update_fields = ["username", "value", "attribute", "op", "is_active"]
 
     @classmethod
     def create(cls, data):
@@ -22,17 +20,35 @@ class RadiusUserService(BaseService):
             data['attribute'] = 'Cleartext-Password'
         if 'op' not in data:
             data['op'] = ':='
+        if 'is_active' not in data:
+            data['is_active'] = True
 
         return super().create(data)
 
     @classmethod
-    def create_with_rate_limit(cls, username, password, rate_limit=None):
-        """Cria usuário com senha e opcionalmente limite de banda"""
-        # Cria usuário
-        user_result = cls.create({
+    def create_with_rate_limit(cls, username, password, rate_limit=None, tenant_id=None):
+        """Cria usuário com senha e opcionalmente limite de banda
+        
+        Args:
+            username: Nome do usuário
+            password: Senha
+            rate_limit: Limite de banda (opcional)
+            tenant_id: UUID do tenant (opcional, se não informado usa do contexto)
+        """
+        # Se não passou tenant_id, tenta pegar do contexto
+        if not tenant_id:
+            from flask import g
+            if hasattr(g, 'current_user') and g.current_user:
+                tenant_id = g.current_user.tenant_id
+        
+        # Cria usuário com tenant_id
+        user_data = {
             'username': username,
-            'value': password
-        })
+            'value': password,
+            'tenant_id': tenant_id
+        }
+        
+        user_result = cls.create(user_data)
 
         if not user_result['success']:
             return user_result
@@ -40,10 +56,9 @@ class RadiusUserService(BaseService):
         # Cria rate limit se especificado
         if rate_limit:
             rate_result = RadiusReplyService.create_or_update_rate_limit(
-                username, rate_limit
+                username, rate_limit, tenant_id
             )
             if not rate_result['success']:
-                # Em modo híbrido, loga o erro mas não falha
                 if current_app.config.get('HYBRID_MODE', True):
                     current_app.logger.warning(
                         f"RADIUS: erro ao criar rate limit para {username}: {rate_result.get('errors')}"
@@ -76,24 +91,3 @@ class RadiusUserService(BaseService):
         """Retorna o rate limit do usuário se existir"""
         rate_limit = RadiusReplyRepository.get_rate_limit(username)
         return {"success": True, "data": rate_limit}
-
-    @classmethod
-    def list(cls):
-        """Lista usuários com username limpo para exibição"""
-        result = super().list()
-        
-        if result['success']:
-            for user in result['data']:
-                user.display_username = TenantPrefixService.decode(user.username)
-        
-        return result
-    
-    @classmethod
-    def get(cls, obj_id):
-        """Retorna um usuário com username limpo"""
-        result = super().get(obj_id)
-        
-        if result['success'] and result['data']:
-            result['data'].display_username = TenantPrefixService.decode(result['data'].username)
-        
-        return result

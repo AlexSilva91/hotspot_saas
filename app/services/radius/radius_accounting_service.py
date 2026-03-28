@@ -4,7 +4,6 @@ from flask import g, current_app
 from app.services.base_service import BaseService
 from app.repositories.radius.radius_accounting_repository import RadiusAccountingRepository
 from datetime import datetime, timedelta
-from app.services.radius.tenant_prefix_service import TenantPrefixService
 
 
 class RadiusAccountingService(BaseService):
@@ -12,17 +11,9 @@ class RadiusAccountingService(BaseService):
     not_found_message = "Sessão não encontrada"
 
     @classmethod
-    def _enrich_sessions(cls, sessions):
-        """Adiciona display_username a cada sessão"""
-        for session in sessions:
-            session.display_username = TenantPrefixService.decode(session.username)
-        return sessions
-
-    @classmethod
     def get_active_sessions(cls):
-        """Retorna sessões ativas com informações enriquecidas"""
+        """Retorna sessões ativas"""
         sessions = cls.repository.get_active_sessions()
-        cls._enrich_sessions(sessions)
         return {"success": True, "data": sessions}
 
     @classmethod
@@ -35,7 +26,6 @@ class RadiusAccountingService(BaseService):
     def get_user_history(cls, username, limit=100):
         """Retorna histórico de sessões de um usuário"""
         sessions = cls.repository.get_sessions_by_user(username, limit)
-        cls._enrich_sessions(sessions)
         return {"success": True, "data": sessions}
 
     @classmethod
@@ -61,8 +51,6 @@ class RadiusAccountingService(BaseService):
         active_sessions = cls.repository.get_active_sessions()
         today_traffic = cls.repository.get_today_traffic()
         active_count = cls.repository.get_active_sessions_count()
-        
-        cls._enrich_sessions(active_sessions)
 
         return {
             "success": True,
@@ -77,8 +65,6 @@ class RadiusAccountingService(BaseService):
     def get_user_current_session(cls, username):
         """Retorna a sessão atual de um usuário"""
         session = cls.repository.get_user_current_session(username)
-        if session:
-            session.display_username = TenantPrefixService.decode(session.username)
         return {"success": True, "data": session}
 
     @classmethod

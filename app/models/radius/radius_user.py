@@ -21,7 +21,7 @@ class RadiusUser(db.Model):
     value = db.Column(db.Text, nullable=False, server_default=text("''"))
     
     # NOVO: Campo tenant_id para isolamento multi-tenant
-    tenant_id = db.Column(UUID(as_uuid=True), nullable=False)
+    tenant_id = db.Column(UUID(as_uuid=True), nullable=True)
     
     # Campos de auditoria
     is_active = db.Column(db.Boolean, default=True, nullable=False)

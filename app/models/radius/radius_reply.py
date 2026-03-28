@@ -19,7 +19,7 @@ class RadiusReply(db.Model):
     op = db.Column(db.String(2), nullable=False, server_default=text("'='::character varying"))
     value = db.Column(db.Text, nullable=False, server_default=text("''"))
     
-    tenant_id = db.Column(UUID(as_uuid=True), nullable=False)
+    tenant_id = db.Column(UUID(as_uuid=True), nullable=True)
     
     created_at = db.Column(db.DateTime, server_default=db.func.now())
 
