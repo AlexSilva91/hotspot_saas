@@ -1,5 +1,6 @@
+# app/models/radius/radius_accounting.py
 from app.extensions import db
-from sqlalchemy.dialects.postgresql import INET
+from sqlalchemy.dialects.postgresql import INET, UUID
 from sqlalchemy import Index, text
 
 class RadiusAccounting(db.Model):
@@ -12,6 +13,9 @@ class RadiusAccounting(db.Model):
               postgresql_where=text("acctstoptime IS NULL")),
         Index("radacct_calss_idx", "class"),
         Index("radacct_start_user_idx", "acctstarttime", "username"),
+        Index("idx_radacct_tenant", "tenant_id"),
+        Index("idx_radacct_tenant_active", "tenant_id", 
+              postgresql_where=text("acctstoptime IS NULL")),
         {"extend_existing": True},
     )
 
@@ -44,28 +48,21 @@ class RadiusAccounting(db.Model):
     framedinterfaceid = db.Column(db.Text)
     delegatedipv6prefix = db.Column(INET)
     class_ = db.Column("class", db.Text)
+    
+    # NOVO: Campo tenant_id
+    tenant_id = db.Column(UUID(as_uuid=True), nullable=False)
 
     @property
     def is_active(self):
-        """Retorna True se a sessão ainda está ativa"""
         return self.acctstoptime is None
 
     @property
     def total_octets(self):
-        """Total de bytes transferidos (download + upload)"""
         return (self.acctinputoctets or 0) + (self.acctoutputoctets or 0)
 
     @property
     def total_mb(self):
-        """Total de MB transferidos"""
         return self.total_octets / (1024 * 1024)
-
-    @property
-    def session_time_hours(self):
-        """Tempo de sessão em horas"""
-        if self.acctsessiontime:
-            return round(self.acctsessiontime / 3600, 2)
-        return 0
 
     def to_dict(self):
         return {
@@ -85,7 +82,6 @@ class RadiusAccounting(db.Model):
             'acctterminatecause': self.acctterminatecause,
             'is_active': self.is_active,
             'total_mb': self.total_mb,
-            'session_time_hours': self.session_time_hours,
             'tenant_id': str(self.tenant_id) if self.tenant_id else None
         }
 

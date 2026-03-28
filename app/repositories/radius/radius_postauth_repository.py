@@ -2,7 +2,7 @@ from app.models.radius.radius_postauth import RadiusPostAuth
 from app.repositories.base_repository import BaseRepository
 from app.middleware.tenant_middleware import tenant_filter
 from flask import has_request_context
-from datetime import datetime
+from datetime import datetime, timedelta
 from app.extensions import db
 
 class RadiusPostAuthRepository(BaseRepository):

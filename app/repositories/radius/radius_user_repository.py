@@ -1,5 +1,4 @@
 # app/repositories/radius/radius_user_repository.py
-
 from app.models.radius.radius_user import RadiusUser
 from app.repositories.base_repository import BaseRepository
 from app.middleware.tenant_middleware import tenant_filter
@@ -13,48 +12,61 @@ class RadiusUserRepository(BaseRepository):
 
     @classmethod
     def _apply_tenant_filter(cls, query):
-        """Aplica filtro de tenant apenas se estiver em contexto de requisição"""
+        """Aplica filtro de tenant"""
         if has_request_context():
             return tenant_filter(query)
         return query
 
     @classmethod
-    def _encode_username(cls, username):
-        """Adiciona prefixo ao username se necessário (apenas para não-admin)"""
+    def _get_tenant_id(cls):
+        """Retorna tenant_id do usuário logado"""
         if has_request_context() and hasattr(g, 'current_user') and g.current_user:
-            if g.current_user.role.value not in ["ADMIN", "MANAGER"]:
-                if TenantPrefixService.SEPARATOR not in username:
-                    return TenantPrefixService.encode(username)
-        return username
+            return g.current_user.tenant_id
+        return None
 
     @classmethod
     def get_by_username(cls, username):
-        """Busca um usuário RADIUS pelo nome"""
-        username = cls._encode_username(username)
-        query = cls.model.query.filter_by(username=username)
-        return query.first()
+        """Busca um usuário RADIUS pelo nome (considerando tenant)"""
+        tenant_id = cls._get_tenant_id()
+        
+        if tenant_id:
+            # Busca direta com tenant_id (MAIS RÁPIDO)
+            return cls.model.query.filter_by(
+                username=username,
+                tenant_id=tenant_id
+            ).first()
+        
+        # Fallback: busca sem tenant (CLI)
+        return cls.model.query.filter_by(username=username).first()
 
     @classmethod
     def get_by_username_and_attribute(cls, username, attribute):
         """Busca por username e attribute específico"""
-        username = cls._encode_username(username)
+        tenant_id = cls._get_tenant_id()
+        
         query = cls.model.query.filter_by(
             username=username,
             attribute=attribute
         )
+        
+        if tenant_id:
+            query = query.filter_by(tenant_id=tenant_id)
+        
         return query.first()
 
     @classmethod
     def get_all(cls):
-        """Lista todos os usuários RADIUS"""
+        """Lista todos os usuários RADIUS do tenant"""
         query = cls.model.query
         query = cls._apply_tenant_filter(query)
         return query.all()
 
     @classmethod
-    def get_by_id(cls, obj_id):
-        """Busca por ID"""
-        return cls.model.query.filter_by(id=obj_id).first()
+    def get_active_users(cls):
+        """Lista apenas usuários ativos"""
+        query = cls.model.query.filter_by(is_active=True)
+        query = cls._apply_tenant_filter(query)
+        return query.all()
 
     @classmethod
     def create(cls, data):
@@ -65,33 +77,56 @@ class RadiusUserRepository(BaseRepository):
         if 'op' not in data:
             data['op'] = ':='
         
-        username = data.get('username')
+        # Adiciona tenant_id automaticamente
+        tenant_id = cls._get_tenant_id()
+        if tenant_id:
+            data['tenant_id'] = tenant_id
         
-        # Adiciona prefixo se necessário
-        if has_request_context() and hasattr(g, 'current_user') and g.current_user:
-            if g.current_user.role.value not in ["ADMIN", "MANAGER"]:
-                if TenantPrefixService.SEPARATOR not in username:
-                    data['username'] = TenantPrefixService.encode(username)
+        # Opcional: manter prefixo para compatibilidade durante migração
+        if 'username' in data and tenant_id:
+            # Se ainda estiver em modo híbrido, adiciona prefixo
+            if not TenantPrefixService.SEPARATOR in data['username']:
+                data['username'] = TenantPrefixService.encode(data['username'], tenant_id)
         
         return super().create(data)
 
     @classmethod
+    def update_active_status(cls, username, is_active):
+        """Atualiza status ativo/inativo do usuário"""
+        user = cls.get_by_username(username)
+        if user:
+            user.is_active = is_active
+            db.session.commit()
+            return user
+        return None
+
+    @classmethod
+    def block_user(cls, username):
+        """Bloqueia um usuário"""
+        return cls.update_active_status(username, False)
+
+    @classmethod
+    def unblock_user(cls, username):
+        """Desbloqueia um usuário"""
+        return cls.update_active_status(username, True)
+
+    @classmethod
     def delete_by_username(cls, username):
         """Remove todos os registros de um usuário"""
-        username = cls._encode_username(username)
+        tenant_id = cls._get_tenant_id()
+        
         query = cls.model.query.filter_by(username=username)
+        if tenant_id:
+            query = query.filter_by(tenant_id=tenant_id)
+        
         count = query.delete()
         db.session.commit()
         return count
 
     @classmethod
-    def get_user_with_rate_limit(cls, username):
-        """Retorna usuário com seu rate limit (se existir)"""
-        user = cls.get_by_username(username)
-        if user:
-            from app.repositories.radius.radius_reply_repository import RadiusReplyRepository
-            rate_limit = RadiusReplyRepository.get_by_username_and_attribute(
-                username, "Mikrotik-Rate-Limit"
-            )
-            return user, rate_limit
-        return None, None
+    def count_by_tenant(cls):
+        """Conta usuários do tenant atual"""
+        tenant_id = cls._get_tenant_id()
+        if tenant_id:
+            return cls.model.query.filter_by(tenant_id=tenant_id).count()
+        return cls.model.query.count()

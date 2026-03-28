@@ -1,5 +1,7 @@
+# app/models/radius/radius_postauth.py
 from app.extensions import db
 from sqlalchemy import Index, text
+from sqlalchemy.dialects.postgresql import UUID
 
 class RadiusPostAuth(db.Model):
     """Model para tabela radpostauth - Log de autenticações RADIUS"""
@@ -7,6 +9,8 @@ class RadiusPostAuth(db.Model):
     __table_args__ = (
         Index("radpostauth_username_idx", "username"),
         Index("radpostauth_class_idx", "class"),
+        Index("idx_radpostauth_tenant", "tenant_id"),
+        Index("idx_radpostauth_tenant_authdate", "tenant_id", "authdate"),
         {"extend_existing": True},
     )
 
@@ -18,6 +22,9 @@ class RadiusPostAuth(db.Model):
     callingstationid = db.Column(db.Text)
     authdate = db.Column(db.DateTime(timezone=True), nullable=False, server_default=text("now()"))
     class_ = db.Column("class", db.Text)
+    
+    # NOVO: Campo tenant_id
+    tenant_id = db.Column(UUID(as_uuid=True), nullable=False)
 
     def to_dict(self):
         return {
