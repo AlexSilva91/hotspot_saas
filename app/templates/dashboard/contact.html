@@ -1,0 +1,1020 @@
+{# app/templates/dashboard/contact.html #}
+{% extends "base.html" %}
+
+{% block title %}SOLVEON | Fale Conosco{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== CONTACT PAGE — SOLVEON ===== */
+
+.contact-wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 1rem 5rem;
+}
+
+/* ---------- HEADER ---------- */
+.contact-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+}
+
+.contact-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(0,168,232,0.3);
+}
+
+.contact-headline {
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--metal-light) 0%, var(--neon-cyan) 60%, var(--neon-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.contact-sub {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+/* ---------- LAYOUT GRID ---------- */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2.5rem;
+    align-items: start;
+}
+
+/* ---------- FORM CARD ---------- */
+.contact-form-card {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 1px solid var(--border-neon);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    max-width: none;
+    margin: 0;
+    backdrop-filter: blur(12px);
+}
+
+.contact-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan), var(--neon-blue));
+    animation: scanTop 4s ease-in-out infinite;
+}
+
+@keyframes scanTop {
+    0%,100% { opacity: 0.6; }
+    50%      { opacity: 1; box-shadow: 0 0 12px var(--neon-cyan); }
+}
+
+/* Override global form resets inside card */
+.contact-form-card form {
+    all: unset;
+    display: block;
+    width: 100%;
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+}
+
+.contact-form-card form div { margin-bottom: 0; }
+
+.cf-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.cf-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,168,232,0.4), transparent);
+}
+
+/* Selected Plan Badge */
+.selected-plan-badge {
+    background: rgba(0,168,232,0.15);
+    border: 1px solid var(--neon-cyan);
+    border-radius: var(--radius-md);
+    padding: 0.85rem 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--neon-cyan);
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selected-plan-badge strong {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #FFFFFF;
+}
+
+/* Field groups */
+.cf-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.cf-field {}
+
+.cf-label {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.5rem;
+    font-family: 'Rajdhani', var(--font-sans);
+}
+
+.cf-label span {
+    color: var(--accent-danger);
+    margin-left: 2px;
+}
+
+/* Input wrapper with icon */
+.cf-input-wrap {
+    position: relative;
+}
+
+.cf-input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+}
+
+.cf-input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    background: rgba(6,14,26,0.7);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    font-family: var(--font-sans);
+    transition: all 0.25s ease;
+    outline: none;
+}
+
+.cf-input:focus {
+    border-color: var(--neon-blue);
+    background: rgba(10,22,40,0.9);
+    box-shadow: 0 0 0 2px rgba(0,168,232,0.12), 0 0 16px rgba(0,168,232,0.12);
+}
+
+.cf-input:hover {
+    border-color: rgba(0,168,232,0.4);
+}
+
+.cf-input::placeholder { color: var(--text-muted); }
+
+/* Prefix labels (for phone numbers) */
+.cf-prefix {
+    position: absolute;
+    left: 2.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    pointer-events: none;
+    font-family: 'Share Tech Mono', monospace;
+}
+
+.cf-input.has-prefix { padding-left: 5.5rem; }
+
+/* Textarea */
+.cf-textarea {
+    width: 100%;
+    padding: 0.9rem 1rem 0.9rem 2.8rem;
+    background: rgba(6,14,26,0.7);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    font-family: var(--font-sans);
+    transition: all 0.25s ease;
+    outline: none;
+    resize: vertical;
+    min-height: 130px;
+    line-height: 1.6;
+}
+
+.cf-textarea:focus {
+    border-color: var(--neon-blue);
+    background: rgba(10,22,40,0.9);
+    box-shadow: 0 0 0 2px rgba(0,168,232,0.12), 0 0 16px rgba(0,168,232,0.12);
+}
+
+.cf-textarea:hover { border-color: rgba(0,168,232,0.4); }
+
+.cf-textarea::placeholder { color: var(--text-muted); }
+
+.cf-textarea-icon {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Char counter */
+.cf-char-counter {
+    display: block;
+    text-align: right;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 0.35rem;
+    font-family: 'Share Tech Mono', monospace;
+    transition: color 0.2s;
+}
+
+.cf-char-counter.near { color: var(--accent-warning); }
+.cf-char-counter.over { color: var(--accent-danger); }
+
+/* Divider */
+.cf-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-neon), transparent);
+    margin: 0.5rem 0 1.25rem;
+}
+
+/* Submit button */
+.cf-submit {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 25px rgba(37,211,102,0.3);
+    position: relative;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.cf-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.cf-submit:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 45px rgba(37,211,102,0.55);
+}
+
+.cf-submit:hover::before { opacity: 1; }
+
+.cf-submit:active { transform: translateY(-1px); }
+
+.cf-submit-icon { font-size: 1.3rem; }
+
+.cf-note {
+    text-align: center;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    margin-top: 0.85rem;
+    line-height: 1.5;
+}
+
+/* ---------- SIDEBAR ---------- */
+.contact-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Info card */
+.cs-card {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.cs-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.cs-card:hover {
+    border-color: rgba(0,168,232,0.3);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 20px rgba(0,168,232,0.08);
+    transform: translateY(-3px);
+}
+
+.cs-card:hover::after { transform: scaleX(1); }
+
+.cs-card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(0,212,255,0.3));
+}
+
+.cs-card-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.35rem;
+    font-family: 'Rajdhani', var(--font-sans);
+}
+
+.cs-card-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.cs-card-desc {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+/* WhatsApp card especial */
+.cs-card.is-wa {
+    border-color: rgba(37,211,102,0.25);
+    background: linear-gradient(135deg, rgba(37,211,102,0.05), var(--bg-tertiary));
+}
+
+.cs-card.is-wa:hover {
+    border-color: rgba(37,211,102,0.5);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4), 0 0 20px rgba(37,211,102,0.12);
+}
+
+.cs-card.is-wa::after {
+    background: linear-gradient(90deg, #25D366, #128C7E);
+}
+
+/* Horário card */
+.cs-hours {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem;
+}
+
+.cs-hours-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 1rem;
+    font-family: 'Rajdhani', var(--font-sans);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cs-hour-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(26,58,90,0.5);
+    font-size: 0.82rem;
+}
+
+.cs-hour-row:last-child { border-bottom: none; }
+
+.cs-hour-day { color: var(--text-muted); font-weight: 500; }
+
+.cs-hour-time { color: var(--text-primary); font-weight: 600; font-family: 'Share Tech Mono', monospace; font-size: 0.78rem; }
+
+.cs-hour-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cs-hour-badge.online { background: rgba(13,158,106,0.2); color: #00FFB3; border: 1px solid rgba(13,158,106,0.3); }
+.cs-hour-badge.offline { background: rgba(74,106,138,0.2); color: var(--text-muted); border: 1px solid rgba(74,106,138,0.3); }
+
+/* Status online indicator */
+.cs-online-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #00FFB3;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-primary);
+}
+
+.cs-online-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #00FFB3;
+    box-shadow: 0 0 8px #00FFB3;
+    animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+    0%,100% { box-shadow: 0 0 8px #00FFB3; }
+    50%      { box-shadow: 0 0 18px #00FFB3, 0 0 30px rgba(0,255,179,0.3); }
+}
+
+/* ---------- ERROR STATE ---------- */
+.cf-error-msg {
+    font-size: 0.72rem;
+    color: #F4A49D;
+    margin-top: 0.35rem;
+    display: none;
+    font-weight: 600;
+}
+
+.cf-input.has-error,
+.cf-textarea.has-error {
+    border-color: rgba(192,57,43,0.6);
+    box-shadow: 0 0 0 2px rgba(192,57,43,0.1);
+}
+
+.cf-input.has-error:focus,
+.cf-textarea.has-error:focus {
+    border-color: rgba(192,57,43,0.8);
+    box-shadow: 0 0 0 2px rgba(192,57,43,0.15);
+}
+
+/* ---------- SUCCESS TOAST ---------- */
+.cf-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, rgba(13,158,106,0.15), rgba(13,158,106,0.08));
+    border: 1px solid rgba(13,158,106,0.4);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: #6EDBB4;
+    font-weight: 600;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(13,158,106,0.1);
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cf-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.cf-toast-icon { font-size: 1.3rem; }
+
+/* Plan name styles */
+.plan-name-starter { color: #6EDBB4; }
+.plan-name-pro { color: var(--neon-cyan); }
+.plan-name-enterprise { color: #FFB347; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 800px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    .contact-sidebar {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    .cs-hours { grid-column: 1 / -1; }
+}
+
+@media (max-width: 500px) {
+    .contact-sidebar {
+        grid-template-columns: 1fr;
+    }
+    .contact-form-card { padding: 1.5rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contact-wrap">
+
+    <!-- Header -->
+    <div class="contact-header">
+        <span class="contact-tag">Entre em contato</span>
+        <h1 class="contact-headline">Vamos conversar?</h1>
+        <p class="contact-sub">
+            Preencha o formulário e nossa equipe entra em contato pelo WhatsApp em até <strong style="color:var(--neon-cyan)">1 hora útil</strong>.
+        </p>
+    </div>
+
+    <div class="contact-grid">
+
+        <!-- ===== FORM ===== -->
+        <div class="contact-form-card">
+            <div class="cf-title">📋 Seu contato</div>
+            
+            <!-- Plano selecionado será exibido aqui -->
+            <div id="selectedPlanBadge" class="selected-plan-badge" style="display: none;">
+                <span>🎯 Plano de interesse: </span>
+                <strong id="selectedPlanName"></strong>
+            </div>
+
+            <form id="contactForm" novalidate>
+
+                <div class="cf-fields">
+
+                    <!-- Nome -->
+                    <div class="cf-field">
+                        <label class="cf-label" for="cf-name">Nome completo <span>*</span></label>
+                        <div class="cf-input-wrap">
+                            <span class="cf-input-icon">👤</span>
+                            <input
+                                class="cf-input"
+                                type="text"
+                                id="cf-name"
+                                name="name"
+                                placeholder="Seu nome"
+                                autocomplete="off"
+                            />
+                        </div>
+                        <span class="cf-error-msg" id="err-name">Por favor, informe seu nome.</span>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div class="cf-field">
+                        <label class="cf-label" for="cf-whatsapp">WhatsApp <span>*</span></label>
+                        <div class="cf-input-wrap">
+                            <span class="cf-input-icon">📱</span>
+                            <span class="cf-prefix">+55</span>
+                            <input
+                                class="cf-input has-prefix"
+                                type="tel"
+                                id="cf-whatsapp"
+                                name="whatsapp"
+                                placeholder="(81) 99999-9999"
+                                maxlength="16"
+                                inputmode="numeric"
+                                autocomplete="off"
+                            />
+                        </div>
+                        <span class="cf-error-msg" id="err-whatsapp">Informe um número de WhatsApp válido.</span>
+                    </div>
+
+                    <!-- E-mail -->
+                    <div class="cf-field">
+                        <label class="cf-label" for="cf-email">E-mail</label>
+                        <div class="cf-input-wrap">
+                            <span class="cf-input-icon">✉️</span>
+                            <input
+                                class="cf-input"
+                                type="email"
+                                id="cf-email"
+                                name="email"
+                                placeholder="seu@email.com"
+                                autocomplete="off"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Instagram -->
+                    <div class="cf-field">
+                        <label class="cf-label" for="cf-instagram">Instagram</label>
+                        <div class="cf-input-wrap">
+                            <span class="cf-input-icon">📸</span>
+                            <span class="cf-prefix">@</span>
+                            <input
+                                class="cf-input has-prefix"
+                                type="text"
+                                id="cf-instagram"
+                                name="instagram"
+                                placeholder="seuperfil"
+                                autocomplete="off"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Campo oculto para o plano selecionado -->
+                    <input type="hidden" id="selectedPlan" name="selected_plan" value="">
+
+                    <div class="cf-divider"></div>
+
+                    <!-- Mensagem -->
+                    <div class="cf-field">
+                        <label class="cf-label" for="cf-message">O que você precisa? <span>*</span></label>
+                        <div class="cf-input-wrap">
+                            <span class="cf-textarea-icon">💬</span>
+                            <textarea
+                                class="cf-textarea"
+                                id="cf-message"
+                                name="message"
+                                placeholder="Descreva como podemos te ajudar: número de roteadores, localização, tipo de negócio, dúvidas sobre planos..."
+                                maxlength="600"
+                            ></textarea>
+                        </div>
+                        <span class="cf-char-counter" id="char-counter">0 / 600 caracteres</span>
+                        <span class="cf-error-msg" id="err-message">Por favor, descreva o que você precisa.</span>
+                    </div>
+
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="cf-submit" id="submitBtn">
+                    <span class="cf-submit-icon">💬</span>
+                    Enviar pelo WhatsApp
+                </button>
+
+                <p class="cf-note">
+                    Ao clicar, você será redirecionado para o WhatsApp com<br>
+                    sua mensagem já preenchida e pronta para enviar.
+                </p>
+
+            </form>
+        </div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <div class="contact-sidebar">
+
+            <!-- WhatsApp -->
+            <div class="cs-card is-wa">
+                <span class="cs-card-icon">💬</span>
+                <div class="cs-card-title">WhatsApp</div>
+                <div class="cs-card-value">+55 (87) 9 8146-9865</div>
+                <div class="cs-card-desc">Atendimento rápido e personalizado. Resposta em até 1 hora útil.</div>
+            </div>
+
+            <!-- E-mail -->
+            <div class="cs-card">
+                <span class="cs-card-icon">✉️</span>
+                <div class="cs-card-title">E-mail</div>
+                <div class="cs-card-value">contato@solveon.com.br</div>
+                <div class="cs-card-desc">Para propostas comerciais e dúvidas técnicas detalhadas.</div>
+            </div>
+
+            <!-- Instagram -->
+            <div class="cs-card">
+                <span class="cs-card-icon">📸</span>
+                <div class="cs-card-title">Instagram</div>
+                <div class="cs-card-value">@solveon.tech</div>
+                <div class="cs-card-desc">Acompanhe novidades, cases e dicas de gestão de redes.</div>
+            </div>
+
+            <!-- Horários -->
+            <div class="cs-hours">
+                <div class="cs-hours-title">🕐 Horário de atendimento</div>
+                <div class="cs-hour-row">
+                    <span class="cs-hour-day">Segunda – Sexta</span>
+                    <span class="cs-hour-time">08h – 18h</span>
+                    <span class="cs-hour-badge online">Online</span>
+                </div>
+                <div class="cs-hour-row">
+                    <span class="cs-hour-day">Sábado</span>
+                    <span class="cs-hour-time">08h – 12h</span>
+                    <span class="cs-hour-badge online">Online</span>
+                </div>
+                <div class="cs-hour-row">
+                    <span class="cs-hour-day">Domingo</span>
+                    <span class="cs-hour-time">—</span>
+                    <span class="cs-hour-badge offline">Offline</span>
+                </div>
+                <div class="cs-online-status">
+                    <span class="cs-online-dot"></span>
+                    <span id="onlineStatusText">Verificando disponibilidade...</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="cf-toast" id="toast">
+    <span class="cf-toast-icon">✓</span>
+    <span id="toastMsg">Redirecionando para o WhatsApp...</span>
+</div>
+
+<script>
+(function () {
+    /* ===== WHATSAPP NUMBER ===== */
+    const WA_NUMBER = '5587981469865';
+
+    /* ===== GET PLAN FROM URL OR LOCALSTORAGE ===== */
+    function getSelectedPlan() {
+        // First check URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        let plan = urlParams.get('plan');
+        
+        // If not in URL, check localStorage
+        if (!plan) {
+            plan = localStorage.getItem('selectedPlan');
+            // Clear after reading to avoid showing old plan on next visit
+            if (plan) {
+                localStorage.removeItem('selectedPlan');
+            }
+        }
+        
+        // Map plan names to display names
+        const planMap = {
+            'starter': 'Starter',
+            'pro': 'Pro',
+            'enterprise': 'Enterprise',
+            'contact': null
+        };
+        
+        return planMap[plan] ? { id: plan, name: planMap[plan] } : null;
+    }
+
+    /* ===== DISPLAY SELECTED PLAN BADGE ===== */
+    const selectedPlan = getSelectedPlan();
+    const badge = document.getElementById('selectedPlanBadge');
+    const planNameSpan = document.getElementById('selectedPlanName');
+    const hiddenPlanInput = document.getElementById('selectedPlan');
+    
+    if (selectedPlan && selectedPlan.name) {
+        // Display the badge
+        planNameSpan.textContent = selectedPlan.name;
+        planNameSpan.className = `plan-name-${selectedPlan.id}`;
+        badge.style.display = 'block';
+        
+        // Set hidden input value
+        hiddenPlanInput.value = selectedPlan.id;
+        
+        // Add plan info to message placeholder
+        const messageField = document.getElementById('cf-message');
+        const currentPlaceholder = messageField.placeholder;
+        messageField.placeholder = `Plano ${selectedPlan.name} selecionado. ${currentPlaceholder}`;
+    }
+
+    /* ===== PHONE MASK ===== */
+    const waInput = document.getElementById('cf-whatsapp');
+    if (waInput) {
+        waInput.addEventListener('input', function () {
+            let v = this.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length <= 2)       this.value = v;
+            else if (v.length <= 7)  this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+            else if (v.length <= 11) this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+        });
+    }
+
+    /* ===== CHAR COUNTER ===== */
+    const textarea  = document.getElementById('cf-message');
+    const counter   = document.getElementById('char-counter');
+    const MAX_CHARS = 600;
+
+    if (textarea && counter) {
+        textarea.addEventListener('input', function () {
+            const len = this.value.length;
+            counter.textContent = `${len} / ${MAX_CHARS} caracteres`;
+            counter.className = 'cf-char-counter' +
+                (len >= MAX_CHARS ? ' over' : len >= MAX_CHARS * 0.85 ? ' near' : '');
+        });
+    }
+
+    /* ===== ONLINE STATUS ===== */
+    const statusEl = document.getElementById('onlineStatusText');
+    function updateOnlineStatus() {
+        const now = new Date();
+        const day = now.getDay();
+        const hour = now.getHours();
+        const min  = now.getMinutes();
+        const timeNum = hour * 60 + min;
+
+        let online = false;
+        if (day >= 1 && day <= 5 && timeNum >= 8*60 && timeNum < 18*60) online = true;
+        if (day === 6 && timeNum >= 8*60 && timeNum < 12*60) online = true;
+
+        const dot = document.querySelector('.cs-online-dot');
+        if (statusEl) {
+            if (online) {
+                statusEl.textContent = 'Online agora — respondemos em breve';
+                if (dot) {
+                    dot.style.background = '#00FFB3';
+                    dot.style.boxShadow  = '0 0 8px #00FFB3';
+                }
+            } else {
+                statusEl.textContent = 'Fora do horário — responderemos assim que retornarmos';
+                statusEl.style.color = 'var(--text-muted)';
+                if (dot) {
+                    dot.style.background = 'var(--text-muted)';
+                    dot.style.boxShadow  = 'none';
+                    dot.style.animation  = 'none';
+                }
+            }
+        }
+    }
+    updateOnlineStatus();
+
+    /* ===== VALIDATION ===== */
+    function showError(id, errId, msg) {
+        const input = document.getElementById(id);
+        const err   = document.getElementById(errId);
+        if (input) input.classList.add('has-error');
+        if (err) { err.textContent = msg; err.style.display = 'block'; }
+        return false;
+    }
+
+    function clearError(id, errId) {
+        const input = document.getElementById(id);
+        const err   = document.getElementById(errId);
+        if (input) input.classList.remove('has-error');
+        if (err) err.style.display = 'none';
+    }
+
+    ['cf-name','cf-whatsapp','cf-message'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', () => {
+                clearError(id, 'err-' + id.replace('cf-',''));
+            });
+        }
+    });
+
+    function validate() {
+        let valid = true;
+        const name    = document.getElementById('cf-name')?.value.trim() || '';
+        const wa      = document.getElementById('cf-whatsapp')?.value.replace(/\D/g,'') || '';
+        const message = document.getElementById('cf-message')?.value.trim() || '';
+
+        if (!name) {
+            showError('cf-name','err-name','Por favor, informe seu nome.');
+            valid = false;
+        } else clearError('cf-name','err-name');
+
+        if (wa.length < 10 || wa.length > 11) {
+            showError('cf-whatsapp','err-whatsapp','Informe um número de WhatsApp válido com DDD.');
+            valid = false;
+        } else clearError('cf-whatsapp','err-whatsapp');
+
+        if (!message) {
+            showError('cf-message','err-message','Por favor, descreva o que você precisa.');
+            valid = false;
+        } else clearError('cf-message','err-message');
+
+        return valid;
+    }
+
+    /* ===== BUILD WHATSAPP MESSAGE ===== */
+    function buildWAMessage() {
+        const name      = document.getElementById('cf-name')?.value.trim() || '';
+        const wa        = document.getElementById('cf-whatsapp')?.value.trim() || '';
+        const email     = document.getElementById('cf-email')?.value.trim() || '';
+        const instagram = document.getElementById('cf-instagram')?.value.trim() || '';
+        const message   = document.getElementById('cf-message')?.value.trim() || '';
+        const selectedPlanVal = document.getElementById('selectedPlan')?.value || '';
+
+        let text = `Olá! Vim pelo site da SOLVEON e gostaria de mais informações.\n\n`;
+        text += `👤 *Nome:* ${name}\n`;
+        text += `📱 *WhatsApp:* +55 ${wa}\n`;
+        if (email)     text += `✉️ *E-mail:* ${email}\n`;
+        if (instagram) text += `📸 *Instagram:* @${instagram.replace(/^@/,'')}\n`;
+        if (selectedPlanVal) {
+            const planNames = { starter: 'Starter', pro: 'Pro', enterprise: 'Enterprise' };
+            text += `🎯 *Plano de interesse:* ${planNames[selectedPlanVal] || selectedPlanVal}\n`;
+        }
+        text += `\n💬 *Mensagem:*\n${message}`;
+
+        return encodeURIComponent(text);
+    }
+
+    /* ===== TOAST ===== */
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+        if (toast && toastMsg) {
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+    }
+
+    /* ===== SUBMIT ===== */
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (!validate()) return;
+
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="cf-submit-icon">⏳</span> Abrindo WhatsApp...';
+            }
+
+            showToast('Redirecionando para o WhatsApp...');
+
+            const waMsg = buildWAMessage();
+            const url   = `https://wa.me/${WA_NUMBER}?text=${waMsg}`;
+
+            setTimeout(() => {
+                window.open(url, '_blank');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span class="cf-submit-icon">💬</span> Enviar pelo WhatsApp';
+                }
+            }, 800);
+        });
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                e.target.style.opacity = '1';
+                e.target.style.transform = 'translateY(0)';
+                obs.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.07 });
+
+    const elementsToReveal = ['.contact-form-card', ...document.querySelectorAll('.cs-card, .cs-hours')];
+    elementsToReveal.forEach((el, i) => {
+        const target = typeof el === 'string' ? document.querySelector(el) : el;
+        if (!target) return;
+        target.style.opacity   = '0';
+        target.style.transform = 'translateY(24px)';
+        target.style.transition = `opacity 0.5s ease ${i * 0.08}s, transform 0.5s ease ${i * 0.08}s`;
+        obs.observe(target);
+    });
+
+})();
+</script>
+{% endblock %}

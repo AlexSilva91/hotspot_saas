@@ -74,6 +74,12 @@
             <a href="{{ url_for('auth.logout') }}">Logout ({{ current_user.email }})</a>
         {% else %}
             {% if request.path != '/login' %}
+                {% if request.path != '/' %}
+                    <a href="{{ url_for('landing.index') }}">Dashboard</a>
+                {% endif %}
+                {% if request.path != '/contato' %}
+                    <a href="{{ url_for('landing.contact') }}">Contato</a>
+                {% endif %}
                 <a href="{{ url_for('auth.login') }}">Login</a>
             {% endif %}
         {% endif %}

@@ -25,6 +25,7 @@ from app.routes.ip_pool_routes import ip_pool_bp
 from app.routes.active_session_routes import active_session_bp
 from app.routes.dashboard_routes import dashboard_bp
 from app.routes.radius.radius_stats_routes import radius_stats_bp
+from app.routes.landing_routes import landing_bp
 from app.routes.error_test_routes import error_test_bp
 
 # CLI
@@ -84,6 +85,7 @@ def create_app():
     register_error_handlers_routes(app)
 
     # -------------------- BLUEPRINTS --------------------
+    app.register_blueprint(landing_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(user_bp)

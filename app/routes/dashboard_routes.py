@@ -30,7 +30,7 @@ def dashboard():
     templates_query = tenant_filter(HotspotTemplate.query)
 
     return render_template(
-        "dashboard/index.html",
+        "dashboard/dashboard.html",
         tenant=tenant,
 
         routers_count=routers_query.count(),

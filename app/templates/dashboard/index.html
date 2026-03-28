@@ -1,166 +1,1194 @@
+{# app/templates/dashboard/landing.html #}
 {% extends "base.html" %}
 
-{% block title %}
-Dashboard | SOLVEON TECHNOLOGY
+{% block title %}SOLVEON Hotspot | Transforme sua Rede em Receita{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ===== LANDING — SOLVEON HOTSPOT ===== */
+
+.landing-wrap * { box-sizing: border-box; }
+
+/* ---------- HERO ---------- */
+.lp-hero {
+    min-height: 92vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    padding: 5rem 2rem 4rem;
+}
+
+.lp-hero::before {
+    content: '';
+    position: absolute;
+    width: 900px; height: 900px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(0,168,232,0.10) 0%,
+        rgba(0,112,184,0.06) 40%,
+        transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: heroBreath 6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes heroBreath {
+    0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.7; }
+    50%      { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+}
+
+.lp-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,168,232,0.015) 3px, rgba(0,168,232,0.015) 4px);
+    pointer-events: none;
+}
+
+.lp-hero-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 860px;
+}
+
+.lp-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(0,168,232,0.08);
+    border: 1px solid rgba(0,168,232,0.25);
+    border-radius: 100px;
+    padding: 0.45rem 1.2rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    margin-bottom: 2.5rem;
+    backdrop-filter: blur(8px);
+}
+
+.lp-pill-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan);
+    animation: blink 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+}
+
+.lp-headline {
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1.75rem;
+    letter-spacing: -1px;
+}
+
+.lp-headline-white {
+    color: var(--metal-light);
+    display: block;
+}
+
+.lp-headline-glow {
+    display: block;
+    background: linear-gradient(135deg, var(--neon-cyan) 0%, #FFFFFF 45%, var(--neon-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(0,212,255,0.4));
+}
+
+.lp-sub {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 580px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+}
+
+.lp-sub strong { color: var(--neon-cyan); font-weight: 700; }
+
+.lp-ctas {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3.5rem;
+}
+
+.btn-hero-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 2.2rem;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+    color: var(--bg-primary);
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 30px rgba(0,168,232,0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hero-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 50px rgba(0,168,232,0.6);
+    color: var(--bg-primary);
+}
+
+.btn-hero-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1rem 2.2rem;
+    background: transparent;
+    color: var(--neon-cyan);
+    border: 1px solid rgba(0,168,232,0.35);
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.btn-hero-ghost:hover {
+    border-color: var(--neon-cyan);
+    background: rgba(0,168,232,0.08);
+    transform: translateY(-3px);
+    color: var(--neon-cyan);
+}
+
+.lp-trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.lp-trust-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.lp-trust-icon { color: var(--neon-cyan); }
+
+/* ---------- NUMBERS ---------- */
+.lp-numbers {
+    padding: 3.5rem 2rem;
+    border-top: 1px solid var(--border-neon);
+    border-bottom: 1px solid var(--border-neon);
+    background: linear-gradient(180deg, rgba(0,168,232,0.04) 0%, transparent 50%, rgba(0,168,232,0.04) 100%);
+}
+
+.lp-numbers-grid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    text-align: center;
+}
+
+.lp-num-val {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: var(--neon-cyan);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+    letter-spacing: -1px;
+}
+
+.lp-num-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+}
+
+/* ---------- SECTION HELPERS ---------- */
+.lp-section-tag {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid rgba(0,168,232,0.3);
+}
+
+.lp-section-h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--metal-light), var(--neon-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ---------- PAIN/SOLUTION ---------- */
+.lp-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 6rem 0;
+}
+
+.lp-pain-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1rem; }
+
+.lp-pain-item {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 1.25rem;
+    background: rgba(192,57,43,0.05);
+    border: 1px solid rgba(192,57,43,0.12);
+    border-radius: var(--radius-md);
+    transition: all 0.3s ease;
+}
+
+.lp-pain-item:hover {
+    background: rgba(192,57,43,0.1);
+    border-color: rgba(192,57,43,0.25);
+    transform: translateX(4px);
+}
+
+.lp-pain-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+
+.lp-pain-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+
+.lp-pain-text strong {
+    display: block;
+    color: #F4A49D;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lp-solution-box {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 1px solid var(--border-neon);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-solution-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+}
+
+.lp-solution-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--neon-cyan);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.lp-sol-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.85rem; }
+
+.lp-sol-item { display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+
+.lp-sol-check { color: #00FFB3; font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ---------- HOW IT WORKS ---------- */
+.lp-how {
+    padding: 6rem 2rem;
+    background: linear-gradient(180deg, transparent, rgba(0,168,232,0.03), transparent);
+}
+
+.lp-how-inner { max-width: 1000px; margin: 0 auto; }
+
+.lp-how-header { text-align: center; margin-bottom: 4rem; }
+
+.lp-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    position: relative;
+}
+
+.lp-steps::before {
+    content: '';
+    position: absolute;
+    top: 38px;
+    left: calc(12.5% + 16px);
+    right: calc(12.5% + 16px);
+    height: 1px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan), var(--neon-blue));
+    opacity: 0.4;
+    z-index: 0;
+}
+
+.lp-step { text-align: center; position: relative; z-index: 1; }
+
+.lp-step-num {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--bg-elevated), var(--bg-tertiary));
+    border: 2px solid rgba(0,168,232,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 0 20px rgba(0,168,232,0.2);
+    transition: all 0.3s ease;
+}
+
+.lp-step:hover .lp-step-num {
+    border-color: var(--neon-cyan);
+    box-shadow: 0 0 30px rgba(0,168,232,0.5);
+    transform: scale(1.1);
+}
+
+.lp-step-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lp-step-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+
+/* ---------- FEATURES ---------- */
+.lp-feat-wrap { padding: 6rem 2rem; }
+
+.lp-feat-inner { max-width: 1100px; margin: 0 auto; }
+
+.lp-feat-header { text-align: center; margin-bottom: 4rem; }
+
+.lp-feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+
+.lp-feat-card {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-feat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+}
+
+.lp-feat-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(0,168,232,0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 30px rgba(0,168,232,0.12);
+}
+
+.lp-feat-card:hover::after { transform: scaleX(1); }
+
+.lp-feat-icon { font-size: 2.2rem; margin-bottom: 1.25rem; display: block; filter: drop-shadow(0 0 8px rgba(0,212,255,0.4)); }
+
+.lp-feat-title { font-size: 1rem; font-weight: 800; color: var(--neon-cyan); margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.lp-feat-desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.65; }
+
+.lp-feat-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--neon-blue);
+    background: rgba(0,168,232,0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(0,168,232,0.2);
+}
+
+/* ---------- DATA / MARKETING ---------- */
+.lp-data {
+    padding: 6rem 2rem;
+    background: linear-gradient(135deg, rgba(0,112,184,0.06) 0%, rgba(0,168,232,0.03) 50%, rgba(0,112,184,0.06) 100%);
+    border-top: 1px solid var(--border-neon);
+    border-bottom: 1px solid var(--border-neon);
+}
+
+.lp-data-inner { max-width: 1000px; margin: 0 auto; }
+
+.lp-data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+
+.lp-data-feature-list { list-style: none; padding: 0; margin: 2rem 0; display: flex; flex-direction: column; gap: 1.25rem; }
+
+.lp-data-feature { display: flex; gap: 1rem; align-items: flex-start; }
+
+.lp-data-feature-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--neon-cyan);
+    box-shadow: 0 0 8px var(--neon-cyan);
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+
+.lp-data-feature-text { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5; }
+
+.lp-data-feature-text strong { display: block; color: var(--text-primary); font-weight: 700; margin-bottom: 0.2rem; }
+
+.lp-data-panel {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-neon);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-data-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+}
+
+.lp-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.lp-panel-title { font-size: 0.75rem; font-weight: 700; color: var(--neon-blue); text-transform: uppercase; letter-spacing: 1.5px; }
+
+.lp-panel-live { display: flex; align-items: center; gap: 0.4rem; font-size: 0.65rem; font-weight: 700; color: #00FFB3; text-transform: uppercase; letter-spacing: 1px; }
+
+.lp-panel-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #00FFB3; animation: blink 1.5s ease-in-out infinite; }
+
+.lp-data-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(26,58,90,0.5);
+    font-size: 0.82rem;
+}
+
+.lp-data-row:last-of-type { border-bottom: none; }
+
+.lp-data-row-label { color: var(--text-muted); font-weight: 500; }
+
+.lp-data-row-val { color: var(--neon-cyan); font-weight: 700; font-family: 'Share Tech Mono', monospace; }
+
+.lp-data-bar-wrap { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-primary); }
+
+.lp-bar-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.lp-bar-track { height: 6px; background: var(--bg-elevated); border-radius: 3px; margin-bottom: 0.75rem; overflow: hidden; }
+
+.lp-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+    box-shadow: 0 0 8px rgba(0,168,232,0.5);
+    animation: barGrow 1.5s ease-out forwards;
+    transform-origin: left;
+}
+
+@keyframes barGrow {
+    from { transform: scaleX(0); }
+    to   { transform: scaleX(1); }
+}
+
+/* ---------- PRICING ---------- */
+.lp-pricing-wrap { padding: 6rem 2rem; }
+
+.lp-pricing-inner { max-width: 1100px; margin: 0 auto; }
+
+.lp-pricing-header { text-align: center; margin-bottom: 4rem; }
+
+.lp-pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; }
+
+.lp-price-card {
+    background: linear-gradient(160deg, var(--bg-secondary), var(--bg-tertiary));
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: 2.25rem 2rem;
+    transition: all 0.35s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.lp-price-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(0,168,232,0.3);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 25px rgba(0,168,232,0.1);
+}
+
+.lp-price-card.is-featured {
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 40px rgba(0,168,232,0.2);
+    background: linear-gradient(160deg, var(--bg-tertiary), var(--bg-elevated));
+}
+
+.lp-price-card.is-featured:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 40px rgba(0,168,232,0.25);
+}
+
+.lp-price-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--border-primary);
+    transition: background 0.3s;
+}
+
+.lp-price-card.is-featured::before {
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+    box-shadow: 0 0 10px rgba(0,168,232,0.4);
+}
+
+.lp-price-card:hover::before { background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan)); }
+
+.lp-price-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+    color: var(--bg-primary);
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 0.25rem 0.7rem;
+    border-radius: 4px;
+}
+
+.lp-price-plan { font-size: 0.75rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; }
+
+.lp-price-name { font-size: 1.6rem; font-weight: 900; color: var(--metal-light); margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+
+.lp-price-tagline { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.4; }
+
+.lp-price-amount { margin-bottom: 1.75rem; padding-bottom: 1.75rem; border-bottom: 1px solid var(--border-primary); }
+
+.lp-price-val { font-size: 2.8rem; font-weight: 900; color: var(--neon-cyan); letter-spacing: -1px; line-height: 1; }
+
+.lp-price-val sup { font-size: 1.1rem; font-weight: 700; vertical-align: top; margin-top: 0.5rem; display: inline-block; color: var(--neon-blue); }
+
+.lp-price-period { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+.lp-price-features { list-style: none; padding: 0; margin: 0 0 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+
+.lp-price-feature { display: flex; gap: 0.65rem; align-items: flex-start; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
+
+.lp-price-feature-icon { color: #00FFB3; flex-shrink: 0; margin-top: 1px; font-style: normal; }
+
+.lp-price-feature.is-highlight { color: var(--text-primary); font-weight: 600; }
+
+.lp-price-cta {
+    display: block;
+    text-align: center;
+    padding: 0.9rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 800;
+    font-size: 0.82rem;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,168,232,0.35);
+    color: var(--neon-cyan);
+    background: rgba(0,168,232,0.08);
+    cursor: pointer;
+}
+
+.lp-price-cta:hover {
+    background: rgba(0,168,232,0.15);
+    border-color: var(--neon-cyan);
+    color: var(--neon-cyan);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0,168,232,0.2);
+}
+
+.lp-price-cta.is-primary {
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-cyan));
+    color: var(--bg-primary);
+    border-color: transparent;
+    box-shadow: 0 0 25px rgba(0,168,232,0.35);
+}
+
+.lp-price-cta.is-primary:hover {
+    box-shadow: 0 0 40px rgba(0,168,232,0.55);
+    color: var(--bg-primary);
+    transform: translateY(-3px);
+}
+
+/* ---------- PROOF ---------- */
+.lp-proof {
+    padding: 5rem 2rem;
+    background: linear-gradient(180deg, transparent, rgba(0,168,232,0.03), transparent);
+    border-top: 1px solid var(--border-neon);
+}
+
+.lp-proof-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+
+.lp-quote {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    position: relative;
+    font-style: italic;
+    padding-top: 2rem;
+}
+
+.lp-quote::before {
+    content: '"';
+    font-size: 6rem;
+    color: rgba(0,168,232,0.12);
+    position: absolute;
+    top: -1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Georgia, serif;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.lp-quote-author { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+.lp-quote-role { color: var(--neon-blue); }
+
+/* ---------- CTA FINAL ---------- */
+.lp-cta-final {
+    padding: 6rem 2rem;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.lp-cta-final-h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    margin-bottom: 1.25rem;
+    line-height: 1.2;
+    background: linear-gradient(135deg, var(--metal-light), var(--neon-cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.lp-cta-final-sub { font-size: 1rem; color: var(--text-secondary); margin-bottom: 2.5rem; line-height: 1.6; }
+
+.lp-cta-final-note { margin-top: 1.25rem; font-size: 0.75rem; color: var(--text-muted); }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+    .lp-feat-grid { grid-template-columns: repeat(2, 1fr); }
+    .lp-pricing-grid { grid-template-columns: 1fr; max-width: 420px; margin-left: auto; margin-right: auto; }
+    .lp-numbers-grid { grid-template-columns: repeat(2, 1fr); }
+    .lp-steps { grid-template-columns: repeat(2, 1fr); }
+    .lp-steps::before { display: none; }
+    .lp-two-col { grid-template-columns: 1fr; gap: 2rem; padding: 4rem 0; }
+    .lp-data-grid { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+@media (max-width: 600px) {
+    .lp-feat-grid { grid-template-columns: 1fr; }
+    .lp-numbers-grid { grid-template-columns: repeat(2, 1fr); }
+    .lp-steps { grid-template-columns: 1fr 1fr; }
+    .lp-ctas { flex-direction: column; align-items: center; }
+    .lp-trust { gap: 1rem; }
+}
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="landing-wrap">
 
-<div class="dashboard">
+<!-- ===== HERO ===== -->
+<section class="lp-hero">
+    <div class="lp-hero-inner">
+        <div class="lp-pill">
+            <span class="lp-pill-dot"></span>
+            Plataforma Hotspot SaaS para MikroTik
+        </div>
+        <h1 class="lp-headline">
+            <span class="lp-headline-white">Sua rede Wi-Fi vendendo</span>
+            <span class="lp-headline-glow">enquanto você dorme</span>
+        </h1>
+        <p class="lp-sub">
+            Transforme qualquer ponto de Wi-Fi num canal de <strong>captação de dados, fidelização e receita</strong>.
+            Gestão completa de hotspots MikroTik — do portal customizado ao remarketing — em uma plataforma só.
+        </p>
+        <div class="lp-ctas">
+            <button class="btn-hero-primary select-plan-btn" data-plan="starter">🚀 Começar Grátis por 14 dias</button>
+            <a href="#como-funciona" class="btn-hero-ghost">Ver como funciona ↓</a>
+        </div>
+        <div class="lp-trust">
+            <span class="lp-trust-item"><span class="lp-trust-icon">✓</span> Sem cartão de crédito</span>
+            <span class="lp-trust-item"><span class="lp-trust-icon">✓</span> Setup em menos de 10 min</span>
+            <span class="lp-trust-item"><span class="lp-trust-icon">✓</span> Suporte em português</span>
+        </div>
+    </div>
+</section>
 
-    <!-- HEADER -->
+<!-- ===== NÚMEROS ===== -->
+<section class="lp-numbers">
+    <div class="lp-numbers-grid">
+        <div class="lp-num-item">
+            <div class="lp-num-val" data-count="500" data-suffix="+">0</div>
+            <div class="lp-num-label">Hotspots Ativos</div>
+        </div>
+        <div class="lp-num-item">
+            <div class="lp-num-val" data-count="50" data-suffix="K+">0</div>
+            <div class="lp-num-label">Usuários Conectados</div>
+        </div>
+        <div class="lp-num-item">
+            <div class="lp-num-val" data-count="99" data-suffix=".9%">0</div>
+            <div class="lp-num-label">Uptime Garantido</div>
+        </div>
+        <div class="lp-num-item">
+            <div class="lp-num-val" data-count="3" data-suffix="x mais">0</div>
+            <div class="lp-num-label">Retorno de Clientes</div>
+        </div>
+    </div>
+</section>
 
-    <div class="dashboard-header">
-
+<!-- ===== PROBLEMA / SOLUÇÃO ===== -->
+<section style="padding: 0 2rem;">
+    <div class="lp-two-col">
         <div>
-            <h1>Dashboard</h1>
-            <p class="tenant-label">
-                Empresa: <strong class="badge {{ tenant_color(tenant.name) }}">{{ tenant.name }}</strong>
-            </p>
+            <span class="lp-section-tag">O problema que você enfrenta hoje</span>
+            <h2 class="lp-section-h2">Seu Wi-Fi conecta,<br>mas não gera valor</h2>
+            <ul class="lp-pain-list">
+                <li class="lp-pain-item">
+                    <span class="lp-pain-icon">😤</span>
+                    <div class="lp-pain-text">
+                        <strong>Clientes se conectam e somem</strong>
+                        Sem dados, sem contato — impossível reconquistá-los depois.
+                    </div>
+                </li>
+                <li class="lp-pain-item">
+                    <span class="lp-pain-icon">🔧</span>
+                    <div class="lp-pain-text">
+                        <strong>Gestão manual e descentralizada</strong>
+                        Cada roteador configurado separado, sem visão unificada da rede.
+                    </div>
+                </li>
+                <li class="lp-pain-item">
+                    <span class="lp-pain-icon">📉</span>
+                    <div class="lp-pain-text">
+                        <strong>Zero dado de comportamento</strong>
+                        Quem volta? Quando? Por qual ponto? Você não sabe — e não pode agir.
+                    </div>
+                </li>
+                <li class="lp-pain-item">
+                    <span class="lp-pain-icon">🎨</span>
+                    <div class="lp-pain-text">
+                        <strong>Página de login genérica</strong>
+                        Uma chance preciosa de impactar o cliente — desperdiçada.
+                    </div>
+                </li>
+            </ul>
         </div>
-
-    </div>
-
-
-    <!-- KPIs -->
-
-    <div class="kpi-grid">
-
-        <div class="kpi-card">
-            <span>Routers</span>
-            <strong>{{ routers_count }}</strong>
-        </div>
-
-        <div class="kpi-card">
-            <span>Usuários do Sistema</span>
-            <strong>{{ users_count }}</strong>
-        </div>
-
-        <div class="kpi-card">
-            <span>Hotspot Users</span>
-            <strong>{{ hotspot_users_count }}</strong>
-        </div>
-
-        <div class="kpi-card">
-            <span>Sessões Ativas</span>
-            <strong>{{ active_sessions_count }}</strong>
-        </div>
-
-        <div class="kpi-card">
-            <span>IP Pools</span>
-            <strong>{{ ip_pools_count }}</strong>
-        </div>
-
-        <div class="kpi-card">
-            <span>Bypass Devices</span>
-            <strong>{{ bypass_devices_count }}</strong>
-        </div>
-
-        <div class="kpi-card">
-            <span>Templates</span>
-            <strong>{{ templates_count }}</strong>
-        </div>
-
-    </div>
-
-
-    <!-- GRID DE SEÇÕES -->
-
-    <div class="dashboard-grid">
-
-        <!-- PLANO -->
-
-        <div class="dashboard-card">
-
-            <div class="card-header">
-                Plano Atual
+        <div>
+            <div class="lp-solution-box">
+                <div class="lp-solution-title">✦ O que a SOLVEON muda</div>
+                <ul class="lp-sol-list">
+                    <li class="lp-sol-item"><span class="lp-sol-check">✓</span> Capture nome, e-mail ou WhatsApp de cada cliente que se conectar — automaticamente.</li>
+                    <li class="lp-sol-item"><span class="lp-sol-check">✓</span> Gerencie dezenas de roteadores MikroTik num painel único, sem linha de comando.</li>
+                    <li class="lp-sol-item"><span class="lp-sol-check">✓</span> Saiba quem está online, por quanto tempo e com que frequência retorna.</li>
+                    <li class="lp-sol-item"><span class="lp-sol-check">✓</span> Crie portais de login com sua marca em minutos — sem código, sem designer.</li>
+                    <li class="lp-sol-item"><span class="lp-sol-check">✓</span> Use os dados para remarketing via WhatsApp, SMS ou e-mail.</li>
+                    <li class="lp-sol-item"><span class="lp-sol-check">✓</span> Ambiente multi-tenant: dados de cada cliente completamente isolados.</li>
+                </ul>
             </div>
+        </div>
+    </div>
+</section>
 
-            <div class="card-body">
+<!-- ===== COMO FUNCIONA ===== -->
+<section class="lp-how" id="como-funciona">
+    <div class="lp-how-inner">
+        <div class="lp-how-header">
+            <span class="lp-section-tag">Simples de configurar</span>
+            <h2 class="lp-section-h2">Do roteador ao remarketing<br>em 4 passos</h2>
+        </div>
+        <div class="lp-steps">
+            <div class="lp-step">
+                <div class="lp-step-num">🖧</div>
+                <div class="lp-step-title">Conecte o MikroTik</div>
+                <div class="lp-step-desc">Informe IP e credenciais. A plataforma assume o controle via API RouterOS automaticamente.</div>
+            </div>
+            <div class="lp-step">
+                <div class="lp-step-num">🎨</div>
+                <div class="lp-step-title">Personalize o Portal</div>
+                <div class="lp-step-desc">Monte seu portal de login com logo, cores e formulário de captura. Zero código.</div>
+            </div>
+            <div class="lp-step">
+                <div class="lp-step-num">📲</div>
+                <div class="lp-step-title">Capte os Dados</div>
+                <div class="lp-step-desc">Cada cliente que se conectar entrega nome e contato ao seu painel em tempo real.</div>
+            </div>
+            <div class="lp-step">
+                <div class="lp-step-num">📣</div>
+                <div class="lp-step-title">Ative o Remarketing</div>
+                <div class="lp-step-desc">Use a base para trazer clientes de volta com promoções e campanhas segmentadas.</div>
+            </div>
+        </div>
+    </div>
+</section>
 
-                <div class="plan-info">
+<!-- ===== FEATURES ===== -->
+<section class="lp-feat-wrap">
+    <div class="lp-feat-inner">
+        <div class="lp-feat-header">
+            <span class="lp-section-tag">Funcionalidades</span>
+            <h2 class="lp-section-h2">Tudo que você precisa.<br>Nada que não precise.</h2>
+        </div>
+        <div class="lp-feat-grid">
+            <div class="lp-feat-card">
+                <span class="lp-feat-icon">📡</span>
+                <div class="lp-feat-title">Integração MikroTik Real</div>
+                <div class="lp-feat-desc">Conexão direta com RouterOS via API oficial. Configuração automática de hotspot, firewall e sessões — sem gambiarras.</div>
+                <span class="lp-feat-tag">RouterOS API</span>
+            </div>
+            <div class="lp-feat-card">
+                <span class="lp-feat-icon">🧲</span>
+                <div class="lp-feat-title">Coleta de Dados Ativa</div>
+                <div class="lp-feat-desc">O Wi-Fi se torna um funil de captação. Colete nome, e-mail e WhatsApp antes de liberar o acesso. LGPD incluso.</div>
+                <span class="lp-feat-tag">Marketing</span>
+            </div>
+            <div class="lp-feat-card">
+                <span class="lp-feat-icon">🎨</span>
+                <div class="lp-feat-title">Portal com Sua Marca</div>
+                <div class="lp-feat-desc">Templates profissionais totalmente customizáveis. Sua logo, suas cores, sua mensagem. Primeira impressão que converte.</div>
+                <span class="lp-feat-tag">White Label</span>
+            </div>
+            <div class="lp-feat-card">
+                <span class="lp-feat-icon">📊</span>
+                <div class="lp-feat-title">Dashboard em Tempo Real</div>
+                <div class="lp-feat-desc">Sessões ativas, consumo de banda, horários de pico e frequência de retorno. Dados que viram decisão.</div>
+                <span class="lp-feat-tag">Analytics</span>
+            </div>
+            <div class="lp-feat-card">
+                <span class="lp-feat-icon">🏢</span>
+                <div class="lp-feat-title">Multi-Tenant Isolado</div>
+                <div class="lp-feat-desc">Cada empresa no seu próprio ambiente, com dados e roteadores completamente segregados. Ideal para revendas e ISPs.</div>
+                <span class="lp-feat-tag">SaaS</span>
+            </div>
+            <div class="lp-feat-card">
+                <span class="lp-feat-icon">🔐</span>
+                <div class="lp-feat-title">Segurança Nativa</div>
+                <div class="lp-feat-desc">Autenticação JWT com isolamento por tenant, controle de acesso granular e criptografia end-to-end em toda comunicação.</div>
+                <span class="lp-feat-tag">Enterprise</span>
+            </div>
+        </div>
+    </div>
+</section>
 
-                    <div class="plan-row">
-                        <span>Plano</span>
-                        <span class="badge badge-purple">
-                            {{ tenant.plan.name }}
-                        </span>
-                    </div>
-
-                    <div class="plan-row">
-                        <span>Routers Permitidos</span>
-                        <strong>{{ tenant.plan.max_routers }}</strong>
-                    </div>
-
-                    <div class="plan-row">
-                        <span>Usuários Sistema</span>
-                        <strong>{{ tenant.plan.max_users }}</strong>
-                    </div>
-
-                    <div class="plan-row">
-                        <span>Hotspot Users</span>
-                        <strong>{{ tenant.plan.max_hotspot_users }}</strong>
-                    </div>
-
+<!-- ===== DADOS E MARKETING ===== -->
+<section class="lp-data">
+    <div class="lp-data-inner">
+        <div class="lp-data-grid">
+            <div>
+                <span class="lp-section-tag">O diferencial que muda o jogo</span>
+                <h2 class="lp-section-h2">Wi-Fi que coleta.<br>Dados que vendem.</h2>
+                <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7;">
+                    Enquanto o cliente navega, você constrói um banco de dados segmentado. Sabe quem voltou, quando veio e há quanto tempo não aparece.
+                </p>
+                <ul class="lp-data-feature-list">
+                    <li class="lp-data-feature">
+                        <span class="lp-data-feature-dot"></span>
+                        <div class="lp-data-feature-text">
+                            <strong>Segmentação por comportamento</strong>
+                            Filtre clientes por frequência, horário e localização para campanhas mais certeiras.
+                        </div>
+                    </li>
+                    <li class="lp-data-feature">
+                        <span class="lp-data-feature-dot"></span>
+                        <div class="lp-data-feature-text">
+                            <strong>Exportação de contatos</strong>
+                            Baixe sua lista em CSV e importe no WhatsApp Business, RD Station, Mailchimp ou qualquer ferramenta.
+                        </div>
+                    </li>
+                    <li class="lp-data-feature">
+                        <span class="lp-data-feature-dot"></span>
+                        <div class="lp-data-feature-text">
+                            <strong>Conformidade LGPD</strong>
+                            Termos de uso e consentimento explícito integrados ao fluxo de login — você fica protegido.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="lp-data-panel">
+                <div class="lp-panel-header">
+                    <span class="lp-panel-title">📊 Painel — Hoje</span>
+                    <span class="lp-panel-live"><span class="lp-panel-live-dot"></span> Ao Vivo</span>
                 </div>
-
+                <div class="lp-data-row">
+                    <span class="lp-data-row-label">Conexões ativas</span>
+                    <span class="lp-data-row-val">247</span>
+                </div>
+                <div class="lp-data-row">
+                    <span class="lp-data-row-label">Novos cadastros hoje</span>
+                    <span class="lp-data-row-val">+83</span>
+                </div>
+                <div class="lp-data-row">
+                    <span class="lp-data-row-label">Taxa de retorno</span>
+                    <span class="lp-data-row-val">68%</span>
+                </div>
+                <div class="lp-data-row">
+                    <span class="lp-data-row-label">Base total de contatos</span>
+                    <span class="lp-data-row-val">12.480</span>
+                </div>
+                <div class="lp-data-row">
+                    <span class="lp-data-row-label">Roteadores online</span>
+                    <span class="lp-data-row-val">8 / 8</span>
+                </div>
+                <div class="lp-data-bar-wrap">
+                    <div class="lp-bar-label"><span>Ocupação da rede</span><span>82%</span></div>
+                    <div class="lp-bar-track"><div class="lp-bar-fill" style="width:82%"></div></div>
+                    <div class="lp-bar-label"><span>Conversão de cadastros</span><span>94%</span></div>
+                    <div class="lp-bar-track"><div class="lp-bar-fill" style="width:94%;animation-delay:0.3s"></div></div>
+                    <div class="lp-bar-label"><span>Clientes ativos (30 dias)</span><span>61%</span></div>
+                    <div class="lp-bar-track"><div class="lp-bar-fill" style="width:61%;animation-delay:0.6s"></div></div>
+                </div>
             </div>
-
         </div>
-
-
-        <!-- ROUTERS -->
-
-        <div class="dashboard-card">
-
-            <div class="card-header">
-                Routers Recentes
-            </div>
-
-            <div class="card-body">
-
-                <table class="dashboard-table">
-
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>IP</th>
-                            <th>Localização</th>
-                            <th>Criado</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        {% for router in routers %}
-
-                        <tr>
-                            <td>{{ router.name }}</td>
-                            <td>{{ router.ip_address }}</td>
-                            <td>{{ router.location }}</td>
-                            <td>{{ router.created_at | datetime_br }}</td>
-                        </tr>
-
-                        {% else %}
-
-                        <tr>
-                            <td colspan="4" class="empty">
-                                Nenhum router cadastrado
-                            </td>
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
     </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="lp-pricing-wrap">
+    <div class="lp-pricing-inner">
+        <div class="lp-pricing-header">
+            <span class="lp-section-tag">Planos</span>
+            <h2 class="lp-section-h2">Comece pequeno.<br>Cresça sem limite.</h2>
+            <p style="color:var(--text-secondary);margin-top:0.75rem;font-size:0.95rem;">14 dias grátis em qualquer plano. Sem cartão de crédito.</p>
+        </div>
+        <div class="lp-pricing-grid">
+            <!-- Starter -->
+            <div class="lp-price-card" data-plan="starter">
+                <div class="lp-price-plan">Plano</div>
+                <div class="lp-price-name">Starter</div>
+                <div class="lp-price-tagline">Para negócios que estão começando a monetizar o Wi-Fi</div>
+                <div class="lp-price-amount">
+                    <div class="lp-price-val"><sup>R$</sup>99</div>
+                    <div class="lp-price-period">por mês</div>
+                </div>
+                <ul class="lp-price-features">
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Até 2 roteadores MikroTik</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Até 200 usuários/mês</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Portal de login customizável</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Coleta de dados básica</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Exportação CSV</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Suporte por e-mail</li>
+                </ul>
+                <button class="lp-price-cta select-plan-btn" data-plan="starter">Começar grátis →</button>
+            </div>
+            <!-- Pro -->
+            <div class="lp-price-card is-featured" data-plan="pro">
+                <div class="lp-price-badge">MAIS POPULAR</div>
+                <div class="lp-price-plan">Plano</div>
+                <div class="lp-price-name">Pro</div>
+                <div class="lp-price-tagline">Para quem quer dados, alcance e marketing de verdade</div>
+                <div class="lp-price-amount">
+                    <div class="lp-price-val"><sup>R$</sup>299</div>
+                    <div class="lp-price-period">por mês</div>
+                </div>
+                <ul class="lp-price-features">
+                    <li class="lp-price-feature is-highlight"><i class="lp-price-feature-icon">✓</i> Até 10 roteadores MikroTik</li>
+                    <li class="lp-price-feature is-highlight"><i class="lp-price-feature-icon">✓</i> Até 1.000 usuários/mês</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Portal white label completo</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Coleta + segmentação avançada</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Dashboard analytics em tempo real</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> API completa para integrações</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Multi-usuário por empresa</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Suporte prioritário</li>
+                </ul>
+                <button class="lp-price-cta is-primary select-plan-btn" data-plan="pro">Começar grátis →</button>
+            </div>
+            <!-- Enterprise -->
+            <div class="lp-price-card" data-plan="enterprise">
+                <div class="lp-price-plan">Plano</div>
+                <div class="lp-price-name">Enterprise</div>
+                <div class="lp-price-tagline">Para ISPs e redes de grande escala sem restrições</div>
+                <div class="lp-price-amount">
+                    <div class="lp-price-val"><sup>R$</sup>999</div>
+                    <div class="lp-price-period">por mês</div>
+                </div>
+                <ul class="lp-price-features">
+                    <li class="lp-price-feature is-highlight"><i class="lp-price-feature-icon">✓</i> Roteadores ilimitados</li>
+                    <li class="lp-price-feature is-highlight"><i class="lp-price-feature-icon">✓</i> Usuários ilimitados</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Tudo do plano Pro</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> API + Webhooks em tempo real</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Onboarding e treinamento incluso</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Suporte 24/7 dedicado</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> Instalação on-premise opcional</li>
+                    <li class="lp-price-feature"><i class="lp-price-feature-icon">✓</i> SLA contratual</li>
+                </ul>
+                <button class="lp-price-cta select-plan-btn" data-plan="enterprise">Falar com especialista →</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PROVA SOCIAL ===== -->
+<section class="lp-proof">
+    <div class="lp-proof-inner">
+        <p class="lp-quote">
+            Antes eu tinha Wi-Fi. Hoje tenho uma lista com mais de 8 mil clientes, sei quem volta toda semana e uso isso pra vender. A SOLVEON mudou a forma como enxergo minha rede.
+        </p>
+        <div class="lp-quote-author">
+            Marcos Vinicius — <span class="lp-quote-role">Proprietário, Restaurante MV Sabores · Recife-PE</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section class="lp-cta-final">
+    <h2 class="lp-cta-final-h2">Pronto para transformar conexões em clientes?</h2>
+    <p class="lp-cta-final-sub">
+        Cada dia sem a SOLVEON é um dia coletando zero dados e perdendo clientes que nunca mais voltam. Setup em menos de 10 minutos.
+    </p>
+    <div class="lp-ctas">
+        <button class="btn-hero-primary select-plan-btn" data-plan="starter">🚀 Criar minha conta grátis</button>
+        <button class="btn-hero-ghost select-plan-btn" data-plan="contact">Falar com vendas</button>
+    </div>
+    <p class="lp-cta-final-note">14 dias grátis · Sem cartão · Cancele quando quiser</p>
+</section>
 
 </div>
 
+<script>
+/* COUNTER ANIMATION */
+function animateCounters() {
+    document.querySelectorAll('[data-count]').forEach(el => {
+        const target = parseInt(el.dataset.count);
+        const suffix = el.dataset.suffix || '';
+        const duration = 1800;
+        const start = performance.now();
+        function update(now) {
+            const p = Math.min((now - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - p, 4);
+            el.textContent = Math.round(eased * target) + suffix;
+            if (p < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+    });
+}
+
+/* SCROLL REVEAL */
+const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
+            revealObs.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.lp-feat-card, .lp-price-card, .lp-step, .lp-pain-item, .lp-sol-item').forEach((el, i) => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(28px)';
+    el.style.transition = `opacity 0.55s ease ${i * 0.06}s, transform 0.55s ease ${i * 0.06}s`;
+    revealObs.observe(el);
+});
+
+/* COUNTER TRIGGER */
+const cObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { animateCounters(); cObs.disconnect(); } });
+}, { threshold: 0.4 });
+const n = document.querySelector('.lp-numbers');
+if (n) cObs.observe(n);
+
+/* SMOOTH SCROLL */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+        const t = document.querySelector(a.getAttribute('href'));
+        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+});
+
+/* ===== PLAN SELECTION ===== */
+function selectPlanAndRedirect(plan) {
+    // Store selected plan in localStorage
+    localStorage.setItem('selectedPlan', plan);
+    
+    // Check if plan is for contact (enterprise or contact button)
+    if (plan === 'enterprise' || plan === 'contact') {
+        // Redirect to contact page
+        window.location.href = '/contato';
+    } else {
+        // Redirect to contact page with plan parameter
+        window.location.href = `/contato?plan=${plan}`;
+    }
+}
+
+// Add click handlers to all plan selection buttons
+document.querySelectorAll('.select-plan-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const plan = btn.getAttribute('data-plan');
+        if (plan) {
+            selectPlanAndRedirect(plan);
+        }
+    });
+});
+</script>
 {% endblock %}
