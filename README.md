@@ -83,6 +83,46 @@ hotspot_saas
 │   │   ├── __init__.py
 │   │   └── user_cli.py
 │   ├── controller
+│   │   ├── active_session_controller
+│   │   │   ├── __init__.py
+│   │   │   └── active_session_controller.py
+│   │   ├── auth_controller
+│   │   │   ├── __init__.py
+│   │   │   └── auth_controller.py
+│   │   ├── bypass_device_controller
+│   │   │   ├── __init__.py
+│   │   │   └── bypass_device_controller.py
+│   │   ├── dashboard_controller
+│   │   │   ├── __init__.py
+│   │   │   └── dashboard_controller.py
+│   │   ├── error_test_controller
+│   │   │   ├── __init__.py
+│   │   │   └── error_test_controller.py
+│   │   ├── hotspot_template_controller
+│   │   │   ├── __init__.py
+│   │   │   └── hotspot_template_controller.py
+│   │   ├── hotspot_user_controller
+│   │   │   ├── __init__.py
+│   │   │   └── hotspot_user_controller.py
+│   │   ├── ip_pool_controller
+│   │   │   ├── __init__.py
+│   │   │   └── ip_pool_controller.py
+│   │   ├── landing_controller
+│   │   │   ├── __init__.py
+│   │   │   └── landing_controller.py
+│   │   ├── plan_controller
+│   │   │   ├── __init__.py
+│   │   │   └── plan_controller.py
+│   │   ├── radius
+│   │   ├── router_controller
+│   │   │   ├── __init__.py
+│   │   │   └── router_controller.py
+│   │   ├── tenant_controller
+│   │   │   ├── __init__.py
+│   │   │   └── tenant_controller.py
+│   │   ├── user_controller
+│   │   │   ├── __init__.py
+│   │   │   └── user_controller.py
 │   │   ├── __init__.py
 │   │   └── base_controller.py
 │   ├── decorators
@@ -101,6 +141,7 @@ hotspot_saas
 │   │   ├── radius
 │   │   │   ├── __init__.py
 │   │   │   ├── radius_accounting.py
+│   │   │   ├── radius_postauth.py
 │   │   │   ├── radius_reply.py
 │   │   │   └── radius_user.py
 │   │   ├── __init__.py
@@ -117,6 +158,7 @@ hotspot_saas
 │   │   ├── radius
 │   │   │   ├── __init__.py
 │   │   │   ├── radius_accounting_repository.py
+│   │   │   ├── radius_postauth_repository.py
 │   │   │   ├── radius_reply_repository.py
 │   │   │   └── radius_user_repository.py
 │   │   ├── __init__.py
@@ -131,25 +173,56 @@ hotspot_saas
 │   │   ├── tenant_repository.py
 │   │   └── user_repository.py
 │   ├── routes
-│   │   ├── __init__.py
-│   │   ├── active_session_routes.py
-│   │   ├── auth_routes.py
-│   │   ├── bypass_device_routes.py
-│   │   ├── dashboard_routes.py
-│   │   ├── error_test_routes.py
-│   │   ├── hotspot_template_routes.py
-│   │   ├── hotspot_user_routes.py
-│   │   ├── ip_pool_routes.py
-│   │   ├── plan_routes.py
-│   │   ├── router_routes.py
-│   │   ├── tenant_routes.py
-│   │   └── user_routes.py
+│   │   ├── active_session_routes
+│   │   │   ├── __init__.py
+│   │   │   └── active_session_routes.py
+│   │   ├── auth_routes
+│   │   │   ├── __init__.py
+│   │   │   └── auth_routes.py
+│   │   ├── bypass_device_routes
+│   │   │   ├── __init__.py
+│   │   │   └── bypass_device_routes.py
+│   │   ├── dashboard_routes
+│   │   │   ├── __init__.py
+│   │   │   └── dashboard_routes.py
+│   │   ├── error_test_routes
+│   │   │   ├── __init__.py
+│   │   │   └── error_test_routes.py
+│   │   ├── hotspot_template_routes
+│   │   │   ├── __init__.py
+│   │   │   └── hotspot_template_routes.py
+│   │   ├── hotspot_user_routes
+│   │   │   ├── __init__.py
+│   │   │   └── hotspot_user_routes.py
+│   │   ├── ip_pool_routes
+│   │   │   ├── __init__.py
+│   │   │   └── ip_pool_routes.py
+│   │   ├── landing_routes
+│   │   │   ├── __init__.py
+│   │   │   └── landing_routes.py
+│   │   ├── plan_routes
+│   │   │   ├── __init__.py
+│   │   │   └── plan_routes.py
+│   │   ├── radius
+│   │   │   ├── __init__.py
+│   │   │   └── radius_stats_routes.py
+│   │   ├── router_routes
+│   │   │   ├── __init__.py
+│   │   │   └── router_routes.py
+│   │   ├── tenant_routes
+│   │   │   ├── __init__.py
+│   │   │   └── tenant_routes.py
+│   │   ├── user_routes
+│   │   │   ├── __init__.py
+│   │   │   └── user_routes.py
+│   │   └── __init__.py
 │   ├── services
 │   │   ├── radius
 │   │   │   ├── __init__.py
 │   │   │   ├── radius_accounting_service.py
 │   │   │   ├── radius_reply_service.py
-│   │   │   └── radius_user_service.py
+│   │   │   ├── radius_user_service.py
+│   │   │   └── tenant_prefix_service.py
 │   │   ├── __init__.py
 │   │   ├── active_session_service.py
 │   │   ├── auth_service.py
@@ -209,6 +282,8 @@ hotspot_saas
 │   │   │   │   └── edit_user_modal.html
 │   │   │   └── flash_messages.html
 │   │   ├── dashboard
+│   │   │   ├── contact.html
+│   │   │   ├── dashboard.html
 │   │   │   └── index.html
 │   │   ├── errors
 │   │   │   ├── 400.html
@@ -245,7 +320,8 @@ hotspot_saas
 ├── logs
 ├── scripts
 │   ├── check_env.py
-│   └── generate_keys.py
+│   ├── generate_keys.py
+│   └── migrate_radius_users_to_prefix.py
 ├── tests
 │   ├── __init__.py
 │   └── connection_mk.py

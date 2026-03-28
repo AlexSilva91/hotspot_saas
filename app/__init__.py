@@ -13,20 +13,7 @@ from .config import Config
 from app.models.user import User
 
 # Blueprints
-from app.routes.auth_routes import auth_bp
-from app.routes.user_routes import user_bp
-from app.routes.tenant_routes import tenant_bp
-from app.routes.plan_routes import plan_bp
-from app.routes.router_routes import router_bp
-from app.routes.hotspot_user_routes import hotspot_user_bp
-from app.routes.hotspot_template_routes import hotspot_template_bp
-from app.routes.bypass_device_routes import bypass_device_bp
-from app.routes.ip_pool_routes import ip_pool_bp
-from app.routes.active_session_routes import active_session_bp
-from app.routes.dashboard_routes import dashboard_bp
-from app.routes.radius.radius_stats_routes import radius_stats_bp
-from app.routes.landing_routes import landing_bp
-from app.routes.error_test_routes import error_test_bp
+from app.routes import init_routes
 
 # CLI
 from app.cli import register_cli
@@ -85,20 +72,7 @@ def create_app():
     register_error_handlers_routes(app)
 
     # -------------------- BLUEPRINTS --------------------
-    app.register_blueprint(landing_bp)
-    app.register_blueprint(auth_bp)
-    app.register_blueprint(dashboard_bp)
-    app.register_blueprint(user_bp)
-    app.register_blueprint(tenant_bp)
-    app.register_blueprint(plan_bp)
-    app.register_blueprint(router_bp)
-    app.register_blueprint(hotspot_user_bp)
-    app.register_blueprint(hotspot_template_bp)
-    app.register_blueprint(bypass_device_bp)
-    app.register_blueprint(ip_pool_bp)
-    app.register_blueprint(active_session_bp)
-    app.register_blueprint(radius_stats_bp)
-    app.register_blueprint(error_test_bp)  # blueprint apenas para testar erros
+    init_routes(app)
 
     # -------------------- JINJA FILTERS --------------------
     app.jinja_env.filters["datetime_br"] = datetime_br
