@@ -1,30 +1,24 @@
-<dialog id="editDevice_{{ device.id }}" class="modal">
+<dialog id="changeTypeDevice_{{ device.id }}" class="modal">
 
     <div class="modal-header">
-        <h3>Editar Dispositivo</h3>
+        <h3>Alterar Tipo de Binding</h3>
     </div>
 
-    <form method="POST" action="/bypass-devices/{{ device.id }}/edit">
+    <form method="POST" action="/bypass-devices/{{ device.id }}/change-type">
 
         <div class="modal-body">
 
-            <label>Roteador</label>
-            <input type="text"
-                   value="{{ device.router.name }} ({{ device.router.ip_address }})"
-                   disabled>
-
             <label>MAC Address</label>
             <input type="text"
-                   name="mac_address"
                    value="{{ device.mac_address }}"
-                   required>
+                   disabled>
 
-            <label>Comentário</label>
+            <label>Tipo atual</label>
             <input type="text"
-                   name="comment"
-                   value="{{ device.comment if device.comment else '' }}">
+                   value="{{ device.binding_type or 'bypassed' }}"
+                   disabled>
 
-            <label>Tipo de Binding</label>
+            <label>Novo Tipo</label>
             <select name="binding_type" required>
                 <option value="bypassed"
                         {% if device.binding_type == "bypassed" %}selected{% endif %}>
@@ -40,25 +34,15 @@
                 </option>
             </select>
 
-            <label>Status</label>
-            <select name="active" required>
-                <option value="1" {% if device.active %}selected{% endif %}>
-                    Ativo
-                </option>
-                <option value="0" {% if not device.active %}selected{% endif %}>
-                    Inativo
-                </option>
-            </select>
-
         </div>
 
         <div class="modal-footer">
             <button type="button" class="button secondary"
-                    onclick="document.getElementById('editDevice_{{ device.id }}').close()">
+                    onclick="document.getElementById('changeTypeDevice_{{ device.id }}').close()">
                 Cancelar
             </button>
             <button type="submit" class="button primary">
-                Salvar
+                Confirmar
             </button>
         </div>
 

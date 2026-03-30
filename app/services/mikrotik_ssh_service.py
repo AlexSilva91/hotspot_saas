@@ -409,13 +409,37 @@ class MikroTikSSHService:
     async def add_bypass_mac(self, mac, server, comment=""):
         """Adiciona um MAC address como bypassed no hotspot."""
         comment_part = f' comment="{comment}"' if comment else ""
-        await self.safe_add(
-            "/ip hotspot ip-binding",
-            f"mac-address={mac}",
-            f"/ip hotspot ip-binding add mac-address={mac} server={server} type=bypassed{comment_part}",
-            f"/ip hotspot ip-binding remove [find mac-address={mac}]",
+        cmd = f'/ip hotspot ip-binding add mac-address={mac} server={server} type=bypassed{comment_part}'
+        print(f"[DEBUG] Executando: {cmd}")
+        result = await self.conn.run(cmd)
+        print(f"[DEBUG] stdout: {repr(result.stdout)}")
+        print(f"[DEBUG] stderr: {repr(result.stderr)}")
+        print(f"[DEBUG] exit_status: {result.exit_status}")
+    
+    async def disable_bypass_mac(self, mac):
+        """Desativa um ip-binding: muda type para blocked e disabled=yes."""
+        await self.exec(
+            f"/ip hotspot ip-binding set [find mac-address={mac}] type=blocked disabled=yes"
         )
 
+    async def enable_bypass_mac(self, mac):
+        """Ativa um ip-binding: muda type para bypassed e disabled=no."""
+        await self.exec(
+            f"/ip hotspot ip-binding set [find mac-address={mac}] type=regular disabled=no"
+        )
+
+    async def set_binding_type(self, mac, binding_type):
+        """
+        Muda o type de um ip-binding existente.
+        binding_type: 'blocked' | 'bypassed' | 'regular'
+        """
+        if binding_type not in ("blocked", "bypassed", "regular"):
+            raise Exception(f"Type inválido: {binding_type}. Use blocked, bypassed ou regular.")
+
+        await self.exec(
+            f"/ip hotspot ip-binding set [find mac-address={mac}] type={binding_type}"
+        )
+    
     async def add_walled_garden_ip(self, dst_address, dst_port=None, protocol="tcp", comment=""):
         """Adiciona uma entrada no walled-garden IP (acesso sem autenticação)."""
         port_part = f" dst-port={dst_port}" if dst_port else ""

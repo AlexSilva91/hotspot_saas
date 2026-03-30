@@ -21,7 +21,7 @@ class Router(UserMixin, db.Model):
     name = db.Column(db.String(100), nullable=False)
 
     ip_address = db.Column(db.String(50), nullable=False)
-
+    hotspot_name = db.Column(db.String(100), default="hotspot1")
     api_port = db.Column(db.Integer, default=8728)
 
     username = db.Column(db.String(100))

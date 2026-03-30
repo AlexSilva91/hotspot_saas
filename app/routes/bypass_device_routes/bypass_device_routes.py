@@ -24,3 +24,13 @@ def update_device(device_id):
 @login_required
 def delete_device(device_id):
     return BypassDeviceController.delete(device_id)
+
+@bypass_device_bp.route("/bypass-devices/<uuid:device_id>/enable", methods=["POST"])
+@login_required
+def enable_device(device_id):
+    return BypassDeviceController.enable(device_id)
+
+@bypass_device_bp.route("/bypass-devices/<uuid:device_id>/change-type", methods=["POST"])
+@login_required
+def change_type_device(device_id):
+    return BypassDeviceController.change_type(device_id)

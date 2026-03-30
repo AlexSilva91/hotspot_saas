@@ -18,7 +18,10 @@ class BypassDevice(UserMixin, db.Model):
     )
 
     mac_address = db.Column(db.String(50))
+    
+    active = db.Column(db.Boolean, default=True, nullable=False)
 
+    binding_type = db.Column(db.String(20), default="bypassed", nullable=False)
     comment = db.Column(db.String(200))
 
     created_at = db.Column(

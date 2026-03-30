@@ -9,20 +9,15 @@ Bypass Devices
 {% include "components/flash_messages.html" %}
 
 <div class="page-header">
-
     <h2>Dispositivos em Bypass</h2>
-
     <button class="button primary"
             onclick="document.getElementById('createBypassDevice').showModal()">
         Adicionar Dispositivo
     </button>
-
     {% include "components/bypass_devices/create_bypass_device_modal.html" %}
-
 </div>
 
 <div class="table-container">
-
 <table>
 
 <thead>
@@ -30,6 +25,8 @@ Bypass Devices
     <th>Roteador</th>
     <th>MAC Address</th>
     <th>Comentário</th>
+    <th>Tipo</th>
+    <th>Status</th>
     <th>Ações</th>
 </tr>
 </thead>
@@ -37,73 +34,89 @@ Bypass Devices
 <tbody>
 
 {% for device in devices %}
-
 <tr>
-<td>
-    <span class="badge badge-info"> {{ device.router.name }} - {{ device.router.ip_address }}</span>
-</td>
-<td>
-    <span class="badge badge-info">
-        {{ device.mac_address }}
-    </span>
-</td>
 
-<td>
-    {{ device.comment if device.comment else "-" }}
-</td>
+    <td>
+        <span class="badge badge-info">
+            {{ device.router.name }} - {{ device.router.ip_address }}
+        </span>
+    </td>
 
-<td class="actions">
+    <td>
+        <span class="badge badge-info">{{ device.mac_address }}</span>
+    </td>
 
-<button class="button-icon"
-        onclick="document.getElementById('editDevice_{{ device.id }}').showModal()">
-    Editar
-</button>
+    <td>{{ device.comment if device.comment else "-" }}</td>
 
-<form method="POST"
-      action="/bypass-devices/{{ device.id }}/delete"
-      style="display:inline;">
+    <td>
+        {% if device.binding_type == "bypassed" %}
+            <span class="badge badge-success">bypassed</span>
+        {% elif device.binding_type == "blocked" %}
+            <span class="badge badge-danger">blocked</span>
+        {% else %}
+            <span class="badge badge-secondary">regular</span>
+        {% endif %}
+    </td>
 
-<button type="submit"
-        class="button-icon danger"
-        onclick="return confirm('Remover dispositivo?')">
-    Delete
-</button>
+    <td>
+        {% if device.active %}
+            <span class="badge badge-success">Ativo</span>
+        {% else %}
+            <span class="badge badge-danger">Inativo</span>
+        {% endif %}
+    </td>
 
-</form>
+    <td class="actions">
 
-</td>
+        <button class="button-icon"
+                onclick="document.getElementById('editDevice_{{ device.id }}').showModal()">
+            Editar
+        </button>
+
+        <button class="button-icon"
+                onclick="document.getElementById('changeTypeDevice_{{ device.id }}').showModal()">
+            Tipo
+        </button>
+
+        {% if device.active %}
+            <form method="POST" action="/bypass-devices/{{ device.id }}/delete" style="display:inline;">
+                <button type="submit" class="button-icon danger"
+                        onclick="return confirm('Desativar {{ device.mac_address }}?')">
+                    Desativar
+                </button>
+            </form>
+        {% else %}
+            <form method="POST" action="/bypass-devices/{{ device.id }}/enable" style="display:inline;">
+                <button type="submit" class="button-icon success">
+                    Ativar
+                </button>
+            </form>
+        {% endif %}
+
+    </td>
 
 </tr>
 
 {% include "components/bypass_devices/edit_bypass_device_modal.html" %}
+{% include "components/bypass_devices/change_type_device_modal.html" %}
 
 {% else %}
-
 <tr>
-<td colspan="3" class="empty-state">
-
-<div class="empty-state-content">
-
-<span class="empty-icon">📱</span>
-
-<p>Nenhum dispositivo em bypass</p>
-
-<button class="button primary"
-        onclick="document.getElementById('createBypassDevice').showModal()">
-    Adicionar primeiro dispositivo
-</button>
-
-</div>
-
-</td>
+    <td colspan="6" class="empty-state">
+        <div class="empty-state-content">
+            <span class="empty-icon">📱</span>
+            <p>Nenhum dispositivo em bypass</p>
+            <button class="button primary"
+                    onclick="document.getElementById('createBypassDevice').showModal()">
+                Adicionar primeiro dispositivo
+            </button>
+        </div>
+    </td>
 </tr>
-
 {% endfor %}
 
 </tbody>
-
 </table>
-
 </div>
 
 {% endblock %}
