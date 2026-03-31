@@ -42,13 +42,11 @@
         <div class="detail-item">
             <span class="detail-label">Empresa:</span>
             <span class="detail-value">
-
                 {% if router.tenant %}
                     {{ router.tenant.name }}
                 {% else %}
                     —
                 {% endif %}
-
             </span>
         </div>
 
@@ -59,15 +57,166 @@
             </span>
         </div>
 
+        {% if router.hotspot_provisioned and router.hotspot_config %}
+        <div class="detail-section">
+            <h4>Configurações do Hotspot</h4>
+            
+            <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value badge badge-success">✓ Provisionado</span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Bridge:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.bridge or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">LAN Interface:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.lan or "—" }}</code></span>
+            </div>
+
+            {% if router.hotspot_config.lan_extras %}
+            <div class="detail-item">
+                <span class="detail-label">LAN Extras:</span>
+                <span class="detail-value">
+                    {% for iface in router.hotspot_config.lan_extras %}
+                        <code>{{ iface }}</code>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+
+            <div class="detail-item">
+                <span class="detail-label">WAN Interface:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.wan or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Pool:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.pool or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">IP Range:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.ranges or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Bridge IP:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.ip or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Network:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.network or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Gateway:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.gateway or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">DHCP Server:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.dhcp or "—" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">DHCP Lease Time:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.lease_time or "1h" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Hotspot Name:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.hotspot or "hotspot1" }}</code></span>
+            </div>
+
+            <div class="detail-item">
+                <span class="detail-label">Hotspot Profile:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.profile or "hsprof1" }}</code></span>
+            </div>
+
+            {% if router.hotspot_config.dns_name %}
+            <div class="detail-item">
+                <span class="detail-label">DNS Name:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.dns_name }}</code></span>
+            </div>
+            {% endif %}
+
+            {% if router.hotspot_config.user %}
+            <div class="detail-item">
+                <span class="detail-label">Usuário Admin:</span>
+                <span class="detail-value"><code>{{ router.hotspot_config.user }}</code></span>
+            </div>
+            {% endif %}
+
+            {% if router.hotspot_config.users %}
+            <div class="detail-item">
+                <span class="detail-label">Usuários Criados:</span>
+                <span class="detail-value">
+                    {% for user in router.hotspot_config.users %}
+                        <code>{{ user }}</code>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+
+            {% if router.hotspot_config.user_profiles %}
+            <div class="detail-item">
+                <span class="detail-label">Perfis de Usuário:</span>
+                <span class="detail-value">
+                    {% for profile in router.hotspot_config.user_profiles %}
+                        <code>{{ profile }}</code>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+
+            {% if router.hotspot_config.bypass_macs %}
+            <div class="detail-item">
+                <span class="detail-label">MACs Bypass:</span>
+                <span class="detail-value">
+                    {% for mac in router.hotspot_config.bypass_macs %}
+                        <code>{{ mac }}</code>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+
+            {% if router.hotspot_config.walled_garden %}
+            <div class="detail-item">
+                <span class="detail-label">Walled Garden:</span>
+                <span class="detail-value">
+                    {% for wg in router.hotspot_config.walled_garden %}
+                        <code>{{ wg.dst_address }}{% if wg.dst_port %}:{{ wg.dst_port }}{% endif %}</code>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+        {% elif not router.hotspot_provisioned %}
+        <div class="detail-section">
+            <h4>Configurações do Hotspot</h4>
+            <div class="detail-item">
+                <span class="detail-label">Status:</span>
+                <span class="detail-value badge badge-warning">⚠ Não provisionado</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-value" style="color: var(--text-muted);">
+                    Clique em "Provisionar Hotspot" para configurar.
+                </span>
+            </div>
+        </div>
+        {% endif %}
+
     </div>
 
     <div class="modal-footer">
-
         <button class="button primary"
                 onclick="document.getElementById('router_{{ router.id }}').close()">
             Fechar
         </button>
-
     </div>
 
 </dialog>

@@ -19,20 +19,21 @@ Routers
 </div>
 
 <div class="table-container">
-    <table>
+     <table>
         <thead>
-            <tr>
+             <tr>
                 <th>Nome</th>
                 <th>IP</th>
                 <th>Porta</th>
                 <th>Localização</th>
                 <th>Empresa</th>
+                <th>Status</th>
                 <th>Ações</th>
-            </tr>
+             </tr>
         </thead>
         <tbody>
             {% for router in routers %}
-            <tr>
+             <tr>
                 <td class="router-name">{{ router.name }}</td>
                 <td><code>{{ router.ip_address }}</code></td>
                 <td>{{ router.api_port }}</td>
@@ -44,33 +45,272 @@ Routers
                         <span class="badge badge-secondary">Sem empresa</span>
                     {% endif %}
                 </td>
-                <td class="actions">
-                    <!-- Botão Detalhes -->
-                    <button class="button-icon" onclick="document.getElementById('router_{{ router.id }}').showModal()" title="Detalhes">
-                        Detalhes
-                    </button>
-
-                    <!-- Botão Editar -->
-                    <button class="button-icon" onclick="document.getElementById('editRouter_{{ router.id }}').showModal()" title="Editar">
-                       Editar
-                    </button>
-
-                    <!-- Botão Excluir -->
-                    <form method="POST" action="/routers/{{ router.id }}/delete" style="display:inline;">
-                        <button type="submit" class="button-icon danger" onclick="return confirm('Tem certeza que deseja excluir este router?')" title="Excluir">
-                            Delete
-                        </button>
-                    </form>
+                <td>
+                    {% if router.hotspot_provisioned %}
+                        <span class="badge badge-success">✓ Provisionado</span>
+                    {% else %}
+                        <span class="badge badge-warning">⚠ Não provisionado</span>
+                    {% endif %}
                 </td>
-            </tr>
-            <!-- MODAL EDIÇÃO -->
+                <td class="actions">
+                    <div class="action-buttons">
+                        <!-- Botão Detalhes -->
+                        <button class="action-btn action-btn-info" 
+                                onclick="document.getElementById('router_{{ router.id }}').showModal()" 
+                                title="Ver detalhes do router">
+                            <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <span class="action-text">Detalhes</span>
+                        </button>
+
+                        <!-- Botão Editar -->
+                        <button class="action-btn action-btn-warning" 
+                                onclick="document.getElementById('editRouter_{{ router.id }}').showModal()" 
+                                title="Editar router">
+                            <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path>
+                                <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon>
+                            </svg>
+                            <span class="action-text">Editar</span>
+                        </button>
+                        {% if router.hotspot_provisioned %}
+                        <button class="action-btn action-btn-danger" 
+                                onclick="document.getElementById('removeHotspotModal_{{ router.id }}').showModal()" 
+                                title="Remover configuração do hotspot">
+                            <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"></path>
+                            </svg>
+                            <span class="action-text">Remover</span>
+                        </button>
+                        {% else %}
+                        <button class="action-btn action-btn-success" 
+                                onclick="document.getElementById('provisionHotspotModal_{{ router.id }}').showModal()" 
+                                title="Provisionar hotspot no router">
+                            <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14"></path>
+                            </svg>
+                            <span class="action-text">Provisionar</span>
+                        </button>
+                        {% endif %}
+
+                        <!-- Botão Excluir -->
+                        <form method="POST" action="/routers/{{ router.id }}/delete" class="inline-form">
+                            <button type="submit" class="action-btn action-btn-danger" 
+                                    onclick="return confirm('Tem certeza que deseja excluir este router?')" 
+                                    title="Excluir router permanentemente">
+                                <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                <span class="action-text">Excluir</span>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+             </tr>
+            
+            <!-- MODAL PROVISIONAR HOTSPOT -->
+            <dialog id="provisionHotspotModal_{{ router.id }}">
+                <h3>Provisionar Hotspot - {{ router.name }}</h3>
+                <form method="POST" action="/routers/{{ router.id }}/provision-hotspot">
+                    <div>
+                        <label for="bridge_{{ router.id }}">Bridge Name:</label>
+                        <input type="text" id="bridge_{{ router.id }}" name="bridge" value="bridge2" required>
+                    </div>
+
+                    <div>
+                        <label for="lan_{{ router.id }}">LAN Interface:</label>
+                        <input type="text" id="lan_{{ router.id }}" name="lan" value="ether2" required>
+                    </div>
+                    
+                    <div>
+                        <label for="lan_extras_{{ router.id }}">LAN Extras (separados por vírgula):</label>
+                        <input type="text" id="lan_extras_{{ router.id }}" name="lan_extras" placeholder="ether3,ether4">
+                        <small>Interfaces LAN adicionais separadas por vírgula</small>
+                    </div>
+
+                    <div>
+                        <label for="wan_{{ router.id }}">WAN Interface:</label>
+                        <input type="text" id="wan_{{ router.id }}" name="wan" value="ether1" required>
+                    </div>
+
+                    <div>
+                        <label for="pool_{{ router.id }}">Pool Name:</label>
+                        <input type="text" id="pool_{{ router.id }}" name="pool" value="hs-pool-20" required>
+                    </div>
+
+                    <div>
+                        <label for="ranges_{{ router.id }}">IP Range:</label>
+                        <input type="text" id="ranges_{{ router.id }}" name="ranges" value="192.168.0.2-192.168.3.254" required>
+                    </div>
+
+                    <div>
+                        <label for="ip_{{ router.id }}">Bridge IP (CIDR):</label>
+                        <input type="text" id="ip_{{ router.id }}" name="ip" value="192.168.1.1/22" required>
+                    </div>
+
+                    <div>
+                        <label for="network_{{ router.id }}">Network:</label>
+                        <input type="text" id="network_{{ router.id }}" name="network" value="192.168.0.0/22" required>
+                    </div>
+
+                    <div>
+                        <label for="gateway_{{ router.id }}">Gateway:</label>
+                        <input type="text" id="gateway_{{ router.id }}" name="gateway" value="192.168.1.1" required>
+                    </div>
+
+                    <div>
+                        <label for="hotspot_user_{{ router.id }}">Usuário Admin:</label>
+                        <input type="text" id="hotspot_user_{{ router.id }}" name="hotspot_user" value="admin" required>
+                    </div>
+
+                    <div>
+                        <label for="hotspot_password_{{ router.id }}">Senha Admin:</label>
+                        <input type="password" id="hotspot_password_{{ router.id }}" name="hotspot_password" required>
+                    </div>
+
+                    <div>
+                        <label for="dns_name_{{ router.id }}">DNS Name (opcional):</label>
+                        <input type="text" id="dns_name_{{ router.id }}" name="dns_name" placeholder="hotspot.exemplo.com">
+                    </div>
+
+                    <div>
+                        <label for="lease_time_{{ router.id }}">DHCP Lease Time:</label>
+                        <input type="text" id="lease_time_{{ router.id }}" name="lease_time" value="1h">
+                    </div>
+
+                    <div>
+                        <label for="hotspot_name_{{ router.id }}">Hotspot Name:</label>
+                        <input type="text" id="hotspot_name_{{ router.id }}" name="hotspot" value="hotspot1">
+                    </div>
+
+                    <div>
+                        <label for="profile_{{ router.id }}">Profile Name:</label>
+                        <input type="text" id="profile_{{ router.id }}" name="profile" value="hsprof1">
+                    </div>
+
+                    <div>
+                        <label for="dhcp_{{ router.id }}">DHCP Server Name:</label>
+                        <input type="text" id="dhcp_{{ router.id }}" name="dhcp" value="dhcp2">
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                        <button type="button" class="button secondary" onclick="document.getElementById('provisionHotspotModal_{{ router.id }}').close()">Cancelar</button>
+                        <button type="submit" class="button primary">Provisionar</button>
+                    </div>
+                </form>
+            </dialog>
+
+            <!-- MODAL REMOVER HOTSPOT -->
+            <dialog id="removeHotspotModal_{{ router.id }}">
+                <h3>Desprovisionar Hotspot - {{ router.name }}</h3>
+                <form method="POST" action="/routers/{{ router.id }}/remove-hotspot">
+                    <p style="color: #F4A49D; margin-bottom: 1rem;">⚠️ Atenção: Esta ação irá remover toda a configuração do hotspot!</p>
+                    
+                    <div>
+                        <label for="remove_bridge_{{ router.id }}">Bridge Name:</label>
+                        <input type="text" id="remove_bridge_{{ router.id }}" name="bridge" 
+                               value="{{ router.hotspot_config.bridge if router.hotspot_config else 'bridge2' }}" required>
+                    </div>
+
+                    <div>
+                        <label for="remove_lan_{{ router.id }}">LAN Interface:</label>
+                        <input type="text" id="remove_lan_{{ router.id }}" name="lan" 
+                               value="{{ router.hotspot_config.lan if router.hotspot_config else 'ether2' }}" required>
+                    </div>
+                    
+                    <div>
+                        <label for="remove_lan_extras_{{ router.id }}">LAN Extras (separados por vírgula):</label>
+                        <input type="text" id="remove_lan_extras_{{ router.id }}" name="lan_extras" 
+                               value="{{ router.hotspot_config.lan_extras|join(',') if router.hotspot_config and router.hotspot_config.lan_extras else '' }}">
+                        <small>Interfaces LAN adicionais separadas por vírgula</small>
+                    </div>
+
+                    <div>
+                        <label for="remove_wan_{{ router.id }}">WAN Interface:</label>
+                        <input type="text" id="remove_wan_{{ router.id }}" name="wan" 
+                               value="{{ router.hotspot_config.wan if router.hotspot_config else 'ether1' }}" required>
+                    </div>
+
+                    <div>
+                        <label for="remove_pool_{{ router.id }}">Pool Name:</label>
+                        <input type="text" id="remove_pool_{{ router.id }}" name="pool" 
+                               value="{{ router.hotspot_config.pool if router.hotspot_config else 'hs-pool-20' }}" required>
+                    </div>
+
+                    <div>
+                        <label for="remove_ip_{{ router.id }}">Bridge IP:</label>
+                        <input type="text" id="remove_ip_{{ router.id }}" name="ip" 
+                               value="{{ router.hotspot_config.ip if router.hotspot_config else '192.168.1.1/22' }}" required>
+                    </div>
+
+                    <div>
+                        <label for="remove_network_{{ router.id }}">Network:</label>
+                        <input type="text" id="remove_network_{{ router.id }}" name="network" 
+                               value="{{ router.hotspot_config.network if router.hotspot_config else '192.168.0.0/22' }}" required>
+                    </div>
+
+                    <div>
+                        <label for="remove_gateway_{{ router.id }}">Gateway:</label>
+                        <input type="text" id="remove_gateway_{{ router.id }}" name="gateway" 
+                               value="{{ router.hotspot_config.gateway if router.hotspot_config else '192.168.1.1' }}">
+                    </div>
+
+                    <div>
+                        <label for="remove_hotspot_{{ router.id }}">Hotspot Name:</label>
+                        <input type="text" id="remove_hotspot_{{ router.id }}" name="hotspot" 
+                               value="{{ router.hotspot_config.hotspot if router.hotspot_config else 'hotspot1' }}">
+                    </div>
+
+                    <div>
+                        <label for="remove_profile_{{ router.id }}">Profile Name:</label>
+                        <input type="text" id="remove_profile_{{ router.id }}" name="profile" 
+                               value="{{ router.hotspot_config.profile if router.hotspot_config else 'hsprof1' }}">
+                    </div>
+
+                    <div>
+                        <label for="remove_dhcp_{{ router.id }}">DHCP Server Name:</label>
+                        <input type="text" id="remove_dhcp_{{ router.id }}" name="dhcp" 
+                               value="{{ router.hotspot_config.dhcp if router.hotspot_config else 'dhcp2' }}">
+                    </div>
+
+                    <div>
+                        <label for="remove_users_{{ router.id }}">Usuários para remover (separados por vírgula):</label>
+                        <input type="text" id="remove_users_{{ router.id }}" name="users" 
+                               value="{% if router.hotspot_config and router.hotspot_config.users %}{{ router.hotspot_config.users|join(',') }}{% else %}admin{% endif %}">
+                        <small>Usuários a serem removidos separados por vírgula</small>
+                    </div>
+
+                    <div>
+                        <label for="remove_user_profiles_{{ router.id }}">Perfis de usuário (separados por vírgula):</label>
+                        <input type="text" id="remove_user_profiles_{{ router.id }}" name="user_profiles" 
+                               value="{% if router.hotspot_config and router.hotspot_config.user_profiles %}{{ router.hotspot_config.user_profiles|join(',') }}{% endif %}">
+                        <small>Perfis de usuário a serem removidos separados por vírgula</small>
+                    </div>
+
+                    <div>
+                        <label for="remove_bypass_macs_{{ router.id }}">MACs Bypass (separados por vírgula):</label>
+                        <input type="text" id="remove_bypass_macs_{{ router.id }}" name="bypass_macs" 
+                               value="{% if router.hotspot_config and router.hotspot_config.bypass_macs %}{{ router.hotspot_config.bypass_macs|join(',') }}{% endif %}">
+                        <small>MACs bypass a serem removidos separados por vírgula</small>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                        <button type="button" class="button secondary" onclick="document.getElementById('removeHotspotModal_{{ router.id }}').close()">Cancelar</button>
+                        <button type="submit" class="button danger">Remover Hotspot</button>
+                    </div>
+                </form>
+            </dialog>
+
+            <!-- MODAL DETALHES -->
             {% include "components/routers/details_router_modal.html" %}
             <!-- MODAL EDIÇÃO -->
             {% include "components/routers/edit_router_modal.html" %}
 
             {% else %}
-            <tr>
-                <td colspan="4" class="empty-state">
+             <tr>
+                <td colspan="7" class="empty-state">
                     <div class="empty-state-content">
                         <span class="empty-icon">📡</span>
                         <p>Nenhum router encontrado</p>
@@ -79,10 +319,9 @@ Routers
                         </button>
                     </div>
                 </td>
-            </tr>
+             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
 {% endblock %}

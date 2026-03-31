@@ -1,3 +1,4 @@
+# app/models/router.py
 import uuid
 from app.extensions import db
 from flask_login import UserMixin
@@ -29,6 +30,10 @@ class Router(UserMixin, db.Model):
     password = db.Column(db.String(200))
 
     location = db.Column(db.String(150))
+    
+    hotspot_provisioned = db.Column(db.Boolean, default=False)
+    
+    hotspot_config = db.Column(db.JSON, nullable=True)
 
     created_at = db.Column(
         db.DateTime,

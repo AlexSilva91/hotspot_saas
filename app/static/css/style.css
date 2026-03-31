@@ -4,31 +4,29 @@
 /* ===== VARIÁVEIS - TEMA SOLVEON TECHNOLOGY ===== */
 :root {
     /* Cores extraídas diretamente do logo */
-    --bg-primary: #060E1A;          /* Azul-preto profundo do fundo do logo */
-    --bg-secondary: #0A1628;        /* Azul escuro metálico */
-    --bg-tertiary: #102040;         /* Azul médio com tom de aço */
-    --bg-elevated: #1A3058;         /* Azul elevado, reflexo metálico */
+    --bg-primary: #060E1A;
+    --bg-secondary: #0A1628;
+    --bg-tertiary: #102040;
+    --bg-elevated: #1A3058;
 
-    --text-primary: #D4E4F4;        /* Prata-azulado, cor das letras SOLVEON */
-    --text-secondary: #8AAEC8;      /* Azul-prata médio */
-    --text-muted: #4A6A8A;          /* Azul acinzentado suave */
+    --text-primary: #D4E4F4;
+    --text-secondary: #8AAEC8;
+    --text-muted: #4A6A8A;
     --text-inverse: #060E1A;
 
-    /* Neons baseados no brilho do logo */
-    --neon-blue: #00A8E8;           /* Ciano elétrico do brilho do ícone S */
-    --neon-cyan: #00D4FF;           /* Ciano brilhante dos circuitos */
-    --neon-purple: #2060C0;         /* Azul royal dos reflexos metálicos */
-    --neon-pink: #0080CC;           /* Azul médio dos detalhes */
+    --neon-blue: #00A8E8;
+    --neon-cyan: #00D4FF;
+    --neon-purple: #2060C0;
+    --neon-pink: #0080CC;
 
-    /* Tons metálicos do texto SOLVEON */
-    --metal-light: #C8DCF0;         /* Prata clara, topo das letras */
-    --metal-mid: #8AAEC8;           /* Prata média */
-    --metal-dark: #3A5A7A;          /* Aço escuro, sombra das letras */
-    --circuit-glow: #006699;        /* Azul dos traços de circuito */
+    --metal-light: #C8DCF0;
+    --metal-mid: #8AAEC8;
+    --metal-dark: #3A5A7A;
+    --circuit-glow: #006699;
 
-    --accent-primary: #0070B8;      /* Azul principal do logo */
-    --accent-secondary: #0095E0;    /* Azul ciano dos destaques */
-    --accent-neon: #00BFFF;         /* Ciano máximo, ponto de luz do ícone */
+    --accent-primary: #0070B8;
+    --accent-secondary: #0095E0;
+    --accent-neon: #00BFFF;
     --accent-success: #0D9E6A;
     --accent-danger: #C0392B;
     --accent-warning: #D4860A;
@@ -53,7 +51,6 @@
     --radius-lg: 0.625rem;
     --radius-xl: 0.875rem;
 
-    /* Tipografia inspirada no logo — Exo 2 para o display, Rajdhani para subtítulos */
     --font-sans: 'Exo 2', 'Segoe UI', system-ui, sans-serif;
     --font-mono: 'Share Tech Mono', 'Fira Code', monospace;
     --font-logo: 'Exo 2', 'Rajdhani', var(--font-sans);
@@ -75,7 +72,6 @@ body {
     position: relative;
 }
 
-/* Grade de circuito sutil — referência direta aos traços do logo */
 body::before {
     content: '';
     position: fixed;
@@ -107,7 +103,6 @@ header {
     flex-wrap: wrap;
 }
 
-/* Logo Container */
 .logo-container {
     display: flex;
     flex-direction: column;
@@ -120,7 +115,6 @@ header {
     font-size: 2rem;
     font-weight: 800;
     letter-spacing: 2px;
-    /* Gradiente metálico fiel ao texto "SOLVEON" do logo */
     background: linear-gradient(
         180deg,
         var(--metal-light) 0%,
@@ -145,7 +139,6 @@ header {
     color: var(--neon-blue);
     margin-top: -3px;
     opacity: 0.85;
-    /* Linha decorativa flanqueando o texto — idêntica ao "—TECHNOLOGY—" do logo */
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -164,7 +157,6 @@ header {
     background: linear-gradient(90deg, var(--neon-blue), transparent);
 }
 
-/* Scan line no logo */
 .logo-container::after {
     content: '';
     position: absolute;
@@ -322,7 +314,7 @@ main {
 }
 .flash-message.flash-error::before { content: '✕'; color: var(--accent-danger); }
 
-/* ===== BOTÕES ===== */
+/* ===== BOTÕES GERAIS ===== */
 button, .button {
     display: inline-flex;
     align-items: center;
@@ -418,7 +410,6 @@ table {
     position: relative;
 }
 
-/* Barra metálica no topo da tabela — como o brilho horizontal das letras */
 table::before {
     content: '';
     position: absolute;
@@ -450,14 +441,14 @@ table td {
     color: var(--text-secondary);
     font-size: 0.9rem;
     background: transparent;
-}
-
-table tr:last-child td { border-bottom: none; }
-
-table tbody tr {
     transition: all 0.2s ease;
 }
 
+table tr:last-child td { 
+    border-bottom: none; 
+}
+
+/* Hover em toda a linha - incluindo TODAS as células */
 table tbody tr:hover td {
     background: rgba(0, 112, 184, 0.08);
     color: var(--text-primary);
@@ -467,13 +458,6 @@ table tbody tr:hover {
     box-shadow: inset 0 0 0 1px rgba(0, 168, 232, 0.15);
 }
 
-table td:last-child {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
 td[colspan] {
     text-align: center;
     color: var(--text-muted);
@@ -481,7 +465,147 @@ td[colspan] {
     padding: 2rem !important;
 }
 
-/* ===== FORMULÁRIOS DE PÁGINA ===== */
+/* ===== ACTION BUTTONS ===== */
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    z-index: 1;
+}
+
+.action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.4s ease;
+    z-index: -1;
+}
+
+.action-btn:hover::before {
+    left: 100%;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-neon);
+}
+
+/* Quando a linha da tabela está em hover, os botões mantêm suas cores mas ganham destaque */
+table tbody tr:hover .action-btn {
+    filter: brightness(1.1);
+}
+
+.action-icon {
+    width: 12px;
+    height: 12px;
+    stroke-width: 2;
+    flex-shrink: 0;
+}
+
+.action-text {
+    font-size: 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Variantes de cores dos botões */
+.action-btn-info {
+    background: linear-gradient(135deg, #1a3a5a, #0a1e34);
+    color: var(--neon-blue);
+    border: 1px solid rgba(0, 168, 232, 0.3);
+}
+
+.action-btn-info:hover {
+    color: var(--neon-cyan);
+    border-color: rgba(0, 168, 232, 0.6);
+    box-shadow: 0 0 12px rgba(0, 168, 232, 0.25);
+}
+
+.action-btn-warning {
+    background: linear-gradient(135deg, #5a3a1a, #34200a);
+    color: #ffb347;
+    border: 1px solid rgba(255, 180, 71, 0.3);
+}
+
+.action-btn-warning:hover {
+    color: #ffcc80;
+    border-color: rgba(255, 180, 71, 0.6);
+    box-shadow: 0 0 12px rgba(255, 180, 71, 0.25);
+}
+
+.action-btn-success {
+    background: linear-gradient(135deg, #0d6a3a, #0a4a2a);
+    color: #5affb3;
+    border: 1px solid rgba(90, 255, 179, 0.3);
+}
+
+.action-btn-success:hover {
+    color: #a5ffcc;
+    border-color: rgba(90, 255, 179, 0.6);
+    box-shadow: 0 0 12px rgba(90, 255, 179, 0.25);
+}
+
+.action-btn-danger {
+    background: linear-gradient(135deg, #6a1a1a, #4a0a0a);
+    color: #ff6b6b;
+    border: 1px solid rgba(255, 107, 107, 0.3);
+}
+
+.action-btn-danger:hover {
+    color: #ff9999;
+    border-color: rgba(255, 107, 107, 0.6);
+    box-shadow: 0 0 12px rgba(255, 107, 107, 0.25);
+}
+
+/* Ajuste na coluna de ações */
+table td.actions {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* Formulário inline */
+.inline-form {
+    display: inline-flex;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    border: none;
+}
+
+.inline-form::before {
+    display: none;
+}
+
+/* ===== FORMULÁRIOS ===== */
 form {
     background: rgba(10, 22, 40, 0.8);
     backdrop-filter: blur(12px);
@@ -506,7 +630,7 @@ form::before {
 
 form div { margin-bottom: 1.5rem; }
 
-/* ===== FORMULÁRIOS INLINE (delete, ações de tabela) ===== */
+/* Formulários inline */
 form[style*="display:inline"],
 form[style*="display: inline"] {
     all: unset;
@@ -514,7 +638,7 @@ form[style*="display: inline"] {
     align-items: center;
 }
 
-/* Formulário dentro de dialog: sem card */
+/* Formulário dentro de dialog */
 dialog form {
     all: unset;
     display: block;
@@ -590,7 +714,7 @@ small[style*="color: red"] {
     font-weight: 500;
 }
 
-/* ===== DIALOGS — CENTRALIZADOS ===== */
+/* ===== DIALOGS ===== */
 dialog {
     position: fixed;
     inset: 0;
@@ -608,6 +732,7 @@ dialog {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     color: var(--text-primary);
+    z-index: 1000;
 }
 
 dialog::backdrop {
@@ -668,7 +793,6 @@ dialog button {
     backdrop-filter: blur(6px);
 }
 
-/* Shine animado */
 .badge::before {
     content: '';
     position: absolute;
@@ -678,8 +802,6 @@ dialog button {
     transform: rotate(45deg);
     animation: shine 5s linear infinite;
 }
-
-/* ===== CORES BASE ===== */
 
 .badge-info {
     background: rgba(0, 149, 224, 0.18);
@@ -709,8 +831,6 @@ dialog button {
     box-shadow: 0 0 10px rgba(192, 57, 43, 0.25);
 }
 
-/* ===== CORES EXTRA (ANTI-COLISÃO HASH) ===== */
-
 .badge-purple {
     background: rgba(128, 0, 255, 0.18);
     color: #C77DFF;
@@ -739,18 +859,10 @@ dialog button {
     box-shadow: 0 0 10px rgba(255, 140, 0, 0.25);
 }
 
-/* ===== HOVER EFFECT ===== */
 .badge:hover {
     transform: translateY(-1px);
     filter: brightness(1.2);
     box-shadow: 0 0 18px rgba(0, 168, 232, 0.35);
-}
-
-/* ===== VARIANTE NEON (opcional premium) ===== */
-.badge-neon {
-    border-color: var(--neon-cyan);
-    box-shadow: 0 0 12px var(--neon-cyan), inset 0 0 6px rgba(0, 212, 255, 0.2);
-    color: var(--neon-cyan);
 }
 
 /* ===== SCROLLBAR ===== */
@@ -777,7 +889,6 @@ dialog button {
     overflow: hidden;
 }
 
-/* Reflexo metálico no topo — como a brilhância do ícone S */
 .card::after {
     content: '';
     position: absolute;
@@ -822,10 +933,6 @@ nav a.active {
     background: rgba(0, 112, 184, 0.12);
 }
 
-/* ===== EFEITOS GLOW ===== */
-.glow { transition: all 0.3s ease; }
-.glow:hover { box-shadow: var(--shadow-neon-hover); border-color: var(--neon-blue); }
-
 /* ===== TOOLTIPS ===== */
 [data-tooltip] { position: relative; }
 
@@ -859,69 +966,33 @@ nav a.active {
     transform: translateX(-50%) translateY(-5px);
 }
 
-/* ===== ANIMAÇÃO LOADING ===== */
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-}
-.loading { animation: pulse 1.5s ease infinite; }
-
-/* ===== RESPONSIVIDADE ===== */
-@media (max-width: 768px) {
-    header {
-        padding: 1rem;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .logo-container {
-        align-items: center;
-        text-align: center;
-    }
-
-    .logo-main {
-        font-size: 1.7rem;
-    }
-
-    .logo-sub {
-        font-size: 0.68rem;
-        letter-spacing: 3px;
-    }
-
-    nav {
-        flex-direction: column;
-        align-items: stretch;
-        width: 100%;
-    }
-
-    nav a {
-        text-align: center;
-    }
-
-    nav a:last-child { margin-left: 0; }
-
-    main { padding: 0 1rem; }
-
-    table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    table td:last-child {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    dialog {
-        width: 95%;
-        padding: 1.5rem;
-    }
-
-    form { padding: 1.5rem; }
+/* Tooltip personalizado para action buttons */
+.action-btn[title] {
+    position: relative;
 }
 
-/* ===== PAGE WRAPPER PARA FOOTER FIXO ===== */
+.action-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.5rem;
+    background: var(--bg-elevated);
+    color: var(--neon-cyan);
+    font-size: 0.6rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(0, 168, 232, 0.3);
+    pointer-events: none;
+    z-index: 1000;
+    margin-bottom: 0.3rem;
+    font-family: var(--font-sans);
+    letter-spacing: 0.5px;
+}
+
+/* ===== PAGE WRAPPER ===== */
 html, body {
     height: 100%;
     margin: 0;
@@ -975,13 +1046,7 @@ footer::before {
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg,
-        transparent,
-        var(--neon-blue),
-        var(--neon-cyan),
-        var(--neon-blue),
-        transparent
-    );
+    background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-cyan), var(--neon-blue), transparent);
     animation: footerScan 10s linear infinite;
 }
 
@@ -998,21 +1063,97 @@ footer:hover::before {
     animation-duration: 4s;
 }
 
-/* Ajuste para o hr */
-hr {
-    border: none;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
-    margin: 0;
-    width: 100%;
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1024px) {
+    .action-buttons {
+        gap: 0.3rem;
+    }
+    
+    .action-btn {
+        padding: 0.35rem 0.6rem;
+    }
+    
+    .action-text {
+        font-size: 0.6rem;
+    }
+    
+    .action-icon {
+        width: 10px;
+        height: 10px;
+    }
 }
 
-/* Ajuste responsivo */
 @media (max-width: 768px) {
-    .main-content {
+    header {
         padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
     }
 
+    .logo-container {
+        align-items: center;
+        text-align: center;
+    }
+
+    .logo-main {
+        font-size: 1.7rem;
+    }
+
+    .logo-sub {
+        font-size: 0.68rem;
+        letter-spacing: 3px;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    nav a {
+        text-align: center;
+    }
+
+    nav a:last-child { margin-left: 0; }
+
+    main { padding: 0 1rem; }
+    .main-content { padding: 1rem; }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    table td.actions {
+        white-space: normal;
+    }
+    
+    .action-buttons {
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+    
+    .action-btn {
+        padding: 0.4rem 0.7rem;
+    }
+    
+    .action-text {
+        font-size: 0.65rem;
+    }
+    
+    .action-icon {
+        width: 12px;
+        height: 12px;
+    }
+
+    dialog {
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    form { padding: 1.5rem; }
+    
     footer {
         padding: 1rem;
         font-size: 0.75rem;

@@ -8,112 +8,296 @@ Planos
 
 {% include "components/flash_messages.html" %}
 
-<h2>Planos</h2>
+<div class="page-header">
+    <h2>Planos</h2>
+    {% if current_user.is_staff %}
+    <button class="button primary" onclick="document.getElementById('createPlan').showModal()">
+        <svg class="button-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Criar Plano
+    </button>
+    {% include "components/plans/create_plan_modal.html" %}
+    {% endif %}
+</div>
 
-{% if current_user.is_staff %}
-<button class="button primary" onclick="document.getElementById('createPlan').showModal()">
-    Criar Plano
-</button>
+<div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Máx. Roteadores</th>
+                <th>Máx. Usuários</th>
+                <th>Máx. Hotspot Users</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plans %}
+            <tr>
+                <td class="plan-name">{{ plan.name }}</td>
+                <td><span class="badge badge-info">{{ plan.max_routers }}</span></td>
+                <td><span class="badge badge-info">{{ plan.max_users }}</span></td>
+                <td><span class="badge badge-info">{{ plan.max_hotspot_users }}</span></td>
+                <td class="actions">
+                    <div class="action-buttons">
+                        <button class="action-btn action-btn-info" 
+                                onclick="document.getElementById('view_{{ plan.id }}').showModal()" 
+                                title="Ver detalhes do plano">
+                            <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <span class="action-text">Detalhes</span>
+                        </button>
 
-{% include "components/plans/create_plan_modal.html" %}
-{% endif %}
+                        {% if current_user.is_staff %}
+                        <button class="action-btn action-btn-warning" 
+                                onclick="document.getElementById('edit_{{ plan.id }}').showModal()" 
+                                title="Editar plano">
+                            <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/>
+                                <polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/>
+                            </svg>
+                            <span class="action-text">Editar</span>
+                        </button>
 
-<table border="1" width="60%">
+                        <form method="POST" action="/plans/{{ plan.id }}/delete" class="inline-form">
+                            <button type="submit" class="action-btn action-btn-danger" 
+                                    onclick="return confirm('Tem certeza que deseja excluir este plano?')" 
+                                    title="Excluir plano permanentemente">
+                                <svg class="action-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                </svg>
+                                <span class="action-text">Excluir</span>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
 
-<thead>
-    <tr>
-        <th>Nome</th>
-        <th>Máx. Roteadores</th>
-        <th>Máx. Usuários</th>
-        <th>Máx. Hotspot Users</th>
-        <th>Ações</th>
-    </tr>
-</thead>
-
-<tbody>
-
-    {% for plan in plans %}
-
-    <tr>
-
-        <td>{{ plan.name }}</td>
-        <td>{{ plan.max_routers }}</td>
-        <td>{{ plan.max_users }}</td>
-        <td>{{ plan.max_hotspot_users }}</td>
-
-        <td>
-
-            <button
-                onclick="document.getElementById('view_{{ plan.id }}').showModal()"
-            >
-                Detalhes
-            </button>
-
+            <!-- Modal Detalhes -->
+            <dialog id="view_{{ plan.id }}">
+                <div class="modal-header">
+                    <h3>Detalhes do Plano</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="detail-item">
+                        <span class="detail-label">Nome:</span>
+                        <span class="detail-value">{{ plan.name }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Máx. Roteadores:</span>
+                        <span class="detail-value"><span class="badge badge-info">{{ plan.max_routers }}</span></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Máx. Usuários:</span>
+                        <span class="detail-value"><span class="badge badge-info">{{ plan.max_users }}</span></span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Máx. Hotspot Users:</span>
+                        <span class="detail-value"><span class="badge badge-info">{{ plan.max_hotspot_users }}</span></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="button primary" onclick="document.getElementById('view_{{ plan.id }}').close()">
+                        Fechar
+                    </button>
+                </div>
+            </dialog>
 
             {% if current_user.is_staff %}
-
-            <button
-                onclick="document.getElementById('edit_{{ plan.id }}').showModal()">
-                Editar
-            </button>
-
-            <form
-                method="POST"
-                action="/plans/{{ plan.id }}/delete"
-                style="display:inline;">
-                <button type="submit" class="button-icon danger">
-                    Remover
-                </button>
-            </form>
-
+                {% include "components/plans/edit_plan_modal.html" %}
             {% endif %}
 
-        </td>
+            {% else %}
+            <tr>
+                <td colspan="5" class="empty-state">
+                    <div class="empty-state-content">
+                        <span class="empty-icon">📋</span>
+                        <p>Nenhum plano encontrado</p>
+                        {% if current_user.is_staff %}
+                        <button class="button primary" onclick="document.getElementById('createPlan').showModal()">
+                            Criar primeiro plano
+                        </button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-    </tr>
+<style>
+/* Estilos específicos para a página de planos */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
 
+.page-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Exo 2', var(--font-sans);
+    position: relative;
+    display: inline-block;
+}
 
-    <!-- Modal Detalhes -->
+.page-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-blue), var(--neon-cyan));
+    border-radius: 2px;
+}
 
-    <dialog id="view_{{ plan.id }}">
+.button-icon {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+}
 
-        <h3>Detalhes do Plano</h3>
+.table-container {
+    overflow-x: auto;
+}
 
-        <p>
-            <strong>Nome:</strong>
-            {{ plan.name }}
-        </p>
+.plan-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
 
-        <p>
-            <strong>Máx. Roteadores:</strong>
-            {{ plan.max_routers }}
-        </p>
+/* Badges para números */
+.badge-info {
+    background: rgba(0, 149, 224, 0.18);
+    color: #60C8F0;
+    border-color: rgba(0, 149, 224, 0.5);
+    box-shadow: 0 0 10px rgba(0, 149, 224, 0.25);
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    min-width: 50px;
+    text-align: center;
+    display: inline-block;
+}
 
-        <p>
-            <strong>Máx. Usuários:</strong>
-            {{ plan.max_users }}
-        </p>
-        <p>
-            <strong>Máx. Hotspot Users:</strong>
-           {{ plan.max_hotspot_users }}
-        </p>
-        <button
-            onclick="document.getElementById('view_{{ plan.id }}').close()"
-        >
-            Fechar
-        </button>
+/* Empty State */
+.empty-state {
+    text-align: center !important;
+    padding: 3rem !important;
+}
 
-    </dialog>
+.empty-state-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
 
+.empty-icon {
+    font-size: 4rem;
+    opacity: 0.5;
+}
 
-    {% if current_user.is_staff %}
-        {% include "components/plans/edit_plan_modal.html" %}
-    {% endif %}
+.empty-state p {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
 
-    {% endfor %}
+/* Modal styles para os detalhes */
+.modal-header {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 168, 232, 0.2);
+    margin-bottom: 1rem;
+}
 
-</tbody>
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--neon-cyan);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Exo 2', var(--font-sans);
+}
 
-</table>
+.modal-body {
+    margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 168, 232, 0.2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.detail-item {
+    display: flex;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 168, 232, 0.1);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-label {
+    width: 140px;
+    font-weight: 700;
+    color: var(--neon-blue);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'Rajdhani', var(--font-sans);
+}
+
+.detail-value {
+    flex: 1;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.detail-value .badge {
+    margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .page-header h2::after {
+        width: 40px;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+    }
+    
+    .detail-label {
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 1rem;
+    }
+}
+</style>
 
 {% endblock %}

@@ -1,3 +1,5 @@
+# app/services/mikrotik_ssh_service.py
+
 import asyncio
 import asyncssh
 
@@ -74,22 +76,13 @@ class MikroTikSSHService:
         err = result.stderr.strip()
         full = f"{out} {err}".lower()
 
-        # Erros ignorados (comportamento normal do RouterOS)
-        ignored_patterns = [
-            "no such item",
-        ]
+        ignored_patterns = ["no such item"]
         if any(p in full for p in ignored_patterns):
             return out
 
-        # Erros que devem lançar exceção
         error_patterns = [
-            "failure",
-            "bad command",
-            "syntax error",
-            "no such command",
-            "invalid value",
-            "already have such",
-            "expected end of command",
+            "failure", "bad command", "syntax error", "no such command",
+            "invalid value", "already have such", "expected end of command",
             "ambiguous value",
         ]
         if any(e in full for e in error_patterns):
@@ -98,7 +91,7 @@ class MikroTikSSHService:
         return out
 
     async def exec_silent(self, command):
-        """Executa comando ignorando qualquer erro (uso interno)."""
+        """Executa comando ignorando qualquer erro."""
         try:
             return await self.exec(command)
         except Exception:
@@ -109,13 +102,7 @@ class MikroTikSSHService:
     # =========================================================================
 
     async def exists(self, path, where):
-        """
-        Verifica se um recurso existe no RouterOS.
-
-        Estratégia: usa 'print' com count-only para evitar problemas
-        de parsing do 'where' com hífens, aspas e operadores especiais.
-        Faz grep no output do print sem where, que é mais confiável.
-        """
+        """Verifica se um recurso existe no RouterOS."""
         try:
             result = await self.conn.run(f"{path} print")
             output = result.stdout.strip()
@@ -134,16 +121,11 @@ class MikroTikSSHService:
             return False
 
     async def safe_add(self, path, where, command, rollback_cmd=None):
-        """
-        Adiciona um recurso somente se ele ainda não existir.
-        Registra rollback_cmd na pilha para desfazer em caso de falha.
-        """
+        """Adiciona um recurso somente se ele ainda não existir."""
         if await self.exists(path, where):
-            return  # já existe, ignora
+            return
 
         await self.exec(command)
-
-        # Pequena pausa para o RouterOS confirmar a escrita
         await asyncio.sleep(0.3)
 
         if not await self.exists(path, where):
@@ -165,12 +147,10 @@ class MikroTikSSHService:
     # =========================================================================
 
     async def rollback(self):
-        """Desfaz todas as operações registradas na pilha (ordem inversa)."""
-        print("⚠️  Executando rollback...")
+        """Desfaz todas as operações registradas na pilha."""
         for cmd in reversed(self.rollback_stack):
             await self.safe_remove(cmd)
         self.rollback_stack.clear()
-        print("✅ Rollback concluído")
 
     # =========================================================================
     # VALIDAÇÕES
@@ -179,26 +159,18 @@ class MikroTikSSHService:
     async def ensure_hotspot_package(self):
         """Garante que o pacote hotspot está instalado e ativo."""
         packages = await self.exec("/system package print")
-
         if "hotspot" not in packages.lower():
             raise Exception(
-                "Pacote 'hotspot' não está instalado neste RouterOS. "
-                "Instale via /system package e reinicie o equipamento."
+                "Pacote 'hotspot' não está instalado neste RouterOS."
             )
 
     async def ensure_interface_exists(self, name):
         """Garante que uma interface existe no roteador."""
         if not await self.exists("/interface", f"name={name}"):
-            raise Exception(
-                f"Interface '{name}' não encontrada. "
-                f"Verifique as interfaces disponíveis com /interface print."
-            )
+            raise Exception(f"Interface '{name}' não encontrada.")
 
     async def ensure_management_access(self):
-        """
-        Garante que SSH e Winbox continuem acessíveis mesmo após
-        o hotspot redirecionar o tráfego da bridge.
-        """
+        """Garante que SSH e Winbox continuem acessíveis após o hotspot subir."""
         services = await self.exec("/ip service print")
 
         ssh_port = "22"
@@ -328,50 +300,26 @@ class MikroTikSSHService:
     async def create_user_profile(self, name, idle_timeout="none", keepalive_timeout="2m", 
                               status_autorefresh="1m", shared_users=1, add_mac_cookie="yes",
                               mac_cookie_timeout="3d", address_list="", rate_limit=""):
-        """
-        Cria um perfil de usuário hotspot (/ip hotspot user profile).
-        
-        Parâmetros:
-        - name: Nome do perfil (obrigatório)
-        - idle_timeout: Tempo de inatividade antes de desconectar (ex: "5m", "none")
-        - keepalive_timeout: Tempo de verificação de conexão (ex: "2m")
-        - status_autorefresh: Intervalo de atualização da página de status (ex: "1m")
-        - shared_users: Número de dispositivos simultâneos (padrão: 1)
-        - add_mac_cookie: Habilita cookie MAC (yes/no)
-        - mac_cookie_timeout: Validade do cookie MAC (ex: "3d")
-        - address_list: Lista de endereços para firewall/QoS
-        - rate_limit: Limite de banda (ex: "10M/5M" para download/upload)
-        """
-        # Monta o comando base com nome
+        """Cria um perfil de usuário hotspot."""
         cmd = f'/ip hotspot user profile add name="{name}"'
         
-        # Adiciona parâmetros
         if idle_timeout:
             cmd += f' idle-timeout={idle_timeout}'
-        
         if keepalive_timeout:
             cmd += f' keepalive-timeout={keepalive_timeout}'
-        
         if status_autorefresh:
             cmd += f' status-autorefresh={status_autorefresh}'
-        
         cmd += f' shared-users={shared_users}'
         cmd += f' add-mac-cookie={add_mac_cookie}'
-        
         if mac_cookie_timeout:
             cmd += f' mac-cookie-timeout={mac_cookie_timeout}'
-        
         if address_list:
             cmd += f' address-list={address_list}'
-        
-        # Adiciona rate-limit se especificado
         if rate_limit:
             cmd += f' rate-limit="{rate_limit}"'
         
-        # Comando de rollback (remove o perfil)
         rollback_cmd = f'/ip hotspot user profile remove [find name="{name}"]'
         
-        # Verifica se já existe e cria
         await self.safe_add(
             "/ip hotspot user profile",
             f'name="{name}"',
@@ -380,20 +328,11 @@ class MikroTikSSHService:
         )
 
     async def create_user_with_profile(self, username, password, profile_name, server="all"):
-        """
-        Cria um usuário hotspot associado a um perfil específico.
-        
-        Parâmetros:
-        - username: Nome do usuário
-        - password: Senha do usuário
-        - profile_name: Nome do perfil a ser usado
-        - server: Servidor hotspot (ex: "all", "hotspot1")
-        """
+        """Cria um usuário hotspot associado a um perfil específico."""
         cmd = f'/ip hotspot user add name="{username}" password="{password}"'
         
         if profile_name:
             cmd += f' profile="{profile_name}"'
-        
         if server:
             cmd += f' server={server}'
         
@@ -410,38 +349,31 @@ class MikroTikSSHService:
         """Adiciona um MAC address como bypassed no hotspot."""
         comment_part = f' comment="{comment}"' if comment else ""
         cmd = f'/ip hotspot ip-binding add mac-address={mac} server={server} type=bypassed{comment_part}'
-        print(f"[DEBUG] Executando: {cmd}")
-        result = await self.conn.run(cmd)
-        print(f"[DEBUG] stdout: {repr(result.stdout)}")
-        print(f"[DEBUG] stderr: {repr(result.stderr)}")
-        print(f"[DEBUG] exit_status: {result.exit_status}")
+        await self.conn.run(cmd)
     
     async def disable_bypass_mac(self, mac):
-        """Desativa um ip-binding: muda type para blocked e disabled=yes."""
+        """Desativa um ip-binding."""
         await self.exec(
             f"/ip hotspot ip-binding set [find mac-address={mac}] type=blocked disabled=yes"
         )
 
     async def enable_bypass_mac(self, mac):
-        """Ativa um ip-binding: muda type para bypassed e disabled=no."""
+        """Ativa um ip-binding."""
         await self.exec(
             f"/ip hotspot ip-binding set [find mac-address={mac}] type=regular disabled=no"
         )
 
     async def set_binding_type(self, mac, binding_type):
-        """
-        Muda o type de um ip-binding existente.
-        binding_type: 'blocked' | 'bypassed' | 'regular'
-        """
+        """Muda o type de um ip-binding existente."""
         if binding_type not in ("blocked", "bypassed", "regular"):
-            raise Exception(f"Type inválido: {binding_type}. Use blocked, bypassed ou regular.")
+            raise Exception(f"Type inválido: {binding_type}")
 
         await self.exec(
             f"/ip hotspot ip-binding set [find mac-address={mac}] type={binding_type}"
         )
     
     async def add_walled_garden_ip(self, dst_address, dst_port=None, protocol="tcp", comment=""):
-        """Adiciona uma entrada no walled-garden IP (acesso sem autenticação)."""
+        """Adiciona uma entrada no walled-garden IP."""
         port_part = f" dst-port={dst_port}" if dst_port else ""
         comment_part = f' comment="{comment}"' if comment else ""
         where = f"dst-address={dst_address}"
@@ -455,145 +387,35 @@ class MikroTikSSHService:
         )
 
     # =========================================================================
-    # REMOÇÃO COMPLETA DO HOTSPOT
-    # =========================================================================
-
-    async def teardown_hotspot(self, config):
-        """
-        Remove completamente o hotspot e todos os recursos associados.
-        Ordem inversa à criação para evitar dependências.
-        """
-        print("🗑️  Removendo hotspot...")
-
-        name = config.get("hotspot", "hotspot1")
-        bridge = config.get("bridge", "bridge2")
-        pool = config.get("pool", "hs-pool-20")
-        dhcp = config.get("dhcp", "dhcp2")
-        profile = config.get("profile", "hsprof1")
-        ip = config.get("ip", "")
-        network = config.get("network", "")
-        wan = config.get("wan", "ether1")
-        lan_interfaces = config.get("lan_interfaces", [config.get("lan", "")])
-        bypass_macs = config.get("bypass_macs", [])
-        users = config.get("users", [])
-        user_profiles = config.get("user_profiles", [])
-
-        # Usuários
-        for user in users:
-            if user:
-                await self.safe_remove(f'/ip hotspot user remove [find name="{user}"]')
-
-        # Perfis de usuário
-        for profile_name in user_profiles:
-            if profile_name:
-                await self.safe_remove(f'/ip hotspot user profile remove [find name="{profile_name}"]')
-
-        # Bypass MACs
-        for mac in bypass_macs:
-            await self.safe_remove(f"/ip hotspot ip-binding remove [find mac-address={mac}]")
-
-        # Hotspot
-        await self.safe_remove(f"/ip hotspot remove [find name={name}]")
-
-        # Perfil do hotspot
-        await self.safe_remove(f"/ip hotspot profile remove [find name={profile}]")
-
-        # DHCP
-        await self.safe_remove(f"/ip dhcp-server remove [find name={dhcp}]")
-
-        # Rede DHCP
-        if network:
-            await self.safe_remove(f"/ip dhcp-server network remove [find address={network}]")
-
-        # IP da bridge
-        if ip:
-            ip_addr = ip.split("/")[0]
-            await self.safe_remove(f'/ip address remove [find address~"{ip_addr}"]')
-
-        # Pool
-        await self.safe_remove(f"/ip pool remove [find name={pool}]")
-
-        # NAT
-        await self.safe_remove(
-            f"/ip firewall nat remove [find out-interface={wan} chain=srcnat action=masquerade]"
-        )
-
-        # Ports da bridge
-        for iface in lan_interfaces:
-            if iface:
-                await self.safe_remove(
-                    f"/interface bridge port remove [find bridge={bridge} interface={iface}]"
-                )
-
-        # Bridge
-        await self.safe_remove(f"/interface bridge remove [find name={bridge}]")
-
-        print("✅ Hotspot removido com sucesso")
-
-    # =========================================================================
     # ORQUESTRAÇÃO PRINCIPAL
     # =========================================================================
 
     async def setup_hotspot(self, config):
         """
-        Provisiona o hotspot completo na ordem correta.
-
-        Config esperado:
-        {
-            "bridge":        str   - nome da bridge (ex: "bridge2")
-            "lan":           str   - interface LAN principal (ex: "ether2")
-            "lan_extras":    list  - interfaces LAN adicionais (opcional)
-            "pool":          str   - nome do pool (ex: "hs-pool-20")
-            "ranges":        str   - range de IPs (ex: "192.168.0.2-192.168.3.254")
-            "dhcp":          str   - nome do DHCP server (ex: "dhcp2")
-            "lease_time":    str   - tempo de lease (padrão: "1h")
-            "profile":       str   - nome do perfil hotspot (ex: "hsprof1")
-            "hotspot":       str   - nome do hotspot (ex: "hotspot1")
-            "ip":            str   - IP/máscara da bridge (ex: "192.168.1.1/22")
-            "network":       str   - rede (ex: "192.168.0.0/22")
-            "gateway":       str   - gateway (ex: "192.168.1.1")
-            "wan":           str   - interface WAN para NAT (ex: "ether1")
-            "user":          str   - usuário hotspot (ex: "admin") [opcional]
-            "password":      str   - senha do usuário [opcional]
-            "user_profile":  dict  - perfil de usuário hotspot (opcional)
-            "users_with_profiles": list - lista de usuários com perfis específicos (opcional)
-            "bypass_macs":   list  - MACs liberados sem login (opcional)
-            "walled_garden": list  - dicts com {dst_address, dst_port, comment} (opcional)
-            "dns_name":      str   - DNS name do hotspot (opcional)
-        }
+        Provisiona o hotspot completo.
+        
+        Args:
+            config: Dicionário com configurações do hotspot
         """
         self.rollback_stack.clear()
 
         try:
-            # 1. Valida pacote hotspot
             await self.ensure_hotspot_package()
-
-            # 2. Valida interfaces antes de qualquer criação
             await self.ensure_interface_exists(config["lan"])
             for extra in config.get("lan_extras", []):
                 await self.ensure_interface_exists(extra)
             await self.ensure_interface_exists(config["wan"])
-
-            # 3. Garante acesso SSH/Winbox após hotspot subir
             await self.ensure_management_access()
 
-            # 4. Bridge
             await self.create_bridge(config["bridge"])
-
-            # 5. Adiciona interfaces LAN à bridge
             await self.add_interface_to_bridge(config["bridge"], config["lan"])
             for extra in config.get("lan_extras", []):
                 await self.add_interface_to_bridge(config["bridge"], extra)
 
-            # 6. IP da bridge (deve vir antes do DHCP e hotspot)
             gateway = config["gateway"]
             network_cidr = config["network"]
             await self.assign_ip(config["bridge"], config["ip"], network_cidr.split("/")[0])
-
-            # 7. Pool de IPs
             await self.create_pool(config["pool"], config["ranges"])
-
-            # 8. Rede e servidor DHCP
             await self.create_dhcp_network(network_cidr, gateway)
             await self.create_dhcp(
                 config["dhcp"],
@@ -601,8 +423,6 @@ class MikroTikSSHService:
                 config["pool"],
                 config.get("lease_time", "1h"),
             )
-
-            # 9. Perfil e instância do hotspot
             await self.create_hotspot_profile(
                 config["profile"],
                 gateway,
@@ -614,11 +434,8 @@ class MikroTikSSHService:
                 config["pool"],
                 config["profile"],
             )
-
-            # 10. NAT para WAN
             await self.create_nat(config["wan"])
 
-            # 11. Cria perfis de usuário hotspot (se especificado)
             if "user_profile" in config:
                 profile = config["user_profile"]
                 await self.create_user_profile(
@@ -633,7 +450,7 @@ class MikroTikSSHService:
                     rate_limit=profile.get("rate_limit", "") 
                 )
 
-            # 12. Cria usuários com perfis específicos
+            users_created = []
             for user in config.get("users_with_profiles", []):
                 await self.create_user_with_profile(
                     username=user["username"],
@@ -641,16 +458,19 @@ class MikroTikSSHService:
                     profile_name=user.get("profile_name", ""),
                     server=user.get("server", "all")
                 )
+                users_created.append(user["username"])
 
-            # 13. Bypass MACs
+            bypass_macs_list = []
             for mac in config.get("bypass_macs", []):
                 comment = ""
                 if isinstance(mac, dict):
                     comment = mac.get("comment", "")
-                    mac = mac["mac"]
-                await self.add_bypass_mac(mac, config["hotspot"], comment)
+                    mac_addr = mac["mac"]
+                else:
+                    mac_addr = mac
+                bypass_macs_list.append(mac_addr)
+                await self.add_bypass_mac(mac_addr, config["hotspot"], comment)
 
-            # 14. Walled Garden
             for wg in config.get("walled_garden", []):
                 await self.add_walled_garden_ip(
                     wg["dst_address"],
@@ -659,55 +479,126 @@ class MikroTikSSHService:
                     wg.get("comment", ""),
                 )
 
-            # 15. Usuário padrão (se não criado via users_with_profiles)
             if "user" in config and "password" in config:
-                # Verifica se o usuário padrão já foi criado
-                user_exists = False
-                for user in config.get("users_with_profiles", []):
-                    if user.get("username") == config["user"]:
-                        user_exists = True
-                        break
-                
-                if not user_exists:
+                if config["user"] not in users_created:
                     await self.create_user(
                         config["user"],
                         config["password"],
                         config.get("user_server", "all"),
                     )
+                    users_created.append(config["user"])
 
-            print("✅ Hotspot provisionado com sucesso")
+            config["users"] = users_created
+            config["user_profiles"] = [p["name"] for p in config.get("user_profile", [])] if "user_profile" in config else []
+            config["bypass_macs"] = bypass_macs_list
+            config["lan_interfaces"] = [config["lan"]] + config.get("lan_extras", [])
 
         except Exception as e:
-            print(f"❌ Erro durante provisionamento: {e}")
             await self.rollback()
             raise
+
+    async def teardown_hotspot(self, config):
+        """
+        Remove completamente o hotspot e todos os recursos associados.
+        
+        Args:
+            config: Dicionário com configurações do hotspot a ser removido
+        """
+        name = config.get("hotspot", "hotspot1")
+        bridge = config.get("bridge", "bridge2")
+        pool = config.get("pool", "hs-pool-20")
+        dhcp = config.get("dhcp", "dhcp2")
+        profile = config.get("profile", "hsprof1")
+        ip = config.get("ip", "")
+        network = config.get("network", "")
+        wan = config.get("wan", "ether1")
+        lan_interfaces = config.get("lan_interfaces", [config.get("lan", "")])
+        bypass_macs = config.get("bypass_macs", [])
+        users = config.get("users", [])
+        user_profiles = config.get("user_profiles", [])
+        
+        default_user = config.get("user")
+        if default_user and default_user not in users:
+            users.append(default_user)
+        
+        for user in users:
+            if user:
+                await self.safe_remove(f'/ip hotspot user remove [find name="{user}"]')
+                await self.safe_remove(f'/ip hotspot user remove [find name="{user}" server={name}]')
+                await self.safe_remove(f'/ip hotspot user remove [find name="{user}" server=all]')
+
+        for profile_name in user_profiles:
+            if profile_name:
+                await self.safe_remove(f'/ip hotspot user profile remove [find name="{profile_name}"]')
+
+        for mac in bypass_macs:
+            if isinstance(mac, dict):
+                mac = mac.get("mac", mac)
+            if mac:
+                await self.safe_remove(f"/ip hotspot ip-binding remove [find mac-address={mac}]")
+
+        await self.safe_remove(f"/ip hotspot remove [find name={name}]")
+        await self.safe_remove(f"/ip hotspot remove [find where name~'hotspot']")
+        await self.safe_remove(f"/ip hotspot profile remove [find name={profile}]")
+        await self.safe_remove(f"/ip hotspot profile remove [find where name~'hsprof']")
+        await self.safe_remove(f"/ip dhcp-server remove [find name={dhcp}]")
+        await self.safe_remove(f"/ip dhcp-server remove [find where interface={bridge}]")
+        
+        if network:
+            await self.safe_remove(f"/ip dhcp-server network remove [find address={network}]")
+            await self.safe_remove(f'/ip dhcp-server network remove [find comment="hotspot network"]')
+        
+        gateway = config.get("gateway", "")
+        if gateway:
+            await self.safe_remove(f"/ip dhcp-server network remove [find gateway={gateway}]")
+
+        if ip:
+            ip_addr = ip.split("/")[0]
+            await self.safe_remove(f'/ip address remove [find address~"{ip_addr}"]')
+            await self.safe_remove(f'/ip address remove [find interface={bridge}]')
+
+        await self.safe_remove(f"/ip pool remove [find name={pool}]")
+        await self.safe_remove(f"/ip pool remove [find where name~'hs-pool']")
+        await self.safe_remove(
+            f"/ip firewall nat remove [find out-interface={wan} chain=srcnat action=masquerade]"
+        )
+        await self.safe_remove(f'/ip firewall nat remove [find comment="NAT-HOTSPOT"]')
+        await self.safe_remove(f"/ip firewall nat remove [find out-interface={bridge} chain=srcnat]")
+        await self.safe_remove(f'/ip firewall filter remove [find chain="unused-hs-chain"]')
+        await self.safe_remove(f'/ip firewall nat remove [find chain="unused-hs-chain"]')
+
+        for iface in lan_interfaces:
+            if iface:
+                await self.safe_remove(
+                    f"/interface bridge port remove [find bridge={bridge} interface={iface}]"
+                )
+        await self.safe_remove(f"/interface bridge port remove [find bridge={bridge}]")
+        await self.safe_remove(f"/interface bridge remove [find name={bridge}]")
+        await self.safe_remove(f'/ip firewall filter remove [find comment="MGMT_SAFE"]')
 
     # =========================================================================
     # DIAGNÓSTICO
     # =========================================================================
 
     async def diagnostics(self):
-        """
-        Retorna um dict com o estado atual do roteador.
-        Útil para validar o provisionamento.
-        """
+        """Retorna um dict com o estado atual do roteador."""
         sections = {
-            "identity":          "/system identity print",
-            "packages":          "/system package print",
-            "interfaces":        "/interface print",
-            "bridge_ports":      "/interface bridge port print",
-            "ip_addresses":      "/ip address print",
-            "pools":             "/ip pool print",
-            "dhcp_servers":      "/ip dhcp-server print",
-            "dhcp_networks":     "/ip dhcp-server network print",
-            "hotspot":           "/ip hotspot print",
-            "hotspot_prof":      "/ip hotspot profile print",
-            "hs_user_profiles":  "/ip hotspot user profile print",
-            "hs_users":          "/ip hotspot user print",
-            "hs_bindings":       "/ip hotspot ip-binding print",
-            "hs_walled":         "/ip hotspot walled-garden ip print",
-            "nat_rules":         "/ip firewall nat print",
-            "filter_rules":      "/ip firewall filter print",
+            "identity": "/system identity print",
+            "packages": "/system package print",
+            "interfaces": "/interface print",
+            "bridge_ports": "/interface bridge port print",
+            "ip_addresses": "/ip address print",
+            "pools": "/ip pool print",
+            "dhcp_servers": "/ip dhcp-server print",
+            "dhcp_networks": "/ip dhcp-server network print",
+            "hotspot": "/ip hotspot print",
+            "hotspot_prof": "/ip hotspot profile print",
+            "hs_user_profiles": "/ip hotspot user profile print",
+            "hs_users": "/ip hotspot user print",
+            "hs_bindings": "/ip hotspot ip-binding print",
+            "hs_walled": "/ip hotspot walled-garden ip print",
+            "nat_rules": "/ip firewall nat print",
+            "filter_rules": "/ip firewall filter print",
         }
 
         result = {}
@@ -723,209 +614,149 @@ class MikroTikSSHService:
         """Imprime diagnóstico formatado no terminal."""
         data = await self.diagnostics()
         labels = {
-            "identity":          "📌 Identity",
-            "packages":          "📦 Pacotes",
-            "interfaces":        "📡 Interfaces",
-            "bridge_ports":      "🔗 Bridge Ports",
-            "ip_addresses":      "🌐 IP Addresses",
-            "pools":             "🎱 Pools",
-            "dhcp_servers":      "📋 DHCP Servers",
-            "dhcp_networks":     "🗺️  DHCP Networks",
-            "hotspot":           "🔥 Hotspot",
-            "hotspot_prof":      "⚙️  Hotspot Profiles",
-            "hs_user_profiles":  "👥 User Profiles",
-            "hs_users":          "👤 Usuários",
-            "hs_bindings":       "🔓 IP Bindings",
-            "hs_walled":         "🌿 Walled Garden",
-            "nat_rules":         "🔄 NAT Rules",
-            "filter_rules":      "🛡️  Firewall Filter",
+            "identity": "📌 Identity",
+            "packages": "📦 Pacotes",
+            "interfaces": "📡 Interfaces",
+            "bridge_ports": "🔗 Bridge Ports",
+            "ip_addresses": "🌐 IP Addresses",
+            "pools": "🎱 Pools",
+            "dhcp_servers": "📋 DHCP Servers",
+            "dhcp_networks": "🗺️ DHCP Networks",
+            "hotspot": "🔥 Hotspot",
+            "hotspot_prof": "⚙️ Hotspot Profiles",
+            "hs_user_profiles": "👥 User Profiles",
+            "hs_users": "👤 Usuários",
+            "hs_bindings": "🔓 IP Bindings",
+            "hs_walled": "🌿 Walled Garden",
+            "nat_rules": "🔄 NAT Rules",
+            "filter_rules": "🛡️ Firewall Filter",
         }
         for key, label in labels.items():
             print(f"\n{label}:")
             print(data.get(key, "(vazio)") or "(vazio)")
             
     # =========================================================================
-    # GERENCIAMENTO DE USUÁRIOS (BLOQUEIO/DESBLOQUEIO)
-    # =========================================================================
-    # =========================================================================
-    # HELPERS
+    # GERENCIAMENTO DE USUÁRIOS
     # =========================================================================
 
     async def _build_where(self, field, value, server="all"):
+        """Constrói condição WHERE para comandos."""
         where = f'where {field}="{value}"'
         if server != "all":
             where += f' and server="{server}"'
         return where
 
-
     async def ensure_profile(self, rate_limit):
-        """
-        Garante que exista um profile com rate-limit
-        """
+        """Garante que exista um profile com rate-limit."""
         profile_name = f"profile_{rate_limit.replace('/', '_')}"
-
         try:
             cmd = f'/ip hotspot user profile add name="{profile_name}" rate-limit="{rate_limit}"'
             await self.exec(cmd)
         except:
-            pass  # já existe
-
+            pass
         return profile_name
 
-
-    # =========================================================================
-    # GERENCIAMENTO DE USUÁRIOS
-    # =========================================================================
-
     async def disable_hotspot_user(self, username, server="all"):
+        """Desabilita um usuário hotspot."""
         try:
             where = await self._build_where("name", username, server)
             cmd = f'/ip hotspot user disable [find {where}]'
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao desabilitar usuário {username}: {e}")
             return False
 
-
     async def enable_hotspot_user(self, username, server="all"):
+        """Habilita um usuário hotspot."""
         try:
             where = await self._build_where("name", username, server)
             cmd = f'/ip hotspot user enable [find {where}]'
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao habilitar usuário {username}: {e}")
             return False
 
-
     async def create_hotspot_user(self, username, password, server="all", profile=None):
+        """Cria um usuário hotspot."""
         try:
             cmd = f'/ip hotspot user add name="{username}" password="{password}" server="{server}"'
             if profile:
                 cmd += f' profile="{profile}"'
-
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao criar usuário {username}: {e}")
             return False
 
-
-    # =========================================================================
-    # LIMPEZA / SESSÕES
-    # =========================================================================
-
     async def remove_hotspot_cookie(self, username, server="all"):
+        """Remove cookies de um usuário."""
         try:
             where = await self._build_where("user", username, server)
             cmd = f'/ip hotspot cookie remove [find {where}]'
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao remover cookie do usuário {username}: {e}")
             return False
 
-
     async def remove_hotspot_host(self, username, server="all"):
+        """Remove hosts de um usuário."""
         try:
             where = await self._build_where("user", username, server)
             cmd = f'/ip hotspot host remove [find {where}]'
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao remover host do usuário {username}: {e}")
             return False
 
-
     async def remove_hotspot_active(self, username, server="all"):
+        """Remove sessões ativas de um usuário."""
         try:
             where = await self._build_where("user", username, server)
             cmd = f'/ip hotspot active remove [find {where}]'
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao remover sessão ativa do usuário {username}: {e}")
             return False
 
-
     async def remove_hotspot_ip_binding(self, username, server="all"):
+        """Remove IP bindings de um usuário."""
         try:
             where = f'where comment="{username}"'
             cmd = f'/ip hotspot ip-binding remove [find {where}]'
             await self.exec(cmd)
             return True
-
         except Exception as e:
-            print(f"Erro ao remover IP binding do usuário {username}: {e}")
             return False
 
-
-    # =========================================================================
-    # RATE LIMIT (CORRETO VIA PROFILE)
-    # =========================================================================
-
     async def set_user_rate_limit(self, username, rate_limit, server="all"):
-        """
-        Aplica rate-limit via profile (forma correta no hotspot)
-        """
+        """Aplica rate-limit via profile."""
         try:
             profile = await self.ensure_profile(rate_limit)
             where = await self._build_where("name", username, server)
-
             cmd = f'/ip hotspot user set [find {where}] profile="{profile}"'
             await self.exec(cmd)
-
             return True
-
         except Exception as e:
-            print(f"Erro ao aplicar rate-limit no usuário {username}: {e}")
             return False
 
-
-    # =========================================================================
-    # FLUXOS COMPLETOS
-    # =========================================================================
-
     async def full_disconnect_hotspot_user(self, username, server="all"):
+        """Desconecta completamente um usuário."""
         try:
             await self.remove_hotspot_active(username, server)
             await self.remove_hotspot_cookie(username, server)
             await self.remove_hotspot_host(username, server)
             await self.disable_hotspot_user(username, server)
-
             return True
-
         except Exception as e:
-            print(f"Erro ao desconectar usuário {username}: {e}")
             return False
 
-
-    async def full_unblock_hotspot_user(
-        self,
-        username,
-        password,
-        server="all",
-        profile=None,
-        rate_limit=None
-    ):
+    async def full_unblock_hotspot_user(self, username, password, server="all", profile=None, rate_limit=None):
+        """Desbloqueia completamente um usuário."""
         try:
             await self.enable_hotspot_user(username, server)
-
             if not await self.exists("/ip hotspot user", f'name="{username}"'):
                 await self.create_hotspot_user(username, password, server, profile)
-
             if rate_limit:
                 await self.set_user_rate_limit(username, rate_limit, server)
-
             return True
-
         except Exception as e:
-            print(f"Erro ao desbloquear usuário {username}: {e}")
             return False
